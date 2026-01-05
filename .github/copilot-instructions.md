@@ -7,14 +7,14 @@
 ## レイヤー分離アーキテクチャ
 
 ```
-app/                    # Expo Router画面
-├─ components/          # UIコンポーネント
-├─ services/           # データアクセス層
-├─ hooks/              # ビジネスロジック
-├─ utils/              # 純粋関数
-├─ stores/             # 状態管理
-└─ contexts/           # React Context
-└─ types/              # 型定義
+app/                    # Expo Router画面（ルーティング専用）
+components/             # UIコンポーネント
+services/               # データアクセス層
+hooks/                  # ビジネスロジック
+utils/                  # 純粋関数
+stores/                 # 状態管理
+contexts/               # React Context
+types/                  # 型定義
 ```
 
 ### サービス層パターン (`services/supabaseService.ts`)

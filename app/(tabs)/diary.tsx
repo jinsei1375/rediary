@@ -1,10 +1,10 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-export default function HomeScreen() {
+export default function DiaryScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Rediary</Text>
-      <Text style={styles.text}>日記で学ぶ言語学習アプリ</Text>
+      <Text style={styles.title}>日記</Text>
+      <Text style={styles.text}>日記の作成・編集画面</Text>
     </View>
   );
 }
@@ -23,5 +23,6 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 16,
+    color: '#666',
   },
 });

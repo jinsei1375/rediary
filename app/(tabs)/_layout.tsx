@@ -8,33 +8,36 @@ export default function TabLayout() {
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: '#007AFF',
+        tabBarStyle: {
+          paddingTop: 10,
+          height: 40,
+          backgroundColor: '#fff',
+        },
       }}
     >
       <Tabs.Screen
-        name="index"
+        name="calendar"
         options={{
-          title: 'ホーム',
+          title: '',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home-outline" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="diary"
-        options={{
-          title: '日記',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="book-outline" size={size} color={color} />
+            <Ionicons name="calendar-outline" size={size} color={color} />
           ),
         }}
       />
       <Tabs.Screen
         name="settings"
         options={{
-          title: '設定',
+          title: '',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="settings-outline" size={size} color={color} />
           ),
+        }}
+      />
+      <Tabs.Screen
+        name="diary/[date]"
+        options={{
+          href: null,
+          headerShown: false,
         }}
       />
     </Tabs>

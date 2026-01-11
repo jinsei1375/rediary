@@ -23,7 +23,7 @@ function RootLayoutNav() {
       router.replace('/login');
     } else if (session && !inAuthGroup) {
       // ログインしている場合はタブ画面へ
-      router.replace('/(tabs)/calendar');
+      router.replace('/(tabs)');
     }
   }, [session, loading, segments]);
 
@@ -37,6 +37,7 @@ function RootLayoutNav() {
             gestureDirection: 'horizontal',
           }}
         >
+          <Stack.Screen name="index" />
           <Stack.Screen name="login" />
           <Stack.Screen name="(tabs)" />
         </Stack>

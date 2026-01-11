@@ -3,13 +3,12 @@ import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 
-export default function DiaryScreen() {
+export default function HomeScreen() {
   const [selectedDate, setSelectedDate] = useState('');
   const router = useRouter();
 
   const handleDayPress = (day: any) => {
     setSelectedDate(day.dateString);
-    console.log('Date pressed:', day.dateString);
     router.push({
       pathname: '/(tabs)/diary/[date]',
       params: { date: day.dateString },

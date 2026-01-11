@@ -20,9 +20,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     // 初期セッションを取得
-    AuthService.getSession().then(({ data }) => {
-      setSession(data.session);
-      setUser(data.session?.user ?? null);
+    AuthService.getSession().then(({ data, error }) => {
+      if (error) {
+        // セッション検証エラー（ユーザーが削除された等）
+        console.error('Session validation error:', error);
+        setSession(null);
+        setUser(null);
+      } else {
+        setSession(data.session);
+        setUser(data.session?.user ?? null);
+      }
       setLoading(false);
     });
 

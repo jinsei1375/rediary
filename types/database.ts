@@ -7,6 +7,7 @@ export type Json = string | number | boolean | null | { [key: string]: Json | un
 // Supabase Enums
 export enum Language {
   EN = 'en',
+  JA = 'ja',
 }
 
 export type Database = {
@@ -44,8 +45,8 @@ export type Profile = {
   id: string;
   email: string;
   display_name: string | null;
-  native_language: string | null;
-  target_language: string | null;
+  native_language: Language | null;
+  target_language: Language | null;
   created_at: string | null;
   updated_at: string | null;
 };

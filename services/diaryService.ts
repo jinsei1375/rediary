@@ -18,7 +18,7 @@ export class DiaryService {
       .select('*')
       .eq('user_id', userId)
       .eq('entry_date', date)
-      .single();
+      .maybeSingle();
     return { data, error };
   }
 

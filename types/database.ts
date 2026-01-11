@@ -4,6 +4,11 @@
 
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
+// Supabase Enums
+export enum Language {
+  EN = 'en',
+}
+
 export type Database = {
   public: {
     Tables: {
@@ -48,12 +53,13 @@ export type Profile = {
 export type DiaryEntry = {
   id: string;
   user_id: string;
-  title: string | null;
+  title: string;
   content: string;
-  language: string;
+  content_native: string;
+  language: Language;
   entry_date: string;
-  created_at: string | null;
-  updated_at: string | null;
+  created_at: string;
+  updated_at: string;
 };
 
 export type AiCorrection = {
@@ -85,15 +91,16 @@ export type TranslationExercise = {
 // ============================================
 
 export type ProfileInsert = Omit<Profile, 'id' | 'created_at' | 'updated_at'> & {
-  id: string; // auth.users.idと一致する必要がある
-  native_language?: string; // デフォルト: 'ja'
-  target_language?: string; // デフォルト: 'en'
+  id: string;
+  native_language?: string;
+  target_language?: string;
   created_at?: string;
   updated_at?: string;
 };
 
-export type DiaryEntryInsert = Omit<DiaryEntry, 'id' | 'created_at' | 'updated_at'> & {
+export type DiaryEntryInsert = Omit<DiaryEntry, 'id' | 'created_at' | 'updated_at' | 'language'> & {
   id?: string;
+  language?: Language;
   created_at?: string;
   updated_at?: string;
 };
@@ -108,7 +115,7 @@ export type TranslationExerciseInsert = Omit<
   'id' | 'created_at' | 'is_completed'
 > & {
   id?: string;
-  is_completed?: boolean; // デフォルト: false
+  is_completed?: boolean;
   created_at?: string;
 };
 

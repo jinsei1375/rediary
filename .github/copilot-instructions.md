@@ -17,9 +17,9 @@ contexts/               # React Context
 types/                  # 型定義
 ```
 
-### サービス層パターン (`services/supabaseService.ts`)
+### サービス層パターン
 
-全てのデータベース操作は`SupabaseService`クラスに集約：
+全てのデータベース操作は services/ 以下に実装し、直接 Supabase クライアントを使用することは避ける。
 
 ## UI スタイル
 

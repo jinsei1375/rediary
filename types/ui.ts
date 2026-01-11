@@ -4,8 +4,8 @@
 
 export type DiaryFormData = {
   title: string;
-  content: string;
-  language: string;
+  content: string; // 英語の内容
+  content_native: string; // 日本語の内容（本来書きたかった内容）
   entry_date: string;
 };
 
@@ -60,13 +60,14 @@ export type MonthlyStats = {
 
 export const LANGUAGES = {
   EN: 'en',
-  JA: 'ja',
-  ES: 'es',
-  FR: 'fr',
-  DE: 'de',
-  ZH: 'zh',
-  KO: 'ko',
-  ID: 'id',
+  // 将来的に追加予定:
+  // JA: 'ja',
+  // ES: 'es',
+  // FR: 'fr',
+  // DE: 'de',
+  // ZH: 'zh',
+  // KO: 'ko',
+  // ID: 'id',
 } as const;
 
 export type Language = (typeof LANGUAGES)[keyof typeof LANGUAGES];

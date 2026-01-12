@@ -1,4 +1,4 @@
-import type { DiaryEntryInsert, DiaryEntryUpdate } from '@/types';
+import type { DiaryEntryInsert, DiaryEntryUpdate } from '@/types/database';
 import { supabase } from './supabase';
 
 export class DiaryService {
@@ -53,8 +53,11 @@ export class DiaryService {
   }
 
   static async getByMonth(userId: string, year: number, month: number) {
-    const startDate = `${year}-${String(month).padStart(2, '0')}-01`;
-    const endDate = `${year}-${String(month).padStart(2, '0')}-31`;
+    const firstDay = new Date(year, month - 1, 1);
+    const lastDay = new Date(year, month, 0);
+
+    const startDate = firstDay.toISOString().split('T')[0];
+    const endDate = lastDay.toISOString().split('T')[0];
 
     const { data, error } = await supabase
       .from('diary_entries')
@@ -63,6 +66,28 @@ export class DiaryService {
       .gte('entry_date', startDate)
       .lte('entry_date', endDate)
       .order('entry_date', { ascending: true });
+
+    return { data, error };
+  }
+
+  /**
+   * カレンダー表示用：指定月の前後1ヶ月を含む3ヶ月分のタイトルと日付を取得
+   */
+  static async getTitlesForMonth(userId: string, year: number, month: number) {
+    // 前月の1日
+    const startDate = new Date(year, month - 2, 1);
+    // 次月の最終日
+    const endDate = new Date(year, month + 1, 0);
+
+    const startDateStr = startDate.toISOString().split('T')[0];
+    const endDateStr = endDate.toISOString().split('T')[0];
+
+    const { data, error } = await supabase
+      .from('diary_entries')
+      .select('entry_date, title')
+      .eq('user_id', userId)
+      .gte('entry_date', startDateStr)
+      .lte('entry_date', endDateStr);
 
     return { data, error };
   }

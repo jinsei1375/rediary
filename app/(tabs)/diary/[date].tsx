@@ -3,7 +3,9 @@ import { Loading } from '@/components/common/Loading';
 import { DiaryForm } from '@/components/diary/DiaryForm';
 import { useAuth } from '@/contexts/AuthContext';
 import { DiaryService } from '@/services/diaryService';
-import type { DiaryEntryInsert, DiaryFormData } from '@/types';
+import type { DiaryEntryInsert } from '@/types/database';
+import type { DiaryFormData } from '@/types/ui';
+import { formatDate } from '@/utils';
 import { useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { Alert } from 'react-native';
@@ -15,11 +17,6 @@ export default function DiaryDetailScreen() {
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const [existingEntryId, setExistingEntryId] = useState<string | null>(null);
-
-  const formatDate = (dateString: string) => {
-    if (!dateString) return '';
-    return dateString.replace(/-/g, '/');
-  };
 
   const [formData, setFormData] = useState<DiaryFormData>({
     title: formatDate(date || ''),

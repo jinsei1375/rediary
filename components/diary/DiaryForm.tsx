@@ -1,4 +1,4 @@
-import type { DiaryFormData } from '@/types';
+import type { DiaryFormData } from '@/types/ui';
 import React, { useCallback } from 'react';
 import { Button, ScrollView, Spinner, Text, YStack } from 'tamagui';
 import { DiaryTextInput } from './DiaryTextInput';

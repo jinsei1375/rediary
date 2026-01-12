@@ -33,6 +33,13 @@ export type CalendarDiary = {
   };
 };
 
+// カレンダー画面で使用する日付ごとの日記データ
+export type CalendarDiaryData = {
+  [date: string]: {
+    title: string;
+  };
+};
+
 // ============================================
 // Statistics/Analytics Types
 // ============================================

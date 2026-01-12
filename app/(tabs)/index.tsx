@@ -3,13 +3,14 @@ import { DiaryService } from '@/services/diaryService';
 import { useFocusEffect } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
 import { Calendar, DateData } from 'react-native-calendars';
+import { useTheme, YStack } from 'tamagui';
 
 export default function HomeScreen() {
   const [diaryDates, setDiaryDates] = useState<Set<string>>(new Set());
   const router = useRouter();
   const { session } = useAuth();
+  const theme = useTheme();
 
   const today = new Date().toISOString().split('T')[0];
 
@@ -43,7 +44,7 @@ export default function HomeScreen() {
     diaryDates.forEach((date) => {
       marked[date] = {
         marked: true,
-        dotColor: '#007AFF',
+        dotColor: theme.primary.get(),
       };
     });
 
@@ -54,33 +55,26 @@ export default function HomeScreen() {
     marked[today] = {
       ...marked[today],
       selected: true,
-      selectedColor: '#E8F4FF',
-      selectedTextColor: '#007AFF',
+      selectedColor: theme.blue1.get(),
+      selectedTextColor: theme.primary.get(),
     };
 
     return marked;
   };
 
   return (
-    <View style={styles.container}>
+    <YStack flex={1} backgroundColor="$background">
       <Calendar
         onDayPress={handleDayPress}
         markedDates={getMarkedDates()}
         theme={{
-          todayTextColor: '#007AFF',
-          arrowColor: '#000',
-          monthTextColor: '#000',
+          todayTextColor: theme.primary.get(),
+          arrowColor: theme.color.get(),
+          monthTextColor: theme.color.get(),
           textMonthFontWeight: 'bold',
-          calendarBackground: '#fff',
+          calendarBackground: theme.background.get(),
         }}
       />
-    </View>
+    </YStack>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-});

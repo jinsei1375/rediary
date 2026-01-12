@@ -1,16 +1,7 @@
 import { useAuth } from '@/contexts/AuthContext';
 import React, { useState } from 'react';
-import {
-  ActivityIndicator,
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import { Button, Input, Spinner, Text, YStack } from 'tamagui';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -68,127 +59,93 @@ export default function LoginScreen() {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.container}
+      style={{ flex: 1 }}
     >
-      <View style={styles.content}>
-        <Text style={styles.title}>Rediary</Text>
-        <Text style={styles.subtitle}>日記で学ぶ言語学習アプリ</Text>
+      <YStack flex={1} justifyContent="center" paddingHorizontal="$6" backgroundColor="$background">
+        <Text
+          fontSize="$10"
+          fontWeight="bold"
+          textAlign="center"
+          marginBottom="$2"
+          color="$primary"
+        >
+          Rediary
+        </Text>
+        <Text fontSize="$5" textAlign="center" color="$placeholderColor" marginBottom="$10">
+          日記で学ぶ言語学習アプリ
+        </Text>
 
-        <View style={styles.form}>
-          <TextInput
-            style={styles.input}
+        <YStack width="100%">
+          <Input
             placeholder="メールアドレス"
             value={email}
             onChangeText={setEmail}
             autoCapitalize="none"
             keyboardType="email-address"
+            size="$4"
+            borderWidth={1}
+            borderColor="$borderColor"
+            borderRadius="$3"
+            padding="$3"
+            marginBottom="$4"
+            backgroundColor="$background"
+            focusStyle={{
+              borderColor: '$borderColorFocus',
+            }}
           />
-          <TextInput
-            style={styles.input}
+          <Input
             placeholder="パスワード"
             value={password}
             onChangeText={setPassword}
             secureTextEntry
+            size="$4"
+            borderWidth={1}
+            borderColor="$borderColor"
+            borderRadius="$3"
+            padding="$3"
+            marginBottom="$4"
+            backgroundColor="$background"
+            focusStyle={{
+              borderColor: '$borderColorFocus',
+            }}
           />
 
-          <TouchableOpacity style={styles.button} onPress={handleEmailAuth} disabled={loading}>
+          <Button
+            backgroundColor="$primary"
+            borderRadius="$3"
+            height="$5"
+            marginBottom="$4"
+            onPress={handleEmailAuth}
+            disabled={loading}
+            alignItems="center"
+            justifyContent="center"
+            pressStyle={{
+              backgroundColor: '$primaryPress',
+            }}
+          >
             {loading ? (
-              <ActivityIndicator color="#fff" />
+              <Spinner color="$background" />
             ) : (
-              <Text style={styles.buttonText}>{isSignUp ? '新規登録' : 'ログイン'}</Text>
+              <Text color="$background" fontSize="$5" fontWeight="bold">
+                {isSignUp ? '新規登録' : 'ログイン'}
+              </Text>
             )}
-          </TouchableOpacity>
+          </Button>
 
-          <TouchableOpacity onPress={() => setIsSignUp(!isSignUp)}>
-            <Text style={styles.switchText}>
+          <Button
+            unstyled
+            onPress={() => setIsSignUp(!isSignUp)}
+            marginBottom="$6"
+            pressStyle={{ opacity: 0.7 }}
+          >
+            <Text textAlign="center" color="$primary">
               {isSignUp
                 ? 'アカウントをお持ちの方はログイン'
                 : 'アカウントをお持ちでない方は新規登録'}
             </Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+          </Button>
+        </YStack>
+      </YStack>
     </KeyboardAvoidingView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  content: {
-    flex: 1,
-    justifyContent: 'center',
-    paddingHorizontal: 24,
-  },
-  title: {
-    fontSize: 36,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 8,
-    color: '#007AFF',
-  },
-  subtitle: {
-    fontSize: 16,
-    textAlign: 'center',
-    color: '#666',
-    marginBottom: 48,
-  },
-  form: {
-    width: '100%',
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 16,
-    fontSize: 16,
-  },
-  button: {
-    backgroundColor: '#007AFF',
-    borderRadius: 8,
-    padding: 16,
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  switchText: {
-    textAlign: 'center',
-    color: '#007AFF',
-    marginBottom: 24,
-  },
-  divider: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: '#ddd',
-  },
-  dividerText: {
-    marginHorizontal: 16,
-    color: '#666',
-  },
-  googleButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    padding: 16,
-    gap: 8,
-  },
-  googleButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-  },
-});

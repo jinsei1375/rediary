@@ -1,6 +1,7 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { router } from 'expo-router';
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert } from 'react-native';
+import { Button, Text, YStack } from 'tamagui';
 
 export default function SettingsScreen() {
   const { signOut, user } = useAuth();
@@ -20,42 +21,31 @@ export default function SettingsScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>設定</Text>
-      {user && <Text style={styles.email}>{user.email}</Text>}
+    <YStack flex={1} padding="$6" backgroundColor="$background">
+      <Text fontSize="$8" fontWeight="bold" marginBottom="$2">
+        設定
+      </Text>
+      {user && (
+        <Text fontSize="$3" color="$placeholderColor" marginBottom="$8">
+          {user.email}
+        </Text>
+      )}
 
-      <TouchableOpacity style={styles.logoutButton} onPress={handleSignOut}>
-        <Text style={styles.logoutText}>ログアウト</Text>
-      </TouchableOpacity>
-    </View>
+      <Button
+        backgroundColor="$error"
+        borderRadius="$3"
+        height="$5"
+        onPress={handleSignOut}
+        alignItems="center"
+        justifyContent="center"
+        pressStyle={{
+          opacity: 0.8,
+        }}
+      >
+        <Text color="$background" fontSize="$5" fontWeight="bold">
+          ログアウト
+        </Text>
+      </Button>
+    </YStack>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 24,
-    backgroundColor: '#fff',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 8,
-  },
-  email: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 32,
-  },
-  logoutButton: {
-    backgroundColor: '#ff3b30',
-    borderRadius: 8,
-    padding: 16,
-    alignItems: 'center',
-  },
-  logoutText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-});

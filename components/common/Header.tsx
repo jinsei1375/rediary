@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Button, Text, XStack, YStack } from 'tamagui';
 
 type HeaderProps = {
   title: string;
@@ -20,39 +20,33 @@ export const Header = React.memo(({ title, showBackButton = true, onBack }: Head
   };
 
   return (
-    <View style={styles.header}>
-      {showBackButton && (
-        <TouchableOpacity onPress={handleBack} style={styles.backButtonContainer}>
-          <Text style={styles.backButton}>← 戻る</Text>
-        </TouchableOpacity>
-      )}
-      <Text style={styles.title}>{title}</Text>
-    </View>
+    <YStack
+      backgroundColor="$background"
+      borderBottomWidth={1}
+      borderBottomColor="$borderColor"
+      paddingVertical="$3"
+      paddingHorizontal="$4"
+    >
+      <XStack alignItems="center" justifyContent="center" position="relative">
+        {showBackButton && (
+          <Button
+            unstyled
+            position="absolute"
+            left={0}
+            onPress={handleBack}
+            pressStyle={{ opacity: 0.7 }}
+          >
+            <Text color="$primary" fontSize="$4">
+              ← 戻る
+            </Text>
+          </Button>
+        )}
+        <Text fontSize="$6" fontWeight="bold" color="$color">
+          {title}
+        </Text>
+      </XStack>
+    </YStack>
   );
 });
 
 Header.displayName = 'Header';
-
-const styles = StyleSheet.create({
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
-    backgroundColor: '#fff',
-  },
-  backButtonContainer: {
-    position: 'absolute',
-    left: 16,
-  },
-  backButton: {
-    fontSize: 16,
-    color: '#007AFF',
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-});

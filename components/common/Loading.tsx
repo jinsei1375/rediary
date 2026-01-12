@@ -1,5 +1,5 @@
 import React from 'react';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { Spinner, Text, YStack } from 'tamagui';
 
 type LoadingProps = {
   message?: string;
@@ -7,25 +7,13 @@ type LoadingProps = {
 
 export const Loading = React.memo(({ message = '読み込み中...' }: LoadingProps) => {
   return (
-    <View style={styles.container}>
-      <ActivityIndicator size="large" color="#007AFF" />
-      <Text style={styles.text}>{message}</Text>
-    </View>
+    <YStack flex={1} justifyContent="center" alignItems="center" backgroundColor="$background">
+      <Spinner size="large" color="$primary" />
+      <Text fontSize="$4" color="$placeholderColor" marginTop="$3">
+        {message}
+      </Text>
+    </YStack>
   );
 });
 
 Loading.displayName = 'Loading';
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-  },
-  text: {
-    fontSize: 16,
-    color: '#666',
-    marginTop: 12,
-  },
-});

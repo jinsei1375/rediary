@@ -16,6 +16,9 @@
     "@react-navigation/elements": "^2.6.3",
     "@react-navigation/native": "^7.1.8",
     "@supabase/supabase-js": "^2.89.0",
+    "@tamagui/config": "^1.144.1",
+    "@tamagui/core": "^1.144.1",
+    "@tamagui/theme-base": "^1.144.1",
     "expo": "~54.0.30",
     "expo-constants": "~18.0.12",
     "expo-font": "~14.0.10",
@@ -36,10 +39,12 @@
     "react-native-screens": "~4.16.0",
     "react-native-svg": "^15.15.1",
     "react-native-url-polyfill": "^3.0.0",
-    "react-native-web": "~0.21.0"
+    "react-native-web": "~0.21.0",
+    "tamagui": "^1.144.1"
   },
   "devDependencies": {
     "@supabase/mcp-server-supabase": "^0.6.1",
+    "@tamagui/babel-plugin": "^1.144.1",
     "@types/react": "~19.1.0",
     "eslint": "^9.25.0",
     "eslint-config-expo": "~10.0.0",

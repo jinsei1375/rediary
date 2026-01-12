@@ -2,9 +2,11 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
+import { TamaguiProvider } from 'tamagui';
 
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import tamaguiConfig from '@/tamagui.config';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 function RootLayoutNav() {
@@ -29,20 +31,22 @@ function RootLayoutNav() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <SafeAreaView style={{ flex: 1 }}>
-        <Stack
-          screenOptions={{
-            headerShown: false,
-            gestureEnabled: true,
-            gestureDirection: 'horizontal',
-          }}
-        >
-          <Stack.Screen name="index" />
-          <Stack.Screen name="login" />
-          <Stack.Screen name="(tabs)" />
-        </Stack>
-        <StatusBar />
-      </SafeAreaView>
+      <TamaguiProvider config={tamaguiConfig} defaultTheme={colorScheme || 'light'}>
+        <SafeAreaView style={{ flex: 1 }}>
+          <Stack
+            screenOptions={{
+              headerShown: false,
+              gestureEnabled: true,
+              gestureDirection: 'horizontal',
+            }}
+          >
+            <Stack.Screen name="index" />
+            <Stack.Screen name="login" />
+            <Stack.Screen name="(tabs)" />
+          </Stack>
+          <StatusBar />
+        </SafeAreaView>
+      </TamaguiProvider>
     </ThemeProvider>
   );
 }

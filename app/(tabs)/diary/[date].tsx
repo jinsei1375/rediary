@@ -4,13 +4,13 @@ import { DiaryForm } from '@/components/diary/DiaryForm';
 import { useAuth } from '@/contexts/AuthContext';
 import { DiaryService } from '@/services/diaryService';
 import type { DiaryEntryInsert, DiaryFormData } from '@/types';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
-import { Alert, StyleSheet, View } from 'react-native';
+import { Alert } from 'react-native';
+import { YStack } from 'tamagui';
 
 export default function DiaryDetailScreen() {
   const { date } = useLocalSearchParams<{ date: string }>();
-  const router = useRouter();
   const { session } = useAuth();
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -115,7 +115,7 @@ export default function DiaryDetailScreen() {
     } finally {
       setSaving(false);
     }
-  }, [session?.user?.id, formData, existingEntryId, router]);
+  }, [session?.user?.id, formData, existingEntryId]);
 
   const handleFormChange = useCallback((field: keyof DiaryFormData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -130,7 +130,7 @@ export default function DiaryDetailScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <YStack flex={1} backgroundColor="$background">
       <Header title={formatDate(date)} />
       <DiaryForm
         formData={formData}
@@ -138,13 +138,6 @@ export default function DiaryDetailScreen() {
         onSave={handleSave}
         saving={saving}
       />
-    </View>
+    </YStack>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-});

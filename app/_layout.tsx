@@ -1,4 +1,5 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { PortalProvider } from '@tamagui/portal';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
@@ -32,20 +33,22 @@ function RootLayoutNav() {
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <TamaguiProvider config={tamaguiConfig} defaultTheme={colorScheme || 'light'}>
-        <SafeAreaView style={{ flex: 1 }}>
-          <Stack
-            screenOptions={{
-              headerShown: false,
-              gestureEnabled: true,
-              gestureDirection: 'horizontal',
-            }}
-          >
-            <Stack.Screen name="index" />
-            <Stack.Screen name="login" />
-            <Stack.Screen name="(tabs)" />
-          </Stack>
-          <StatusBar />
-        </SafeAreaView>
+        <PortalProvider shouldAddRootHost>
+          <SafeAreaView style={{ flex: 1 }}>
+            <Stack
+              screenOptions={{
+                headerShown: false,
+                gestureEnabled: true,
+                gestureDirection: 'horizontal',
+              }}
+            >
+              <Stack.Screen name="index" />
+              <Stack.Screen name="login" />
+              <Stack.Screen name="(tabs)" />
+            </Stack>
+            <StatusBar />
+          </SafeAreaView>
+        </PortalProvider>
       </TamaguiProvider>
     </ThemeProvider>
   );

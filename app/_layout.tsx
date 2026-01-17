@@ -40,11 +40,17 @@ function RootLayoutNav() {
                 headerShown: false,
                 gestureEnabled: true,
                 gestureDirection: 'horizontal',
+                animation: 'slide_from_right',
               }}
             >
               <Stack.Screen name="index" />
               <Stack.Screen name="login" />
-              <Stack.Screen name="(tabs)" />
+              <Stack.Screen
+                name="(tabs)"
+                options={{
+                  gestureEnabled: true,
+                }}
+              />
             </Stack>
             <StatusBar />
           </SafeAreaView>

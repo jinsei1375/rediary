@@ -78,6 +78,7 @@ export type AiCorrection = {
 export type TranslationExercise = {
   id: string;
   user_id: string;
+  diary_entry_id: string | null;
   source_text: string;
   source_language: Language;
   target_language: Language;
@@ -117,9 +118,10 @@ export type AiCorrectionInsert = Omit<AiCorrection, 'id' | 'created_at'> & {
 
 export type TranslationExerciseInsert = Omit<
   TranslationExercise,
-  'id' | 'created_at' | 'is_completed' | 'user_translation' | 'completed_at'
+  'id' | 'created_at' | 'is_completed' | 'user_translation' | 'completed_at' | 'diary_entry_id'
 > & {
   id?: string;
+  diary_entry_id?: string | null;
   is_completed?: boolean;
   user_translation?: string | null;
   completed_at?: string | null;

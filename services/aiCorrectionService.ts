@@ -200,6 +200,7 @@ Please respond in the following JSON format:
     if (result.data && aiResponse.native_expressions.length > 0) {
       await this.registerNativeExpressionsAsExercises(
         userId,
+        diaryEntryId,
         aiResponse.native_expressions,
         targetLanguage,
         nativeLanguage
@@ -214,16 +215,18 @@ Please respond in the following JSON format:
    */
   private static async registerNativeExpressionsAsExercises(
     userId: string,
+    diaryEntryId: string,
     nativeExpressions: NativeExpression[],
     sourceLanguage: Language,
     targetLanguage: Language
   ) {
     const exercises = nativeExpressions.map((expr) => ({
       user_id: userId,
-      source_text: expr.expression,
+      diary_entry_id: diaryEntryId,
+      source_text: expr.usage_example,
       source_language: sourceLanguage,
       target_language: targetLanguage,
-      correct_translation: expr.meaning,
+      correct_translation: expr.usage_example_translation,
       scheduled_date: new Date().toISOString().split('T')[0], // 今日の日付
     }));
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { ScrollView } from 'react-native';
-import { Button, Dialog, Text, useTheme, XStack, YStack } from 'tamagui';
+import { Button, Dialog, Text, XStack, YStack } from 'tamagui';
 
 type MonthYearPickerProps = {
   visible: boolean;
@@ -21,7 +21,6 @@ export const MonthYearPicker = ({
   onConfirm,
   onCancel,
 }: MonthYearPickerProps) => {
-  const theme = useTheme();
   const yearScrollRef = useRef<ScrollView>(null);
   const monthScrollRef = useRef<ScrollView>(null);
 

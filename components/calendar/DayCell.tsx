@@ -51,3 +51,5 @@ export const DayCell = React.memo(({ day, isToday, diaryData, onPress }: DayCell
     </Pressable>
   );
 });
+
+DayCell.displayName = 'DayCell';

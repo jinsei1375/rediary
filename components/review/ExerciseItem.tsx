@@ -1,8 +1,7 @@
 import type { TranslationExercise } from '@/types/database';
 import { Ionicons } from '@expo/vector-icons';
 import { memo } from 'react';
-import { Pressable } from 'react-native';
-import { Button, Input, Separator, Text, XStack, YStack } from 'tamagui';
+import { Button, Input, Separator, Text, useTheme, XStack, YStack } from 'tamagui';
 
 type ExerciseItemProps = {
   exercise: TranslationExercise;
@@ -24,6 +23,8 @@ export const ExerciseItem = memo(
     onComplete,
     onGoToDiary,
   }: ExerciseItemProps) => {
+    const theme = useTheme();
+
     return (
       <YStack padding="$4" backgroundColor="$background" gap="$3">
         <YStack gap="$2">
@@ -61,6 +62,9 @@ export const ExerciseItem = memo(
               multiline
               numberOfLines={3}
               disabled={isRevealed}
+              focusStyle={{
+                borderColor: '$borderColorFocus',
+              }}
             />
           </YStack>
         )}
@@ -68,7 +72,7 @@ export const ExerciseItem = memo(
         {isRevealed && (
           <YStack gap="$2">
             <XStack gap="$2" alignItems="center">
-              <Ionicons name="checkmark-circle" size={20} color="#10B981" />
+              <Ionicons name="checkmark-circle" size={20} color={theme.success.get()} />
               <Text fontSize="$3" color="$gray10" fontWeight="600">
                 正解
               </Text>
@@ -78,7 +82,7 @@ export const ExerciseItem = memo(
               backgroundColor="$green2"
               borderRadius="$3"
               borderLeftWidth={4}
-              borderLeftColor="#10B981"
+              borderLeftColor="$success"
             >
               <Text fontSize="$5" color="$color">
                 {exercise.source_text}
@@ -101,14 +105,18 @@ export const ExerciseItem = memo(
         <XStack gap="$2" justifyContent="space-between" alignItems="center" marginTop="$2">
           <XStack gap="$2" alignItems="center" flex={1}>
             {exercise.diary_entry_id && (
-              <Pressable onPress={onGoToDiary}>
+              <Button
+                unstyled
+                onPress={onGoToDiary}
+                pressStyle={{ opacity: 0.7 }}
+              >
                 <XStack gap="$1" alignItems="center">
-                  <Ionicons name="book-outline" size={16} color="#5B8CFF" />
+                  <Ionicons name="book-outline" size={16} color={theme.primary.get()} />
                   <Text fontSize="$2" color="$primary">
                     日記を見る
                   </Text>
                 </XStack>
-              </Pressable>
+              </Button>
             )}
           </XStack>
 
@@ -120,6 +128,12 @@ export const ExerciseItem = memo(
                   backgroundColor="$primary"
                   color="$background"
                   onPress={onRevealAnswer}
+                  pressStyle={{
+                    backgroundColor: '$primaryPress',
+                  }}
+                  hoverStyle={{
+                    backgroundColor: '$primaryHover',
+                  }}
                 >
                   正解を確認する
                 </Button>
@@ -129,6 +143,12 @@ export const ExerciseItem = memo(
                   backgroundColor="$success"
                   color="$background"
                   onPress={onComplete}
+                  pressStyle={{
+                    backgroundColor: '$successPress',
+                  }}
+                  hoverStyle={{
+                    backgroundColor: '$successHover',
+                  }}
                 >
                   完了にする
                 </Button>
@@ -137,7 +157,7 @@ export const ExerciseItem = memo(
           )}
         </XStack>
 
-        <Separator marginTop="$2" />
+        <Separator marginTop="$2" borderColor="$borderColor" />
       </YStack>
     );
   }

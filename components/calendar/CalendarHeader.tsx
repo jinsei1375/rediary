@@ -1,7 +1,6 @@
 import { getYearMonth } from '@/utils';
 import React from 'react';
-import { Pressable } from 'react-native';
-import { Text, useTheme, XStack } from 'tamagui';
+import { Button, Text, XStack } from 'tamagui';
 
 type CalendarHeaderProps = {
   date: Date;
@@ -9,19 +8,23 @@ type CalendarHeaderProps = {
 };
 
 export const CalendarHeader = ({ date, onPress }: CalendarHeaderProps) => {
-  const theme = useTheme();
   const { year, month } = getYearMonth(date);
 
   return (
-    <Pressable onPress={onPress}>
-      <XStack paddingVertical="$3" justifyContent="center" alignItems="center">
-        <Text fontSize="$6" fontWeight="bold" color={theme.color.get()}>
+    <Button
+      unstyled
+      onPress={onPress}
+      paddingVertical="$3"
+      pressStyle={{ opacity: 0.7 }}
+    >
+      <XStack justifyContent="center" alignItems="center">
+        <Text fontSize="$6" fontWeight="bold" color="$color">
           {year}年{month}月
         </Text>
-        <Text fontSize="$4" color={theme.color.get()} marginLeft="$2">
+        <Text fontSize="$4" color="$color" marginLeft="$2">
           ▼
         </Text>
       </XStack>
-    </Pressable>
+    </Button>
   );
 };

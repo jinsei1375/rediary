@@ -1,6 +1,5 @@
 import { memo } from 'react';
-import { Pressable } from 'react-native';
-import { Text, XStack, YStack } from 'tamagui';
+import { Button, XStack } from 'tamagui';
 
 type FilterType = 'all' | 'incomplete' | 'completed';
 
@@ -12,52 +11,59 @@ type FilterButtonsProps = {
 export const FilterButtons = memo(({ filter, onFilterChange }: FilterButtonsProps) => {
   return (
     <XStack gap="$2">
-      <Pressable onPress={() => onFilterChange('incomplete')} style={{ flex: 1 }}>
-        <YStack
-          padding="$2"
-          backgroundColor={filter === 'incomplete' ? '$primary' : '$gray3'}
-          borderRadius="$3"
-          alignItems="center"
-        >
-          <Text
-            fontSize="$3"
-            fontWeight="600"
-            color={filter === 'incomplete' ? '$background' : '$color'}
-          >
-            未完了
-          </Text>
-        </YStack>
-      </Pressable>
+      <Button
+        flex={1}
+        size="$3"
+        onPress={() => onFilterChange('incomplete')}
+        backgroundColor={filter === 'incomplete' ? '$primary' : '$gray3'}
+        color={filter === 'incomplete' ? '$background' : '$color'}
+        borderRadius="$3"
+        fontWeight="600"
+        pressStyle={{
+          backgroundColor: filter === 'incomplete' ? '$primaryPress' : '$backgroundPress',
+        }}
+        hoverStyle={{
+          backgroundColor: filter === 'incomplete' ? '$primaryHover' : '$backgroundHover',
+        }}
+      >
+        未完了
+      </Button>
 
-      <Pressable onPress={() => onFilterChange('completed')} style={{ flex: 1 }}>
-        <YStack
-          padding="$2"
-          backgroundColor={filter === 'completed' ? '$primary' : '$gray3'}
-          borderRadius="$3"
-          alignItems="center"
-        >
-          <Text
-            fontSize="$3"
-            fontWeight="600"
-            color={filter === 'completed' ? '$background' : '$color'}
-          >
-            完了
-          </Text>
-        </YStack>
-      </Pressable>
+      <Button
+        flex={1}
+        size="$3"
+        onPress={() => onFilterChange('completed')}
+        backgroundColor={filter === 'completed' ? '$primary' : '$gray3'}
+        color={filter === 'completed' ? '$background' : '$color'}
+        borderRadius="$3"
+        fontWeight="600"
+        pressStyle={{
+          backgroundColor: filter === 'completed' ? '$primaryPress' : '$backgroundPress',
+        }}
+        hoverStyle={{
+          backgroundColor: filter === 'completed' ? '$primaryHover' : '$backgroundHover',
+        }}
+      >
+        完了
+      </Button>
 
-      <Pressable onPress={() => onFilterChange('all')} style={{ flex: 1 }}>
-        <YStack
-          padding="$2"
-          backgroundColor={filter === 'all' ? '$primary' : '$gray3'}
-          borderRadius="$3"
-          alignItems="center"
-        >
-          <Text fontSize="$3" fontWeight="600" color={filter === 'all' ? '$background' : '$color'}>
-            すべて
-          </Text>
-        </YStack>
-      </Pressable>
+      <Button
+        flex={1}
+        size="$3"
+        onPress={() => onFilterChange('all')}
+        backgroundColor={filter === 'all' ? '$primary' : '$gray3'}
+        color={filter === 'all' ? '$background' : '$color'}
+        borderRadius="$3"
+        fontWeight="600"
+        pressStyle={{
+          backgroundColor: filter === 'all' ? '$primaryPress' : '$backgroundPress',
+        }}
+        hoverStyle={{
+          backgroundColor: filter === 'all' ? '$primaryHover' : '$backgroundHover',
+        }}
+      >
+        すべて
+      </Button>
     </XStack>
   );
 });

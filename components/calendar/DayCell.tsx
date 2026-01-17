@@ -27,15 +27,15 @@ export const DayCell = React.memo(({ day, isToday, diaryData, onPress }: DayCell
         backgroundColor={isToday ? theme.blue1.get() : 'transparent'}
         borderRightWidth={1}
         borderBottomWidth={1}
-        borderColor="#e0e0e0"
+        borderColor="$borderColor"
         padding="$1"
       >
-        <Text fontSize="$3" color={isToday ? theme.primary.get() : theme.color.get()}>
+        <Text fontSize="$3" color={isToday ? '$primary' : '$color'}>
           {day.day}
         </Text>
         {hasDiary && (
           <YStack
-            backgroundColor={theme.primary.get()}
+            backgroundColor="$primary"
             borderRadius="$2"
             paddingHorizontal="$1"
             paddingVertical={2}

@@ -42,7 +42,7 @@ export const DayCell = React.memo(({ day, isToday, diaryData, onPress }: DayCell
             marginTop="$1"
             maxWidth="100%"
           >
-            <Text fontSize="$1" color="$background" numberOfLines={1}>
+            <Text fontSize="$1" color="$background" numberOfLines={2}>
               {diaryData[dateStr].title}
             </Text>
           </YStack>

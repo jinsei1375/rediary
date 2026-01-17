@@ -158,7 +158,7 @@ export function CorrectionResultDisplay({ correction }: CorrectionResultDisplayP
                       使用例
                     </Text>
                     <Text fontSize="$3" fontStyle="italic" color="$gray11" lineHeight="$4">
-                      "{expr.usage_example}"
+                      &quot;{expr.usage_example}&quot;
                     </Text>
                     {expr.usage_example_translation && (
                       <Text fontSize="$3" color="$gray10" lineHeight="$4" marginTop="$1">

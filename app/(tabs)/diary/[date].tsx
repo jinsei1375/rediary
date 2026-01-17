@@ -1,15 +1,19 @@
 import { Header } from '@/components/common/Header';
 import { Loading } from '@/components/common/Loading';
-import { DiaryForm } from '@/components/diary/DiaryForm';
+import { CorrectionConfirmModal } from '@/components/diary/CorrectionConfirmModal';
+import { CorrectionResultDisplay } from '@/components/diary/CorrectionResultDisplay';
+import { DiaryTextInput } from '@/components/diary/DiaryTextInput';
 import { useAuth } from '@/contexts/AuthContext';
+import { AiCorrectionService } from '@/services/aiCorrectionService';
 import { DiaryService } from '@/services/diaryService';
-import type { DiaryEntryInsert } from '@/types/database';
+import type { AiCorrection, DiaryEntryInsert } from '@/types/database';
+import { Language } from '@/types/database';
 import type { DiaryFormData } from '@/types/ui';
 import { formatDate } from '@/utils';
 import { useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { Alert } from 'react-native';
-import { YStack } from 'tamagui';
+import { Button, ScrollView, Separator, Spinner, Text, XStack, YStack } from 'tamagui';
 
 export default function DiaryDetailScreen() {
   const { date } = useLocalSearchParams<{ date: string }>();
@@ -17,6 +21,11 @@ export default function DiaryDetailScreen() {
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const [existingEntryId, setExistingEntryId] = useState<string | null>(null);
+
+  // AI添削関連の状態
+  const [aiCorrecting, setAiCorrecting] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [aiCorrection, setAiCorrection] = useState<AiCorrection | null>(null);
 
   const [formData, setFormData] = useState<DiaryFormData>({
     title: formatDate(date || ''),
@@ -34,6 +43,9 @@ export default function DiaryDetailScreen() {
       }
 
       setLoading(true);
+      // 日付変更時に添削結果をクリア
+      setAiCorrection(null);
+
       const { data, error } = await DiaryService.getByDate(session.user.id, date);
 
       if (error) {
@@ -118,6 +130,84 @@ export default function DiaryDetailScreen() {
     setFormData((prev) => ({ ...prev, [field]: value }));
   }, []);
 
+  // AI添削ボタンクリック
+  const handleAiCorrectionClick = useCallback(() => {
+    if (!formData.content.trim() || !formData.content_native.trim()) {
+      Alert.alert('エラー', '英語と日本語の内容を両方入力してください');
+      return;
+    }
+    setShowConfirmModal(true);
+  }, [formData.content, formData.content_native]);
+
+  // AI添削実行
+  const handleConfirmCorrection = useCallback(async () => {
+    if (!session?.user?.id) {
+      Alert.alert('エラー', 'ログインが必要です');
+      return;
+    }
+
+    setShowConfirmModal(false);
+    setAiCorrecting(true);
+
+    try {
+      let diaryId = existingEntryId;
+
+      // 未保存の場合は先に保存する
+      if (!diaryId) {
+        const diaryEntry: DiaryEntryInsert = {
+          user_id: session.user.id,
+          title: formData.title.trim(),
+          content: formData.content.trim(),
+          content_native: formData.content_native.trim(),
+          entry_date: formData.entry_date,
+        };
+
+        const { data: savedDiary, error: saveError } = await DiaryService.create(diaryEntry);
+        if (saveError || !savedDiary) {
+          throw new Error('日記の保存に失敗しました');
+        }
+
+        diaryId = savedDiary.id;
+        setExistingEntryId(diaryId);
+      }
+
+      // AI添削を実行
+      const { data, error } = await AiCorrectionService.correctAndSave(
+        session.user.id,
+        diaryId as string,
+        formData.content_native.trim(),
+        formData.content.trim(),
+        Language.JA, // ネイティブ言語（日本語）
+        Language.EN // ターゲット言語（英語）
+      );
+
+      if (error) throw error;
+      if (data) {
+        setAiCorrection(data);
+        Alert.alert('成功', 'AI添削が完了しました');
+      }
+    } catch (error) {
+      console.error('AI correction error:', error);
+      Alert.alert('エラー', 'AI添削に失敗しました。もう一度お試しください。');
+    } finally {
+      setAiCorrecting(false);
+    }
+  }, [session?.user?.id, existingEntryId, formData]);
+
+  // 既存のAI添削を読み込む
+  useEffect(() => {
+    const loadAiCorrection = async () => {
+      if (!existingEntryId) return;
+
+      const { data } = await AiCorrectionService.getByDiaryEntryId(existingEntryId);
+      if (data) {
+        setAiCorrection(data);
+      }
+    };
+
+    loadAiCorrection();
+  }, [existingEntryId]);
+
   if (!date) {
     return null;
   }
@@ -129,11 +219,104 @@ export default function DiaryDetailScreen() {
   return (
     <YStack flex={1} backgroundColor="$background">
       <Header title={formatDate(date)} />
-      <DiaryForm
-        formData={formData}
-        onFormChange={handleFormChange}
-        onSave={handleSave}
-        saving={saving}
+
+      <ScrollView flex={1}>
+        <YStack padding="$4" gap="$1">
+          {/* 日記フォーム部分 */}
+          <DiaryTextInput
+            label="タイトル"
+            value={formData.title}
+            onChangeText={(text) => handleFormChange('title', text)}
+            placeholder="YYYY/MM/DD"
+          />
+
+          <DiaryTextInput
+            label="内容（英語）"
+            subLabel="実際に書く英語の日記"
+            value={formData.content}
+            onChangeText={(text) => handleFormChange('content', text)}
+            placeholder="Today..."
+            multiline
+          />
+
+          <DiaryTextInput
+            label="内容（日本語）"
+            subLabel="本来英語として書きたかった内容"
+            value={formData.content_native}
+            onChangeText={(text) => handleFormChange('content_native', text)}
+            placeholder="今日は..."
+            multiline
+          />
+
+          {/* AI添削ボタン */}
+          {existingEntryId && !aiCorrection && (
+            <Button
+              onPress={handleAiCorrectionClick}
+              disabled={!formData.content.trim() || !formData.content_native.trim() || aiCorrecting}
+              height="$5"
+              width="90%"
+              maxWidth={400}
+              marginTop="$4"
+              alignSelf="center"
+              backgroundColor="#7C3AED"
+              borderRadius="$4"
+              pressStyle={{
+                backgroundColor: '#6D28D9',
+                opacity: 0.9,
+              }}
+              opacity={
+                !formData.content.trim() || !formData.content_native.trim() || aiCorrecting
+                  ? 0.5
+                  : 1
+              }
+              shadowColor="rgba(124, 58, 237, 0.4)"
+              shadowOffset={{ width: 0, height: 2 }}
+              shadowOpacity={0.5}
+              shadowRadius={12}
+              elevation={8}
+            >
+              <XStack gap="$3" alignItems="center" justifyContent="center">
+                {aiCorrecting && <Spinner color="white" size="small" />}
+                <Text color="white" fontSize="$6" fontWeight="700" letterSpacing={1}>
+                  {aiCorrecting ? 'AI添削中...' : 'AI添削'}
+                </Text>
+              </XStack>
+            </Button>
+          )}
+
+          {/* AI添削結果表示 */}
+          {aiCorrection && (
+            <YStack marginTop="$4">
+              <Separator marginBottom="$4" />
+              <CorrectionResultDisplay correction={aiCorrection} />
+            </YStack>
+          )}
+        </YStack>
+      </ScrollView>
+
+      {/* 保存ボタン */}
+      <Button
+        backgroundColor={saving ? '#cccccc' : '#5B8CFF'}
+        color="white"
+        margin="$4"
+        height="$5"
+        borderRadius="$3"
+        onPress={handleSave}
+        disabled={saving}
+        fontSize="$5"
+        fontWeight="bold"
+        icon={saving ? <Spinner color="white" /> : undefined}
+      >
+        {saving ? '保存中...' : '保存'}
+      </Button>
+
+      {/* 確認モーダル */}
+      <CorrectionConfirmModal
+        open={showConfirmModal}
+        onConfirm={handleConfirmCorrection}
+        onCancel={() => setShowConfirmModal(false)}
+        nativeContent={formData.content_native}
+        userContent={formData.content}
       />
     </YStack>
   );

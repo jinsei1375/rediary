@@ -40,7 +40,6 @@ export const DiaryTextInput = React.memo(
             borderRadius="$3"
             padding="$3"
             backgroundColor="$background"
-            height={180}
             numberOfLines={6}
             focusStyle={{
               borderColor: '$borderColorFocus',

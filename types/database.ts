@@ -66,19 +66,21 @@ export type DiaryEntry = {
 export type AiCorrection = {
   id: string;
   user_id: string;
-  diary_entry_id: string | null;
-  original_text: string;
-  corrected_text: string;
-  suggestions: Json | null;
-  created_at: string | null;
+  diary_entry_id: string;
+  native_content: string;
+  user_content: string;
+  corrected_content: string;
+  correction_points: Json;
+  native_expressions: Json;
+  created_at: string;
 };
 
 export type TranslationExercise = {
   id: string;
   user_id: string;
   source_text: string;
-  source_language: string;
-  target_language: string;
+  source_language: Language;
+  target_language: Language;
   correct_translation: string | null;
   user_translation: string | null;
   is_completed: boolean | null;
@@ -108,16 +110,20 @@ export type DiaryEntryInsert = Omit<DiaryEntry, 'id' | 'created_at' | 'updated_a
 
 export type AiCorrectionInsert = Omit<AiCorrection, 'id' | 'created_at'> & {
   id?: string;
+  correction_points?: Json;
+  native_expressions?: Json;
   created_at?: string;
 };
 
 export type TranslationExerciseInsert = Omit<
   TranslationExercise,
-  'id' | 'created_at' | 'is_completed'
+  'id' | 'created_at' | 'is_completed' | 'user_translation' | 'completed_at'
 > & {
   id?: string;
   is_completed?: boolean;
-  created_at?: string;
+  user_translation?: string | null;
+  completed_at?: string | null;
+  created_at?: string | null;
 };
 
 // ============================================
@@ -138,15 +144,30 @@ export type TranslationExerciseUpdate = Partial<
 // JSON Types
 // ============================================
 
-export type AiSuggestion = {
+export type CorrectionPoint = {
   type: 'grammar' | 'vocabulary' | 'style' | 'other';
   original: string;
-  suggestion: string;
+  corrected: string;
   explanation: string;
   position?: {
     start: number;
     end: number;
   };
+};
+
+export type NativeExpression = {
+  expression: string;
+  meaning: string;
+  usage_example: string;
+  usage_example_translation: string;
+  context?: string;
+};
+
+// OpenAI API Response型
+export type OpenAIResponse = {
+  corrected_content: string;
+  correction_points: CorrectionPoint[];
+  native_expressions: NativeExpression[];
 };
 
 // ============================================

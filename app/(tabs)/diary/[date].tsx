@@ -261,11 +261,10 @@ export default function DiaryDetailScreen() {
               backgroundColor="$purple10"
               borderRadius="$4"
               pressStyle={{
-                backgroundColor: '$purple10',
-                opacity: 0.9,
+                opacity: 0.85,
               }}
               hoverStyle={{
-                opacity: 0.95,
+                opacity: 0.9,
               }}
               opacity={
                 !formData.content.trim() || !formData.content_native.trim() || aiCorrecting

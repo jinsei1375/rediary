@@ -24,11 +24,13 @@ export function CorrectionConfirmModal({
           opacity={0.5}
           enterStyle={{ opacity: 0 }}
           exitStyle={{ opacity: 0 }}
+          backgroundColor="rgba(0, 0, 0, 0.5)"
         />
         <AlertDialog.Content
           bordered
           elevate
           key="content"
+          backgroundColor="$background"
           animation={[
             'quick',
             {
@@ -46,11 +48,13 @@ export function CorrectionConfirmModal({
           maxWidth={500}
         >
           <YStack gap="$4">
-            <AlertDialog.Title>AI添削を実行しますか？</AlertDialog.Title>
-            <AlertDialog.Description>以下の内容でAIが添削を行います。</AlertDialog.Description>
+            <AlertDialog.Title color="$color">AI添削を実行しますか？</AlertDialog.Title>
+            <AlertDialog.Description color="$gray11">
+              以下の内容でAIが添削を行います。
+            </AlertDialog.Description>
 
             <YStack gap="$2">
-              <Text fontWeight="600" fontSize="$3">
+              <Text fontWeight="600" fontSize="$3" color="$color">
                 書きたかった内容（日本語）：
               </Text>
               <Text fontSize="$3" color="$gray11" numberOfLines={3}>
@@ -59,7 +63,7 @@ export function CorrectionConfirmModal({
             </YStack>
 
             <YStack gap="$2">
-              <Text fontWeight="600" fontSize="$3">
+              <Text fontWeight="600" fontSize="$3" color="$color">
                 実際に書いた内容（英語）：
               </Text>
               <Text fontSize="$3" color="$gray11" numberOfLines={3}>
@@ -73,10 +77,34 @@ export function CorrectionConfirmModal({
 
             <XStack gap="$3" justifyContent="flex-end">
               <AlertDialog.Cancel asChild>
-                <Button onPress={onCancel}>キャンセル</Button>
+                <Button
+                  onPress={onCancel}
+                  backgroundColor="$backgroundHover"
+                  color="$color"
+                  borderRadius="$3"
+                  pressStyle={{
+                    backgroundColor: '$backgroundPress',
+                  }}
+                  hoverStyle={{
+                    backgroundColor: '$backgroundPress',
+                  }}
+                >
+                  キャンセル
+                </Button>
               </AlertDialog.Cancel>
               <AlertDialog.Action asChild>
-                <Button backgroundColor="$blue10" color="$white1" onPress={onConfirm}>
+                <Button
+                  backgroundColor="$primary"
+                  color="$background"
+                  onPress={onConfirm}
+                  borderRadius="$3"
+                  pressStyle={{
+                    backgroundColor: '$primaryPress',
+                  }}
+                  hoverStyle={{
+                    backgroundColor: '$primaryHover',
+                  }}
+                >
                   実行
                 </Button>
               </AlertDialog.Action>

@@ -258,10 +258,12 @@ export default function DiaryDetailScreen() {
               maxWidth={400}
               marginTop="$4"
               alignSelf="center"
-              backgroundColor="#7C3AED"
+              backgroundColor="$purple10"
               borderRadius="$4"
               pressStyle={{
-                backgroundColor: '#6D28D9',
+                opacity: 0.85,
+              }}
+              hoverStyle={{
                 opacity: 0.9,
               }}
               opacity={
@@ -269,15 +271,10 @@ export default function DiaryDetailScreen() {
                   ? 0.5
                   : 1
               }
-              shadowColor="rgba(124, 58, 237, 0.4)"
-              shadowOffset={{ width: 0, height: 2 }}
-              shadowOpacity={0.5}
-              shadowRadius={12}
-              elevation={8}
             >
               <XStack gap="$3" alignItems="center" justifyContent="center">
-                {aiCorrecting && <Spinner color="white" size="small" />}
-                <Text color="white" fontSize="$6" fontWeight="700" letterSpacing={1}>
+                {aiCorrecting && <Spinner color="$background" size="small" />}
+                <Text color="$background" fontSize="$6" fontWeight="700" letterSpacing={1}>
                   {aiCorrecting ? 'AI添削中...' : 'AI添削'}
                 </Text>
               </XStack>
@@ -296,8 +293,8 @@ export default function DiaryDetailScreen() {
 
       {/* 保存ボタン */}
       <Button
-        backgroundColor={saving ? '#cccccc' : '#5B8CFF'}
-        color="white"
+        backgroundColor={saving ? '$backgroundPress' : '$primary'}
+        color="$background"
         margin="$4"
         height="$5"
         borderRadius="$3"
@@ -305,7 +302,13 @@ export default function DiaryDetailScreen() {
         disabled={saving}
         fontSize="$5"
         fontWeight="bold"
-        icon={saving ? <Spinner color="white" /> : undefined}
+        icon={saving ? <Spinner color="$background" /> : undefined}
+        pressStyle={{
+          backgroundColor: '$primaryPress',
+        }}
+        hoverStyle={{
+          backgroundColor: '$primaryHover',
+        }}
       >
         {saving ? '保存中...' : '保存'}
       </Button>

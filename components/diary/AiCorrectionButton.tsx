@@ -11,11 +11,17 @@ export function AiCorrectionButton({ onPress, disabled, loading }: AiCorrectionB
     <Button
       onPress={onPress}
       disabled={disabled || loading}
-      icon={loading ? <Spinner /> : undefined}
+      icon={loading ? <Spinner color="$background" /> : undefined}
       backgroundColor="$primary"
-      color="$white1"
+      color="$background"
       size="$4"
       opacity={disabled ? 0.5 : 1}
+      pressStyle={{
+        backgroundColor: '$primaryPress',
+      }}
+      hoverStyle={{
+        backgroundColor: '$primaryHover',
+      }}
     >
       {loading ? 'AI添削中...' : 'AI添削'}
     </Button>

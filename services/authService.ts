@@ -1,8 +1,11 @@
 import * as WebBrowser from 'expo-web-browser';
 import { supabase } from './supabase';
 
-// WebBrowserのウォームアップ（iOSで必要）
+// WebBrowserを認証セッションに使用する準備（iOSで必要）
 WebBrowser.maybeCompleteAuthSession();
+
+// OAuthコールバック用のリダイレクトURL
+const redirectUrl = 'rediary://auth/callback';
 
 export class AuthService {
   // メールアドレスでサインアップ
@@ -29,35 +32,49 @@ export class AuthService {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          skipBrowserRedirect: false,
+          redirectTo: redirectUrl,
+          skipBrowserRedirect: true,
         },
       });
 
       if (error) throw error;
 
-      // OAuth URLをブラウザで開く
-      if (data?.url) {
-        const result = await WebBrowser.openAuthSessionAsync(data.url, 'rediary://');
-
-        if (result.type === 'success') {
-          // URLからトークンを抽出
-          const url = result.url;
-          const params = new URLSearchParams(url.split('#')[1] || url.split('?')[1]);
-          const accessToken = params.get('access_token');
-          const refreshToken = params.get('refresh_token');
-
-          if (accessToken && refreshToken) {
-            // セッションを設定
-            const { error: sessionError } = await supabase.auth.setSession({
-              access_token: accessToken,
-              refresh_token: refreshToken,
-            });
-            if (sessionError) throw sessionError;
-          }
-        }
+      if (!data?.url) {
+        throw new Error('OAuth URLが取得できませんでした');
       }
 
-      return { data, error: null };
+      // WebBrowserでOAuthフローを処理
+      const result = await WebBrowser.openAuthSessionAsync(data.url, redirectUrl);
+
+      if (result.type === 'success' && result.url) {
+        // URLのハッシュフラグメントからトークンを抽出（Supabaseの標準形式）
+        const url = new URL(result.url);
+        const hashParams = new URLSearchParams(url.hash.slice(1));
+
+        const accessToken = hashParams.get('access_token');
+        const refreshToken = hashParams.get('refresh_token');
+
+        if (accessToken && refreshToken) {
+          // セッションを設定
+          const { error: sessionError } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken,
+          });
+          if (sessionError) throw sessionError;
+          return { data, error: null };
+        } else {
+          throw new Error('認証トークンが取得できませんでした');
+        }
+      } else if (result.type === 'cancel') {
+        return { data: null, error: new Error('認証がキャンセルされました') };
+      } else if (result.type === 'dismiss') {
+        return { data: null, error: new Error('認証が中断されました') };
+      } else if (result.type === 'locked') {
+        return { data: null, error: new Error('端末がロックされているため認証できませんでした') };
+      }
+
+      // OPENED タイプなど、その他のケース
+      return { data: null, error: new Error('認証が完了しませんでした') };
     } catch (error) {
       console.error('Google sign-in error:', error);
       return { data: null, error };

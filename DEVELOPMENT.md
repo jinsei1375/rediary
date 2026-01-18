@@ -36,6 +36,7 @@
 ### 完了した機能
 
 - ✅ Supabase 認証（メール/パスワード、メール確認不要）
+- ✅ Google OAuth 認証（詳細は `docs/GOOGLE_OAUTH_SETUP.md` を参照）
 - ✅ 日記エントリーの作成・編集・削除
 - ✅ カレンダービュー（日記データがある日付をマーク）
 - ✅ 共通コンポーネント（Header, Loading）

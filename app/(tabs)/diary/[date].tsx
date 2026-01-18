@@ -10,6 +10,7 @@ import type { AiCorrection, DiaryEntryInsert } from '@/types/database';
 import { Language } from '@/types/database';
 import type { DiaryFormData } from '@/types/ui';
 import { formatDate } from '@/utils';
+import { Portal } from '@tamagui/portal';
 import { useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { Alert } from 'react-native';
@@ -268,6 +269,40 @@ export default function DiaryDetailScreen() {
         nativeContent={formData.content_native}
         userContent={formData.content}
       />
+
+      {/* AI添削中のオーバーレイ */}
+      {aiCorrecting && (
+        <Portal>
+          <YStack
+            position="absolute"
+            top={0}
+            left={0}
+            right={0}
+            bottom={0}
+            backgroundColor="rgba(0, 0, 0, 0.7)"
+            justifyContent="center"
+            alignItems="center"
+            zIndex={9999}
+          >
+            <YStack
+              backgroundColor="$background"
+              padding="$6"
+              marginHorizontal="$4"
+              borderRadius="$4"
+              alignItems="center"
+              gap="$3"
+            >
+              <Spinner size="large" color="$primary" />
+              <Text fontSize="$6" fontWeight="bold" color="$color">
+                AI添削中...
+              </Text>
+              <Text fontSize="$3" color="$gray10">
+                しばらくお待ちください
+              </Text>
+            </YStack>
+          </YStack>
+        </Portal>
+      )}
     </YStack>
   );
 }

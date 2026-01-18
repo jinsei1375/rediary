@@ -9,10 +9,14 @@ const redirectUrl = 'rediary://auth/callback';
 
 export class AuthService {
   // メールアドレスでサインアップ
+  // リリース時にはメール確認が必要になる
   static async signUpWithEmail(email: string, password: string) {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        emailRedirectTo: redirectUrl,
+      },
     });
     return { data, error };
   }
@@ -34,6 +38,9 @@ export class AuthService {
         options: {
           redirectTo: redirectUrl,
           skipBrowserRedirect: true,
+          queryParams: {
+            prompt: 'select_account',
+          },
         },
       });
 

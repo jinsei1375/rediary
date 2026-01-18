@@ -34,6 +34,9 @@ export class AuthService {
         options: {
           redirectTo: redirectUrl,
           skipBrowserRedirect: true,
+          queryParams: {
+            prompt: 'select_account', // 常にアカウント選択画面を表示
+          },
         },
       });
 

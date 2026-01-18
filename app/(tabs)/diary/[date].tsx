@@ -2,7 +2,7 @@ import { Header } from '@/components/common/Header';
 import { Loading } from '@/components/common/Loading';
 import { CorrectionConfirmModal } from '@/components/diary/CorrectionConfirmModal';
 import { CorrectionResultDisplay } from '@/components/diary/CorrectionResultDisplay';
-import { DiaryTextInput } from '@/components/diary/DiaryTextInput';
+import { DiaryForm } from '@/components/diary/DiaryForm';
 import { useAuth } from '@/contexts/AuthContext';
 import { AiCorrectionService } from '@/services/aiCorrectionService';
 import { DiaryService } from '@/services/diaryService';
@@ -13,7 +13,7 @@ import { formatDate } from '@/utils';
 import { useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { Alert } from 'react-native';
-import { Button, ScrollView, Separator, Spinner, Text, XStack, YStack } from 'tamagui';
+import { Button, Separator, Spinner, Text, XStack, YStack } from 'tamagui';
 
 export default function DiaryDetailScreen() {
   const { date } = useLocalSearchParams<{ date: string }>();
@@ -126,7 +126,7 @@ export default function DiaryDetailScreen() {
     }
   }, [session?.user?.id, formData, existingEntryId]);
 
-  const handleFormChange = useCallback((field: keyof DiaryFormData, value: string) => {
+  const onFormChange = useCallback((field: keyof DiaryFormData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   }, []);
 
@@ -178,7 +178,7 @@ export default function DiaryDetailScreen() {
         formData.content_native.trim(),
         formData.content.trim(),
         Language.JA, // ネイティブ言語（日本語）
-        Language.EN // ターゲット言語（英語）
+        Language.EN, // ターゲット言語（英語）
       );
 
       if (error) throw error;
@@ -220,98 +220,52 @@ export default function DiaryDetailScreen() {
     <YStack flex={1} backgroundColor="$background">
       <Header title={formatDate(date)} />
 
-      <ScrollView flex={1}>
-        <YStack padding="$4" gap="$1">
-          {/* 日記フォーム部分 */}
-          <DiaryTextInput
-            label="タイトル"
-            value={formData.title}
-            onChangeText={(text) => handleFormChange('title', text)}
-            placeholder="YYYY/MM/DD"
-          />
-
-          <DiaryTextInput
-            label="内容（英語）"
-            subLabel="実際に書く英語の日記"
-            value={formData.content}
-            onChangeText={(text) => handleFormChange('content', text)}
-            placeholder="Today..."
-            multiline
-          />
-
-          <DiaryTextInput
-            label="内容（日本語）"
-            subLabel="本来英語として書きたかった内容"
-            value={formData.content_native}
-            onChangeText={(text) => handleFormChange('content_native', text)}
-            placeholder="今日は..."
-            multiline
-          />
-
-          {/* AI添削ボタン */}
-          {existingEntryId && !aiCorrection && (
-            <Button
-              onPress={handleAiCorrectionClick}
-              disabled={!formData.content.trim() || !formData.content_native.trim() || aiCorrecting}
-              height="$5"
-              width="90%"
-              maxWidth={400}
-              marginTop="$4"
-              alignSelf="center"
-              backgroundColor="$purple10"
-              borderRadius="$4"
-              pressStyle={{
-                opacity: 0.85,
-              }}
-              hoverStyle={{
-                opacity: 0.9,
-              }}
-              opacity={
-                !formData.content.trim() || !formData.content_native.trim() || aiCorrecting
-                  ? 0.5
-                  : 1
-              }
-            >
-              <XStack gap="$3" alignItems="center" justifyContent="center">
-                {aiCorrecting && <Spinner color="$background" size="small" />}
-                <Text color="$background" fontSize="$6" fontWeight="700" letterSpacing={1}>
-                  {aiCorrecting ? 'AI添削中...' : 'AI添削'}
-                </Text>
-              </XStack>
-            </Button>
-          )}
-
-          {/* AI添削結果表示 */}
-          {aiCorrection && (
-            <YStack marginTop="$4">
-              <Separator marginBottom="$4" />
-              <CorrectionResultDisplay correction={aiCorrection} />
-            </YStack>
-          )}
-        </YStack>
-      </ScrollView>
-
-      {/* 保存ボタン */}
-      <Button
-        backgroundColor={saving ? '$backgroundPress' : '$primary'}
-        color="$background"
-        margin="$4"
-        height="$5"
-        borderRadius="$3"
-        onPress={handleSave}
-        disabled={saving}
-        fontSize="$5"
-        fontWeight="bold"
-        icon={saving ? <Spinner color="$background" /> : undefined}
-        pressStyle={{
-          backgroundColor: '$primaryPress',
-        }}
-        hoverStyle={{
-          backgroundColor: '$primaryHover',
-        }}
+      {/* 日記フォーム */}
+      <DiaryForm
+        formData={formData}
+        onFormChange={onFormChange}
+        onSave={handleSave}
+        saving={saving}
       >
-        {saving ? '保存中...' : '保存'}
-      </Button>
+        {/* AI添削ボタン */}
+        {existingEntryId && !aiCorrection && (
+          <Button
+            onPress={handleAiCorrectionClick}
+            disabled={!formData.content.trim() || !formData.content_native.trim() || aiCorrecting}
+            height="$5"
+            width="90%"
+            maxWidth={400}
+            marginTop="$4"
+            alignSelf="center"
+            backgroundColor="$purple10"
+            borderRadius="$4"
+            pressStyle={{
+              opacity: 0.85,
+            }}
+            hoverStyle={{
+              opacity: 0.9,
+            }}
+            opacity={
+              !formData.content.trim() || !formData.content_native.trim() || aiCorrecting ? 0.5 : 1
+            }
+          >
+            <XStack gap="$3" alignItems="center" justifyContent="center">
+              {aiCorrecting && <Spinner color="$background" size="small" />}
+              <Text color="$background" fontSize="$6" fontWeight="700" letterSpacing={1}>
+                {aiCorrecting ? 'AI添削中...' : 'AI添削'}
+              </Text>
+            </XStack>
+          </Button>
+        )}
+
+        {/* AI添削結果表示 */}
+        {aiCorrection && (
+          <YStack marginTop="$4">
+            <Separator marginBottom="$4" />
+            <CorrectionResultDisplay correction={aiCorrection} />
+          </YStack>
+        )}
+      </DiaryForm>
 
       {/* 確認モーダル */}
       <CorrectionConfirmModal

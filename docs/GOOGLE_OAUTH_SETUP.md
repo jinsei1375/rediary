@@ -13,6 +13,7 @@
    - `redirectTo` パラメータで明示的にリダイレクトURLを指定
    - ハッシュフラグメント（`#`）からトークンを抽出（Supabaseの標準形式）
    - キャンセル、中断などのエラーケースを適切にハンドリング
+   - `queryParams: { prompt: 'select_account' }` を追加して、常にGoogleアカウント選択画面を表示
 
 2. **OAuth コールバック画面の追加**
    - `app/auth/callback.tsx` を作成
@@ -77,6 +78,11 @@
 
 #### Android
 - AndroidManifest.xml にインテントフィルタを追加（Expo が自動的に処理）
+
+## よくある質問
+
+### 異なる Google アカウントで登録したい場合
+アプリは `prompt: 'select_account'` パラメータを使用しているため、Google 認証時に常にアカウント選択画面が表示されます。これにより、以前にログインしたアカウントとは異なる Google アカウントを選択できます。
 
 ## トラブルシューティング
 

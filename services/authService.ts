@@ -4,7 +4,7 @@ import { supabase } from './supabase';
 // WebBrowserを認証セッションに使用する準備（iOSで必要）
 WebBrowser.maybeCompleteAuthSession();
 
-// Redirect URL for OAuth callback
+// OAuthコールバック用のリダイレクトURL
 const redirectUrl = 'rediary://auth/callback';
 
 export class AuthService {
@@ -70,7 +70,7 @@ export class AuthService {
       } else if (result.type === 'dismiss') {
         return { data: null, error: new Error('認証が中断されました') };
       } else if (result.type === 'locked') {
-        return { data: null, error: new Error('認証が中断されました') };
+        return { data: null, error: new Error('端末がロックされているため認証できませんでした') };
       }
 
       // OPENED タイプなど、その他のケース

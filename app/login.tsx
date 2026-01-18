@@ -38,11 +38,17 @@ export default function LoginScreen() {
     if (message.includes('認証が中断されました')) {
       return '認証が中断されました';
     }
+    if (message.includes('端末がロックされているため認証できませんでした')) {
+      return '端末がロックされているため認証できませんでした';
+    }
     if (message.includes('OAuth URLが取得できませんでした')) {
       return 'Google認証の準備に失敗しました。もう一度お試しください';
     }
     if (message.includes('認証トークンが取得できませんでした')) {
       return 'Google認証に失敗しました。もう一度お試しください';
+    }
+    if (message.includes('認証が完了しませんでした')) {
+      return 'Google認証が完了しませんでした。もう一度お試しください';
     }
 
     return 'エラーが発生しました。もう一度お試しください';

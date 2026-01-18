@@ -16,6 +16,10 @@ export const DayCell = React.memo(({ day, isToday, diaryData, onPress }: DayCell
   const dateStr = day.dateString;
   const hasDiary = diaryData[dateStr];
 
+  // 週の最後の日（土曜日）かどうかを判定
+  const dayOfWeek = new Date(day.year, day.month - 1, day.day).getDay();
+  const isSaturday = dayOfWeek === 6;
+
   return (
     <Pressable onPress={() => onPress(day)} style={{ flex: 1, width: '100%', height: '100%' }}>
       <YStack
@@ -25,7 +29,7 @@ export const DayCell = React.memo(({ day, isToday, diaryData, onPress }: DayCell
         alignItems="flex-start"
         justifyContent="flex-start"
         backgroundColor={isToday ? theme.blue1.get() : 'transparent'}
-        borderRightWidth={1}
+        borderRightWidth={isSaturday ? 0 : 1}
         borderBottomWidth={1}
         borderColor="$borderColor"
         padding="$1"

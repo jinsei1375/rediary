@@ -5,19 +5,20 @@ import { ActivityIndicator, View } from 'react-native';
 /**
  * OAuth認証のコールバック画面
  * Google認証後にリダイレクトされる画面
- * AuthSession.startAsyncが自動的にトークンを処理するため、
- * この画面は表示されることなくホーム画面にリダイレクトされる
+ * WebBrowser.openAuthSessionAsyncがトークンを抽出し、
+ * AuthContextのonAuthStateChangeが認証状態の変更を検知して
+ * 自動的にホーム画面にリダイレクトする
  */
 export default function AuthCallback() {
   const router = useRouter();
 
   useEffect(() => {
-    // AuthSession.startAsyncがトークン処理を完了した後、
-    // 認証状態の変更により自動的にホーム画面にリダイレクトされる
-    // ここでは念のため手動でリダイレクトを試みる
+    // 認証状態の変更により自動的にホーム画面にリダイレクトされるが、
+    // 念のため短時間待機後に手動リダイレクトを試みる
+    const REDIRECT_DELAY_MS = 1000;
     const timer = setTimeout(() => {
       router.replace('/(tabs)');
-    }, 1000);
+    }, REDIRECT_DELAY_MS);
 
     return () => clearTimeout(timer);
   }, [router]);

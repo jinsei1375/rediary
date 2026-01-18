@@ -1,7 +1,7 @@
 import * as WebBrowser from 'expo-web-browser';
 import { supabase } from './supabase';
 
-// OAuth認証完了時に必要（iOSで必要）
+// WebBrowserを認証セッションに使用する準備（iOSで必要）
 WebBrowser.maybeCompleteAuthSession();
 
 // Redirect URL for OAuth callback
@@ -67,11 +67,14 @@ export class AuthService {
         }
       } else if (result.type === 'cancel') {
         return { data: null, error: new Error('認証がキャンセルされました') };
-      } else if (result.type === 'dismiss' || result.type === 'locked') {
+      } else if (result.type === 'dismiss') {
+        return { data: null, error: new Error('認証が中断されました') };
+      } else if (result.type === 'locked') {
         return { data: null, error: new Error('認証が中断されました') };
       }
 
-      return { data, error: null };
+      // OPENED タイプなど、その他のケース
+      return { data: null, error: new Error('認証が完了しませんでした') };
     } catch (error) {
       console.error('Google sign-in error:', error);
       return { data: null, error };

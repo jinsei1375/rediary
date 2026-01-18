@@ -1,14 +1,15 @@
+import { GoogleLogo } from '@/components/common/GoogleLogo';
 import { useAuth } from '@/contexts/AuthContext';
 import React, { useState } from 'react';
 import { Alert, KeyboardAvoidingView, Platform } from 'react-native';
-import { Button, Input, Spinner, Text, YStack } from 'tamagui';
+import { Button, Input, Separator, Spinner, Text, XStack, YStack } from 'tamagui';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSignUp, setIsSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { signIn, signUp } = useAuth();
+  const { signIn, signUp, signInWithGoogle } = useAuth();
 
   const getErrorMessage = (error: any): string => {
     const message = error?.message || '';
@@ -51,8 +52,18 @@ export default function LoginScreen() {
       Alert.alert(
         '確認メールを送信しました',
         'メールに記載されたリンクをクリックして、アカウントを有効化してください',
-        [{ text: 'OK', onPress: () => setIsSignUp(false) }]
+        [{ text: 'OK', onPress: () => setIsSignUp(false) }],
       );
+    }
+  };
+
+  const handleGoogleAuth = async () => {
+    setLoading(true);
+    const { error } = await signInWithGoogle();
+    setLoading(false);
+
+    if (error) {
+      Alert.alert('エラー', 'Google認証に失敗しました');
     }
   };
 
@@ -135,7 +146,7 @@ export default function LoginScreen() {
           <Button
             unstyled
             onPress={() => setIsSignUp(!isSignUp)}
-            marginBottom="$6"
+            marginBottom="$4"
             pressStyle={{ opacity: 0.7 }}
           >
             <Text textAlign="center" color="$primary">
@@ -143,6 +154,36 @@ export default function LoginScreen() {
                 ? 'アカウントをお持ちの方はログイン'
                 : 'アカウントをお持ちでない方は新規登録'}
             </Text>
+          </Button>
+
+          <XStack alignItems="center" marginBottom="$4">
+            <Separator flex={1} />
+            <Text paddingHorizontal="$3" color="$gray10" fontSize="$2">
+              または
+            </Text>
+            <Separator flex={1} />
+          </XStack>
+
+          <Button
+            backgroundColor="$background"
+            borderWidth={1}
+            borderColor="$borderColor"
+            borderRadius="$3"
+            height="$5"
+            onPress={handleGoogleAuth}
+            disabled={loading}
+            alignItems="center"
+            justifyContent="center"
+            pressStyle={{
+              backgroundColor: '$backgroundHover',
+            }}
+          >
+            <XStack gap="$2" alignItems="center">
+              <GoogleLogo size={20} />
+              <Text color="$color" fontSize="$4" fontWeight="600">
+                Googleで{isSignUp ? '登録' : 'ログイン'}
+              </Text>
+            </XStack>
           </Button>
         </YStack>
       </YStack>

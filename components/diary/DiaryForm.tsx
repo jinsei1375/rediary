@@ -8,23 +8,31 @@ type DiaryFormProps = {
   onFormChange: (field: keyof DiaryFormData, value: string) => void;
   onSave: () => void;
   saving: boolean;
+  children?: React.ReactNode;
 };
 
+const MAX_LENGTH_ENGLISH = 1500;
+const MAX_LENGTH_JAPANESE = 1000;
+
 export const DiaryForm = React.memo(
-  ({ formData, onFormChange, onSave, saving }: DiaryFormProps) => {
+  ({ formData, onFormChange, onSave, saving, children }: DiaryFormProps) => {
+    const isContentOverLimit = formData.content.length > MAX_LENGTH_ENGLISH;
+    const isContentNativeOverLimit = formData.content_native.length > MAX_LENGTH_JAPANESE;
+    const isSaveDisabled = saving || isContentOverLimit || isContentNativeOverLimit;
+
     const handleTitleChange = useCallback(
       (text: string) => onFormChange('title', text),
-      [onFormChange]
+      [onFormChange],
     );
 
     const handleContentChange = useCallback(
       (text: string) => onFormChange('content', text),
-      [onFormChange]
+      [onFormChange],
     );
 
     const handleContentNativeChange = useCallback(
       (text: string) => onFormChange('content_native', text),
-      [onFormChange]
+      [onFormChange],
     );
 
     return (
@@ -50,6 +58,7 @@ export const DiaryForm = React.memo(
             onChangeText={handleContentChange}
             placeholder="Today..."
             multiline
+            maxLength={MAX_LENGTH_ENGLISH}
           />
 
           <DiaryTextInput
@@ -59,20 +68,23 @@ export const DiaryForm = React.memo(
             onChangeText={handleContentNativeChange}
             placeholder="今日は..."
             multiline
+            maxLength={MAX_LENGTH_JAPANESE}
           />
+
+          {children}
         </ScrollView>
 
         <Button
-          backgroundColor={saving ? '$backgroundPress' : '$primary'}
+          backgroundColor={isSaveDisabled ? '$gray8' : '$primary'}
           margin="$4"
           height="$5"
           borderRadius="$3"
           onPress={onSave}
-          disabled={saving}
+          disabled={isSaveDisabled}
           alignItems="center"
           justifyContent="center"
           pressStyle={{
-            backgroundColor: '$primaryPress',
+            backgroundColor: isSaveDisabled ? '$gray8' : '$primaryPress',
           }}
         >
           {saving ? (
@@ -85,7 +97,7 @@ export const DiaryForm = React.memo(
         </Button>
       </YStack>
     );
-  }
+  },
 );
 
 DiaryForm.displayName = 'DiaryForm';

@@ -8,6 +8,7 @@ interface AuthContextType {
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signUp: (email: string, password: string) => Promise<{ error: any }>;
+  signInWithGoogle: () => Promise<{ error: any }>;
   signOut: () => Promise<void>;
 }
 
@@ -57,12 +58,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return { error };
   };
 
+  const signInWithGoogle = async () => {
+    const { error } = await AuthService.signInWithGoogle();
+    return { error };
+  };
+
   const signOut = async () => {
+    // ローカル状態を先にクリア（UIがすぐに反応する）
+    setSession(null);
+    setUser(null);
+
+    // バックグラウンドでSupabaseのセッションをクリア
     await AuthService.signOut();
   };
 
   return (
-    <AuthContext.Provider value={{ session, user, loading, signIn, signUp, signOut }}>
+    <AuthContext.Provider
+      value={{ session, user, loading, signIn, signUp, signInWithGoogle, signOut }}
+    >
       {children}
     </AuthContext.Provider>
   );

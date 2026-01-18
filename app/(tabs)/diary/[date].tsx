@@ -45,6 +45,7 @@ export default function DiaryDetailScreen() {
       setLoading(true);
       // 日付変更時に添削結果をクリア
       setAiCorrection(null);
+      setExistingEntryId(null);
 
       const { data, error } = await DiaryService.getByDate(session.user.id, date);
 
@@ -61,6 +62,12 @@ export default function DiaryDetailScreen() {
           content_native: data.content_native,
           entry_date: data.entry_date,
         });
+
+        // AI添削も読み込む
+        const { data: correctionData } = await AiCorrectionService.getByDiaryEntryId(data.id);
+        if (correctionData) {
+          setAiCorrection(correctionData);
+        }
       } else {
         // 新規作成の場合
         setExistingEntryId(null);
@@ -194,20 +201,6 @@ export default function DiaryDetailScreen() {
     }
   }, [session?.user?.id, existingEntryId, formData]);
 
-  // 既存のAI添削を読み込む
-  useEffect(() => {
-    const loadAiCorrection = async () => {
-      if (!existingEntryId) return;
-
-      const { data } = await AiCorrectionService.getByDiaryEntryId(existingEntryId);
-      if (data) {
-        setAiCorrection(data);
-      }
-    };
-
-    loadAiCorrection();
-  }, [existingEntryId]);
-
   if (!date) {
     return null;
   }
@@ -228,7 +221,7 @@ export default function DiaryDetailScreen() {
         saving={saving}
       >
         {/* AI添削ボタン */}
-        {existingEntryId && !aiCorrection && (
+        {!loading && existingEntryId && !aiCorrection && (
           <Button
             onPress={handleAiCorrectionClick}
             disabled={!formData.content.trim() || !formData.content_native.trim() || aiCorrecting}

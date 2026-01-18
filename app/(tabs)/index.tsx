@@ -41,7 +41,7 @@ export default function HomeScreen() {
   useFocusEffect(
     useCallback(() => {
       loadDiaryDates();
-    }, [loadDiaryDates])
+    }, [loadDiaryDates]),
   );
 
   const handleDayPress = (day: DateData) => {

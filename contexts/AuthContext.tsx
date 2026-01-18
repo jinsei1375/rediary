@@ -49,18 +49,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await AuthService.signInWithEmail(email, password);
-    return { error };
+    return AuthService.signInWithEmail(email, password);
   };
 
   const signUp = async (email: string, password: string) => {
-    const { error } = await AuthService.signUpWithEmail(email, password);
-    return { error };
+    return AuthService.signUpWithEmail(email, password);
   };
 
   const signInWithGoogle = async () => {
-    const { error } = await AuthService.signInWithGoogle();
-    return { error };
+    return AuthService.signInWithGoogle();
   };
 
   const signOut = async () => {

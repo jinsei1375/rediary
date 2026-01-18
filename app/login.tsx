@@ -32,6 +32,18 @@ export default function LoginScreen() {
     if (message.includes('Network request failed')) {
       return 'ネットワークエラーが発生しました。接続を確認してください';
     }
+    if (message.includes('認証がキャンセルされました')) {
+      return '認証がキャンセルされました';
+    }
+    if (message.includes('認証が中断されました')) {
+      return '認証が中断されました';
+    }
+    if (message.includes('OAuth URLが取得できませんでした')) {
+      return 'Google認証の準備に失敗しました。もう一度お試しください';
+    }
+    if (message.includes('認証トークンが取得できませんでした')) {
+      return 'Google認証に失敗しました。もう一度お試しください';
+    }
 
     return 'エラーが発生しました。もう一度お試しください';
   };
@@ -63,7 +75,7 @@ export default function LoginScreen() {
     setLoading(false);
 
     if (error) {
-      Alert.alert('エラー', 'Google認証に失敗しました');
+      Alert.alert('エラー', getErrorMessage(error));
     }
   };
 

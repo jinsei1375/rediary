@@ -1,8 +1,11 @@
 import * as WebBrowser from 'expo-web-browser';
 import { supabase } from './supabase';
 
-// WebBrowserのウォームアップ（iOSで必要）
+// OAuth認証完了時に必要（iOSで必要）
 WebBrowser.maybeCompleteAuthSession();
+
+// Redirect URL for OAuth callback
+const redirectUrl = 'rediary://auth/callback';
 
 export class AuthService {
   // メールアドレスでサインアップ
@@ -29,32 +32,43 @@ export class AuthService {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          skipBrowserRedirect: false,
+          redirectTo: redirectUrl,
+          skipBrowserRedirect: true,
         },
       });
 
       if (error) throw error;
 
-      // OAuth URLをブラウザで開く
-      if (data?.url) {
-        const result = await WebBrowser.openAuthSessionAsync(data.url, 'rediary://');
+      if (!data?.url) {
+        throw new Error('OAuth URLが取得できませんでした');
+      }
 
-        if (result.type === 'success') {
-          // URLからトークンを抽出
-          const url = result.url;
-          const params = new URLSearchParams(url.split('#')[1] || url.split('?')[1]);
-          const accessToken = params.get('access_token');
-          const refreshToken = params.get('refresh_token');
+      // WebBrowserでOAuthフローを処理
+      const result = await WebBrowser.openAuthSessionAsync(data.url, redirectUrl);
 
-          if (accessToken && refreshToken) {
-            // セッションを設定
-            const { error: sessionError } = await supabase.auth.setSession({
-              access_token: accessToken,
-              refresh_token: refreshToken,
-            });
-            if (sessionError) throw sessionError;
-          }
+      if (result.type === 'success' && result.url) {
+        // URLのハッシュフラグメントからトークンを抽出（Supabaseの標準形式）
+        const url = new URL(result.url);
+        const hashParams = new URLSearchParams(url.hash.slice(1));
+
+        const accessToken = hashParams.get('access_token');
+        const refreshToken = hashParams.get('refresh_token');
+
+        if (accessToken && refreshToken) {
+          // セッションを設定
+          const { error: sessionError } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken,
+          });
+          if (sessionError) throw sessionError;
+          return { data, error: null };
+        } else {
+          throw new Error('認証トークンが取得できませんでした');
         }
+      } else if (result.type === 'cancel') {
+        return { data: null, error: new Error('認証がキャンセルされました') };
+      } else if (result.type === 'dismiss' || result.type === 'locked') {
+        return { data: null, error: new Error('認証が中断されました') };
       }
 
       return { data, error: null };

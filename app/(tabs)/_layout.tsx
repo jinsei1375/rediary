@@ -1,8 +1,11 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import React from 'react';
+import { useTheme } from 'tamagui';
 
 export default function TabLayout() {
+  const theme = useTheme();
+
   return (
     <Tabs
       screenOptions={{
@@ -11,7 +14,7 @@ export default function TabLayout() {
         tabBarStyle: {
           paddingTop: 10,
           height: 40,
-          backgroundColor: '#fff',
+          backgroundColor: theme.background.val,
         },
       }}
     >

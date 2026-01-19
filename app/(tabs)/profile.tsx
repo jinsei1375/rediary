@@ -1,7 +1,7 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { router } from 'expo-router';
 import { Alert } from 'react-native';
-import { Button, Text, YStack } from 'tamagui';
+import { Button, ListItem, Separator, Text, YStack } from 'tamagui';
 
 export default function SettingsScreen() {
   const { signOut, user } = useAuth();
@@ -23,13 +23,24 @@ export default function SettingsScreen() {
   return (
     <YStack flex={1} padding="$6" backgroundColor="$background">
       <Text fontSize="$8" fontWeight="bold" marginBottom="$2">
-        設定
+        プロフィール
       </Text>
       {user && (
-        <Text fontSize="$3" color="$placeholderColor" marginBottom="$8">
+        <Text fontSize="$3" color="$placeholderColor" marginBottom="$4">
           {user.email}
         </Text>
       )}
+
+      <YStack flex={1}>
+        <ListItem title="個人設定" onPress={() => router.push('/(tabs)/profile/settings')} />
+        <Separator />
+        <ListItem
+          title="プライバシーポリシー"
+          onPress={() => router.push('/(tabs)/profile/privacy')}
+        />
+        <Separator />
+        <ListItem title="利用規約" onPress={() => router.push('/(tabs)/profile/terms')} />
+      </YStack>
 
       <Button
         backgroundColor="$error"

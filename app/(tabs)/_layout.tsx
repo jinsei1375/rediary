@@ -37,7 +37,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="settings"
+        name="profile"
         options={{
           title: '',
           tabBarIcon: ({ color, size }) => (
@@ -47,6 +47,27 @@ export default function TabLayout() {
       />
       <Tabs.Screen
         name="diary/[date]"
+        options={{
+          href: null,
+          headerShown: false,
+        }}
+      />
+      <Tabs.Screen
+        name="profile/privacy"
+        options={{
+          href: null,
+          headerShown: false,
+        }}
+      />
+      <Tabs.Screen
+        name="profile/settings"
+        options={{
+          href: null,
+          headerShown: false,
+        }}
+      />
+      <Tabs.Screen
+        name="profile/terms"
         options={{
           href: null,
           headerShown: false,

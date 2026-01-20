@@ -1,12 +1,165 @@
-import { Text, YStack } from 'tamagui';
+import { Header } from '@/components/common/Header';
+import { Language } from '@/types/database';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { router } from 'expo-router';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Alert, ScrollView } from 'react-native';
+import { Button, Text, XStack, YStack } from 'tamagui';
+
+const LANGUAGES = [
+  { value: Language.JA, label: 'Japanese' },
+  { value: Language.EN, label: 'English' },
+];
+
+const STORAGE_KEYS = {
+  weekStart: 'settings:weekStart',
+  viewMode: 'settings:viewMode',
+  theme: 'settings:theme',
+  nativeLang: 'settings:nativeLang',
+  targetLang: 'settings:targetLang',
+};
 
 export default function ProfileSettingsScreen() {
+  const [weekStart, setWeekStart] = useState<'sun' | 'mon'>('mon');
+  const [viewMode, setViewMode] = useState<'month' | 'week'>('month');
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+
+  const load = useCallback(async () => {
+    try {
+      const [ws, vm, th, nl, tl] = await Promise.all([
+        AsyncStorage.getItem(STORAGE_KEYS.weekStart),
+        AsyncStorage.getItem(STORAGE_KEYS.viewMode),
+        AsyncStorage.getItem(STORAGE_KEYS.theme),
+        AsyncStorage.getItem(STORAGE_KEYS.nativeLang),
+        AsyncStorage.getItem(STORAGE_KEYS.targetLang),
+      ]);
+      if (ws === 'sun' || ws === 'mon') setWeekStart(ws);
+      if (vm === 'month' || vm === 'week') setViewMode(vm);
+      if (th === 'light' || th === 'dark') setTheme(th);
+    } catch (e) {
+      console.error('Load settings error', e);
+    }
+  }, []);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  const save = async (key: string, value: string) => {
+    try {
+      await AsyncStorage.setItem(key, value);
+    } catch (e) {
+      console.error('Save settings error', e);
+      Alert.alert('保存に失敗しました');
+    }
+  };
+
+  const setWeekStartAndSave = (v: 'sun' | 'mon') => {
+    setWeekStart(v);
+    save(STORAGE_KEYS.weekStart, v);
+  };
+
+  const setViewModeAndSave = (v: 'month' | 'week') => {
+    setViewMode(v);
+    save(STORAGE_KEYS.viewMode, v);
+  };
+
+  const setThemeAndSave = (v: 'light' | 'dark') => {
+    setTheme(v);
+    save(STORAGE_KEYS.theme, v);
+  };
+
   return (
-    <YStack flex={1} backgroundColor="$background" padding="$4">
-      <Text fontSize="$7" fontWeight="bold" marginBottom="$4">
-        個人設定
-      </Text>
-      {/* 設定項目は後で実装 */}
+    <YStack flex={1} backgroundColor="$background">
+      <Header title="個人設定" onBack={() => router.push('/(tabs)/profile')} />
+
+      <ScrollView>
+        <YStack padding="$4" gap="$4">
+          {/* 週の開始曜日 */}
+          <YStack backgroundColor="$backgroundStrong" padding="$4" borderRadius="$4" gap="$3">
+            <Text fontSize="$5" fontWeight="600">
+              週の開始曜日
+            </Text>
+            <XStack gap="$2">
+              <Button
+                flex={1}
+                onPress={() => setWeekStartAndSave('sun')}
+                backgroundColor={weekStart === 'sun' ? '$primary' : '$background'}
+                borderWidth={1}
+                borderColor={weekStart === 'sun' ? '$primary' : '$borderColor'}
+              >
+                <Text color={weekStart === 'sun' ? '$background' : '$color'}>日曜日</Text>
+              </Button>
+
+              <Button
+                flex={1}
+                onPress={() => setWeekStartAndSave('mon')}
+                backgroundColor={weekStart === 'mon' ? '$primary' : '$background'}
+                borderWidth={1}
+                borderColor={weekStart === 'mon' ? '$primary' : '$borderColor'}
+              >
+                <Text color={weekStart === 'mon' ? '$background' : '$color'}>月曜日</Text>
+              </Button>
+            </XStack>
+          </YStack>
+
+          {/* 表示モード */}
+          <YStack backgroundColor="$backgroundStrong" padding="$4" borderRadius="$4" gap="$3">
+            <Text fontSize="$5" fontWeight="600">
+              表示モード
+            </Text>
+            <XStack gap="$2">
+              <Button
+                flex={1}
+                onPress={() => setViewModeAndSave('month')}
+                backgroundColor={viewMode === 'month' ? '$primary' : '$background'}
+                borderWidth={1}
+                borderColor={viewMode === 'month' ? '$primary' : '$borderColor'}
+              >
+                <Text color={viewMode === 'month' ? '$background' : '$color'}>月表示</Text>
+              </Button>
+
+              <Button
+                flex={1}
+                onPress={() => setViewModeAndSave('week')}
+                backgroundColor={viewMode === 'week' ? '$primary' : '$background'}
+                borderWidth={1}
+                borderColor={viewMode === 'week' ? '$primary' : '$borderColor'}
+              >
+                <Text color={viewMode === 'week' ? '$background' : '$color'}>週表示</Text>
+              </Button>
+            </XStack>
+          </YStack>
+
+          {/* テーマ */}
+          <YStack backgroundColor="$backgroundStrong" padding="$4" borderRadius="$4" gap="$3">
+            <Text fontSize="$5" fontWeight="600">
+              テーマ
+            </Text>
+            <XStack gap="$2">
+              <Button
+                flex={1}
+                onPress={() => setThemeAndSave('light')}
+                backgroundColor={theme === 'light' ? '$primary' : '$background'}
+                borderWidth={1}
+                borderColor={theme === 'light' ? '$primary' : '$borderColor'}
+              >
+                <Text color={theme === 'light' ? '$background' : '$color'}>ライト</Text>
+              </Button>
+
+              <Button
+                flex={1}
+                onPress={() => setThemeAndSave('dark')}
+                backgroundColor={theme === 'dark' ? '$primary' : '$background'}
+                borderWidth={1}
+                borderColor={theme === 'dark' ? '$primary' : '$borderColor'}
+              >
+                <Text color={theme === 'dark' ? '$background' : '$color'}>ダーク</Text>
+              </Button>
+            </XStack>
+          </YStack>
+        </YStack>
+      </ScrollView>
     </YStack>
   );
 }

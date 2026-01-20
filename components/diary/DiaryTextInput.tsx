@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { Alert } from 'react-native';
-import { Input, Label, Text, TextArea, XStack, YStack } from 'tamagui';
+import { Input, Text, TextArea, XStack, YStack } from 'tamagui';
 
 type DiaryTextInputProps = {
   label: string;
@@ -10,6 +10,7 @@ type DiaryTextInputProps = {
   placeholder: string;
   multiline?: boolean;
   maxLength?: number;
+  onFocus?: () => void;
 };
 
 export const DiaryTextInput = React.memo(
@@ -20,6 +21,7 @@ export const DiaryTextInput = React.memo(
     onChangeText,
     placeholder,
     multiline = false,
+    onFocus,
     maxLength,
   }: DiaryTextInputProps) => {
     const currentLength = value.length;
@@ -40,9 +42,9 @@ export const DiaryTextInput = React.memo(
     return (
       <YStack marginBottom="$4">
         <YStack marginBottom="$2">
-          <Label fontSize="$5" fontWeight="bold" lineHeight="$5">
+          <Text fontSize="$5" fontWeight="bold" lineHeight="$5">
             {label}
-          </Label>
+          </Text>
           {subLabel && (
             <Text fontSize="$2" color="$placeholderColor" lineHeight="$1">
               {subLabel}
@@ -53,6 +55,7 @@ export const DiaryTextInput = React.memo(
           <TextArea
             value={value}
             onChangeText={handleTextChange}
+            onFocus={onFocus}
             placeholder={placeholder}
             size="$4"
             borderWidth={1}
@@ -69,6 +72,7 @@ export const DiaryTextInput = React.memo(
           <Input
             value={value}
             onChangeText={handleTextChange}
+            onFocus={onFocus}
             placeholder={placeholder}
             size="$4"
             borderWidth={1}

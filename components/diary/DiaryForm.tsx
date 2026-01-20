@@ -1,7 +1,7 @@
 import type { DiaryFormData } from '@/types/ui';
-import React, { useCallback } from 'react';
-import { KeyboardAvoidingView, Platform } from 'react-native';
-import { Button, ScrollView, Spinner, Text, YStack } from 'tamagui';
+import React, { useCallback, useRef } from 'react';
+import { KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
+import { Button, Spinner, Text, YStack } from 'tamagui';
 import { DiaryTextInput } from './DiaryTextInput';
 
 type DiaryFormProps = {
@@ -17,6 +17,8 @@ const MAX_LENGTH_JAPANESE = 1000;
 
 export const DiaryForm = React.memo(
   ({ formData, onFormChange, onSave, saving, children }: DiaryFormProps) => {
+    const scrollViewRef = useRef<ScrollView>(null);
+    const contentNativeRef = useRef<View>(null);
     const isContentOverLimit = formData.content.length > MAX_LENGTH_ENGLISH;
     const isContentNativeOverLimit = formData.content_native.length > MAX_LENGTH_JAPANESE;
     const isSaveDisabled = saving || isContentOverLimit || isContentNativeOverLimit;
@@ -36,20 +38,27 @@ export const DiaryForm = React.memo(
       [onFormChange],
     );
 
+    const handleContentNativeFocus = useCallback(() => {
+      setTimeout(() => {
+        contentNativeRef.current?.measure((x, y, width, height, pageX, pageY) => {
+          scrollViewRef.current?.scrollTo({ y: pageY - 100, animated: true });
+        });
+      }, 100);
+    }, []);
+
     return (
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{ flex: 1 }}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}
       >
         <YStack flex={1}>
           <ScrollView
-            flex={1}
-            padding="$4"
-            contentContainerStyle={{
-              paddingBottom: '$4',
-            }}
+            ref={scrollViewRef}
+            style={{ flex: 1, padding: 16 }}
+            contentContainerStyle={{ paddingBottom: 16 }}
             keyboardShouldPersistTaps="handled"
+            keyboardDismissMode="on-drag"
           >
             <DiaryTextInput
               label="タイトル"
@@ -68,15 +77,18 @@ export const DiaryForm = React.memo(
               maxLength={MAX_LENGTH_ENGLISH}
             />
 
-            <DiaryTextInput
-              label="内容（日本語）"
-              subLabel="本来英語として書きたかった内容"
-              value={formData.content_native}
-              onChangeText={handleContentNativeChange}
-              placeholder="今日は..."
-              multiline
-              maxLength={MAX_LENGTH_JAPANESE}
-            />
+            <View ref={contentNativeRef} collapsable={false}>
+              <DiaryTextInput
+                label="内容（日本語）"
+                subLabel="本来英語として書きたかった内容"
+                value={formData.content_native}
+                onChangeText={handleContentNativeChange}
+                onFocus={handleContentNativeFocus}
+                placeholder="今日は..."
+                multiline
+                maxLength={MAX_LENGTH_JAPANESE}
+              />
+            </View>
 
             {children}
           </ScrollView>

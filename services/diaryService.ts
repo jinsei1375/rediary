@@ -91,4 +91,16 @@ export class DiaryService {
 
     return { data, error };
   }
+
+  /**
+   * ユーザーの日記総数を取得
+   */
+  static async getTotalCount(userId: string) {
+    const { count, error } = await supabase
+      .from('diary_entries')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', userId);
+
+    return { count: count ?? 0, error };
+  }
 }

@@ -1,6 +1,7 @@
+import { INPUT_ACCESSORY_VIEW_ID } from '@/constants/inputAccessory';
 import React, { useCallback } from 'react';
-import { Alert } from 'react-native';
-import { Input, Text, TextArea, XStack, YStack } from 'tamagui';
+import { Alert, Platform, StyleSheet, TextInput } from 'react-native';
+import { Text, XStack, YStack, useTheme } from 'tamagui';
 
 type DiaryTextInputProps = {
   label: string;
@@ -24,6 +25,7 @@ export const DiaryTextInput = React.memo(
     onFocus,
     maxLength,
   }: DiaryTextInputProps) => {
+    const theme = useTheme();
     const currentLength = value.length;
     const isOverThreshold = maxLength ? currentLength > maxLength * 0.8 : false;
     const isOverLimit = maxLength ? currentLength > maxLength : false;
@@ -52,37 +54,40 @@ export const DiaryTextInput = React.memo(
           )}
         </YStack>
         {multiline ? (
-          <TextArea
+          <TextInput
             value={value}
             onChangeText={handleTextChange}
             onFocus={onFocus}
             placeholder={placeholder}
-            size="$4"
-            borderWidth={1}
-            borderColor="$borderColor"
-            borderRadius="$3"
-            padding="$3"
-            backgroundColor="$background"
+            multiline
             numberOfLines={6}
-            focusStyle={{
-              borderColor: '$borderColorFocus',
-            }}
+            inputAccessoryViewID={Platform.OS === 'ios' ? INPUT_ACCESSORY_VIEW_ID : undefined}
+            style={[
+              styles.textInput,
+              {
+                borderColor: theme.borderColor?.get(),
+                backgroundColor: theme.background?.get(),
+                color: theme.color?.get(),
+              },
+            ]}
+            placeholderTextColor={theme.placeholderColor?.get()}
           />
         ) : (
-          <Input
+          <TextInput
             value={value}
             onChangeText={handleTextChange}
             onFocus={onFocus}
             placeholder={placeholder}
-            size="$4"
-            borderWidth={1}
-            borderColor="$borderColor"
-            borderRadius="$3"
-            padding="$3"
-            backgroundColor="$background"
-            focusStyle={{
-              borderColor: '$borderColorFocus',
-            }}
+            inputAccessoryViewID={Platform.OS === 'ios' ? INPUT_ACCESSORY_VIEW_ID : undefined}
+            style={[
+              styles.input,
+              {
+                borderColor: theme.borderColor?.get(),
+                backgroundColor: theme.background?.get(),
+                color: theme.color?.get(),
+              },
+            ]}
+            placeholderTextColor={theme.placeholderColor?.get()}
           />
         )}
         {maxLength !== undefined && (
@@ -101,5 +106,23 @@ export const DiaryTextInput = React.memo(
     );
   },
 );
+
+const styles = StyleSheet.create({
+  input: {
+    borderWidth: 1,
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 16,
+    minHeight: 48,
+  },
+  textInput: {
+    borderWidth: 1,
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 16,
+    minHeight: 144,
+    textAlignVertical: 'top',
+  },
+});
 
 DiaryTextInput.displayName = 'DiaryTextInput';

@@ -1,7 +1,17 @@
+import { INPUT_ACCESSORY_VIEW_ID } from '@/constants/inputAccessory';
 import type { DiaryFormData } from '@/types/ui';
 import React, { useCallback, useRef } from 'react';
-import { KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
-import { Button, Spinner, Text, YStack } from 'tamagui';
+import {
+  InputAccessoryView,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
+import { Button, Spinner, Text, YStack, useTheme } from 'tamagui';
 import { DiaryTextInput } from './DiaryTextInput';
 
 type DiaryFormProps = {
@@ -17,6 +27,7 @@ const MAX_LENGTH_JAPANESE = 1000;
 
 export const DiaryForm = React.memo(
   ({ formData, onFormChange, onSave, saving, children }: DiaryFormProps) => {
+    const theme = useTheme();
     const scrollViewRef = useRef<ScrollView>(null);
     const contentNativeRef = useRef<View>(null);
     const isContentOverLimit = formData.content.length > MAX_LENGTH_ENGLISH;
@@ -58,7 +69,6 @@ export const DiaryForm = React.memo(
             style={{ flex: 1, padding: 16 }}
             contentContainerStyle={{ paddingBottom: 16 }}
             keyboardShouldPersistTaps="handled"
-            keyboardDismissMode="on-drag"
           >
             <DiaryTextInput
               label="タイトル"
@@ -115,9 +125,48 @@ export const DiaryForm = React.memo(
             )}
           </Button>
         </YStack>
+
+        {Platform.OS === 'ios' && (
+          <InputAccessoryView nativeID={INPUT_ACCESSORY_VIEW_ID}>
+            <View
+              style={[
+                styles.accessoryContainer,
+                {
+                  backgroundColor: theme.background?.get(),
+                  borderTopColor: theme.borderColor?.get(),
+                },
+              ]}
+            >
+              <Pressable onPress={() => Keyboard.dismiss()} style={styles.doneButton}>
+                <Text style={[styles.doneButtonText, { color: theme.blue10?.get() || '#007AFF' }]}>
+                  完了
+                </Text>
+              </Pressable>
+            </View>
+          </InputAccessoryView>
+        )}
       </KeyboardAvoidingView>
     );
   },
 );
+
+const styles = StyleSheet.create({
+  accessoryContainer: {
+    borderTopWidth: 1,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+  },
+  doneButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+  },
+  doneButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+});
 
 DiaryForm.displayName = 'DiaryForm';

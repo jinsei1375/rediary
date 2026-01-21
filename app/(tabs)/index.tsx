@@ -1,6 +1,7 @@
 import { MonthYearPicker } from '@/components/calendar/MonthYearPicker';
 import { SwipeableCalendar } from '@/components/calendar/SwipeableCalendar';
 import { WeekCalendar } from '@/components/calendar/WeekCalendar';
+import { Loading } from '@/components/common/Loading';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSettings } from '@/contexts/SettingsContext';
 import { DiaryService } from '@/services/diaryService';
@@ -19,7 +20,7 @@ export default function HomeScreen() {
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const router = useRouter();
   const { session } = useAuth();
-  const { weekStart, viewMode } = useSettings();
+  const { weekStart, viewMode, loading: settingsLoading } = useSettings();
 
   const today = new Date().toISOString().split('T')[0];
 
@@ -70,6 +71,11 @@ export default function HomeScreen() {
     setCurrentMonth(new Date(selectedYear, selectedMonth - 1, 1));
     setShowMonthPicker(false);
   };
+
+  // 設定の読み込み中はローディング画面を表示
+  if (settingsLoading) {
+    return <Loading />;
+  }
 
   return (
     <YStack flex={1} backgroundColor="$background">

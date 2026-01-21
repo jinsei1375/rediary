@@ -1,6 +1,7 @@
 import { MonthYearPicker } from '@/components/calendar/MonthYearPicker';
 import { SwipeableCalendar } from '@/components/calendar/SwipeableCalendar';
 import { useAuth } from '@/contexts/AuthContext';
+import { useSettings } from '@/contexts/SettingsContext';
 import { DiaryService } from '@/services/diaryService';
 import type { CalendarDiaryData } from '@/types/ui';
 import { useFocusEffect } from '@react-navigation/native';
@@ -17,6 +18,7 @@ export default function HomeScreen() {
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const router = useRouter();
   const { session } = useAuth();
+  const { weekStart } = useSettings();
 
   const today = new Date().toISOString().split('T')[0];
 
@@ -74,6 +76,7 @@ export default function HomeScreen() {
         currentMonth={currentMonth}
         diaryData={diaryData}
         today={today}
+        weekStart={weekStart}
         onDayPress={handleDayPress}
         onMonthChange={handleMonthChange}
         onMonthYearPress={handleMonthYearPress}

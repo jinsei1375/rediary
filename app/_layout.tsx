@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 import { TamaguiProvider, useTheme } from 'tamagui';
 
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
+import { SettingsProvider } from '@/contexts/SettingsContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import tamaguiConfig from '@/tamagui.config';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -71,7 +72,9 @@ function RootLayoutNav() {
 export default function RootLayout() {
   return (
     <AuthProvider>
-      <RootLayoutNav />
+      <SettingsProvider>
+        <RootLayoutNav />
+      </SettingsProvider>
     </AuthProvider>
   );
 }

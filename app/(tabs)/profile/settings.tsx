@@ -1,57 +1,34 @@
 import { Header } from '@/components/common/Header';
-import { useAuth } from '@/contexts/AuthContext';
-import { getUserSettings, saveUserSettings } from '@/services/userSettingsService';
+import { useSettings } from '@/contexts/SettingsContext';
 import { Language } from '@/types/database';
 import { router } from 'expo-router';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, ScrollView } from 'react-native';
 import { Button, Text, XStack, YStack } from 'tamagui';
 
 export default function ProfileSettingsScreen() {
-  const { user } = useAuth();
+  const { settings, loading, updateSettings } = useSettings();
   const [weekStart, setWeekStart] = useState<'sun' | 'mon'>('sun');
   const [viewMode, setViewMode] = useState<'month' | 'week'>('month');
   const [theme, setTheme] = useState<'light' | 'dark' | 'system'>('system');
   const [nativeLanguage, setNativeLanguage] = useState<Language>(Language.JA);
   const [targetLanguage, setTargetLanguage] = useState<Language>(Language.EN);
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
-  const load = useCallback(async () => {
-    if (!user?.id) return;
-
-    try {
-      setLoading(true);
-      const settings = await getUserSettings(user.id);
-
-      if (settings) {
-        setWeekStart(settings.week_start);
-        setViewMode(settings.view_mode);
-        setTheme(settings.theme);
-        setNativeLanguage(settings.native_language);
-        setTargetLanguage(settings.target_language);
-      }
-    } catch (e) {
-      console.error('Load settings error', e);
-      Alert.alert('エラー', '設定の読み込みに失敗しました');
-    } finally {
-      setLoading(false);
-    }
-  }, [user?.id]);
-
   useEffect(() => {
-    load();
-  }, [load]);
+    if (settings) {
+      setWeekStart(settings.week_start);
+      setViewMode(settings.view_mode);
+      setTheme(settings.theme);
+      setNativeLanguage(settings.native_language);
+      setTargetLanguage(settings.target_language);
+    }
+  }, [settings]);
 
   const handleSave = async () => {
-    if (!user?.id) {
-      Alert.alert('エラー', 'ユーザー情報が取得できません');
-      return;
-    }
-
     try {
       setSaving(true);
-      await saveUserSettings(user.id, {
+      await updateSettings({
         week_start: weekStart,
         view_mode: viewMode,
         theme: theme,

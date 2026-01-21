@@ -11,6 +11,7 @@ type SwipeableCalendarProps = {
   currentMonth: Date;
   diaryData: CalendarDiaryData;
   today: string;
+  weekStart: 'sun' | 'mon';
   onDayPress: (day: DateData) => void;
   onMonthChange: (date: Date) => void;
   onMonthYearPress: () => void;
@@ -23,6 +24,7 @@ export const SwipeableCalendar = memo(
     currentMonth,
     diaryData,
     today,
+    weekStart,
     onDayPress,
     onMonthChange,
     onMonthYearPress,
@@ -30,6 +32,9 @@ export const SwipeableCalendar = memo(
     const theme = useTheme();
     const scrollViewRef = useRef<ScrollView>(null);
     const currentPageRef = useRef(1);
+
+    // 0 = Sunday, 1 = Monday
+    const firstDay = weekStart === 'sun' ? 0 : 1;
 
     const getMarkedDates = useCallback(() => {
       const marked: any = {};
@@ -57,9 +62,17 @@ export const SwipeableCalendar = memo(
     const renderDay = useCallback(
       (day: DateData): React.JSX.Element => {
         const isToday = day.dateString === today;
-        return <DayCell day={day} isToday={isToday} diaryData={diaryData} onPress={onDayPress} />;
+        return (
+          <DayCell
+            day={day}
+            isToday={isToday}
+            diaryData={diaryData}
+            weekStart={weekStart}
+            onPress={onDayPress}
+          />
+        );
       },
-      [today, diaryData, onDayPress]
+      [today, diaryData, weekStart, onDayPress],
     );
 
     const getPreviousMonth = (date: Date) => {
@@ -172,6 +185,7 @@ export const SwipeableCalendar = memo(
             current={formatMonthString(previousMonth)}
             style={{ height: '100%' }}
             enableSwipeMonths={false}
+            firstDay={firstDay}
             dayComponent={({ date }) => date && renderDay(date)}
             renderHeader={(date) => <CalendarHeader date={date} onPress={onMonthYearPress} />}
             markedDates={getMarkedDates()}
@@ -185,6 +199,7 @@ export const SwipeableCalendar = memo(
             current={formatMonthString(currentMonth)}
             style={{ height: '100%' }}
             enableSwipeMonths={false}
+            firstDay={firstDay}
             dayComponent={({ date }) => date && renderDay(date)}
             renderHeader={(date) => <CalendarHeader date={date} onPress={onMonthYearPress} />}
             markedDates={getMarkedDates()}
@@ -198,6 +213,7 @@ export const SwipeableCalendar = memo(
             current={formatMonthString(nextMonth)}
             style={{ height: '100%' }}
             enableSwipeMonths={false}
+            firstDay={firstDay}
             dayComponent={({ date }) => date && renderDay(date)}
             renderHeader={(date) => <CalendarHeader date={date} onPress={onMonthYearPress} />}
             markedDates={getMarkedDates()}
@@ -206,7 +222,7 @@ export const SwipeableCalendar = memo(
         </View>
       </ScrollView>
     );
-  }
+  },
 );
 
 SwipeableCalendar.displayName = 'SwipeableCalendar';

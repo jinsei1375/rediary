@@ -11,6 +11,7 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Button, Spinner, Text, YStack, useTheme } from 'tamagui';
 import { DiaryTextInput } from './DiaryTextInput';
 
@@ -25,10 +26,16 @@ type DiaryFormProps = {
 const MAX_LENGTH_ENGLISH = 1500;
 const MAX_LENGTH_JAPANESE = 1000;
 
+// Header height estimation (padding + text + border)
+const HEADER_HEIGHT = 60;
+
 export const DiaryForm = React.memo(
   ({ formData, onFormChange, onSave, saving, children }: DiaryFormProps) => {
     const theme = useTheme();
+    const insets = useSafeAreaInsets();
     const scrollViewRef = useRef<ScrollView>(null);
+    const titleRef = useRef<View>(null);
+    const contentRef = useRef<View>(null);
     const contentNativeRef = useRef<View>(null);
     const isContentOverLimit = formData.content.length > MAX_LENGTH_ENGLISH;
     const isContentNativeOverLimit = formData.content_native.length > MAX_LENGTH_JAPANESE;
@@ -49,13 +56,44 @@ export const DiaryForm = React.memo(
       [onFormChange],
     );
 
+    // 共通のフォーカスハンドラー
+    const handleFocus = useCallback(
+      (ref: React.RefObject<View>) => {
+        // キーボードが表示されるのを待つ
+        setTimeout(() => {
+          const scrollViewNode = scrollViewRef.current?.getScrollableNode?.() ?? scrollViewRef.current;
+          ref.current?.measureLayout(
+            scrollViewNode as any,
+            (x, y) => {
+              // タイトルがヘッダーの下に来るように調整
+              // ヘッダー高さ + セーフエリア + 少しマージン
+              const offset = HEADER_HEIGHT + insets.top + 8;
+              scrollViewRef.current?.scrollTo({ 
+                y: Math.max(0, y - offset), 
+                animated: true 
+              });
+            },
+            () => {
+              // measureLayoutが失敗した場合は何もしない
+              // (キーボードが自動的にビューを調整する)
+            },
+          );
+        }, 100);
+      },
+      [insets.top],
+    );
+
+    const handleTitleFocus = useCallback(() => {
+      handleFocus(titleRef);
+    }, [handleFocus]);
+
+    const handleContentFocus = useCallback(() => {
+      handleFocus(contentRef);
+    }, [handleFocus]);
+
     const handleContentNativeFocus = useCallback(() => {
-      setTimeout(() => {
-        contentNativeRef.current?.measure((x, y, width, height, pageX, pageY) => {
-          scrollViewRef.current?.scrollTo({ y: pageY - 100, animated: true });
-        });
-      }, 100);
-    }, []);
+      handleFocus(contentNativeRef);
+    }, [handleFocus]);
 
     return (
       <KeyboardAvoidingView
@@ -70,22 +108,28 @@ export const DiaryForm = React.memo(
             contentContainerStyle={{ paddingBottom: 16 }}
             keyboardShouldPersistTaps="handled"
           >
-            <DiaryTextInput
-              label="タイトル"
-              value={formData.title}
-              onChangeText={handleTitleChange}
-              placeholder="YYYY/MM/DD"
-            />
+            <View ref={titleRef} collapsable={false}>
+              <DiaryTextInput
+                label="タイトル"
+                value={formData.title}
+                onChangeText={handleTitleChange}
+                onFocus={handleTitleFocus}
+                placeholder="YYYY/MM/DD"
+              />
+            </View>
 
-            <DiaryTextInput
-              label="内容（英語）"
-              subLabel="実際に書く英語の日記"
-              value={formData.content}
-              onChangeText={handleContentChange}
-              placeholder="Today..."
-              multiline
-              maxLength={MAX_LENGTH_ENGLISH}
-            />
+            <View ref={contentRef} collapsable={false}>
+              <DiaryTextInput
+                label="内容（英語）"
+                subLabel="実際に書く英語の日記"
+                value={formData.content}
+                onChangeText={handleContentChange}
+                onFocus={handleContentFocus}
+                placeholder="Today..."
+                multiline
+                maxLength={MAX_LENGTH_ENGLISH}
+              />
+            </View>
 
             <View ref={contentNativeRef} collapsable={false}>
               <DiaryTextInput

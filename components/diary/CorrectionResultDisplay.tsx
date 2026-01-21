@@ -48,7 +48,7 @@ export function CorrectionResultDisplay({ correction }: CorrectionResultDisplayP
           borderLeftColor="$success"
           borderRadius="$3"
         >
-          <Text fontSize="$5" lineHeight="$6" color="$gray12">
+          <Text fontSize="$5" lineHeight="$6" color="$gray12" selectable>
             {correction.corrected_content}
           </Text>
         </YStack>
@@ -88,7 +88,7 @@ export function CorrectionResultDisplay({ correction }: CorrectionResultDisplayP
                     <Text fontSize="$3" color="$gray11" fontWeight="600" minWidth={50}>
                       元
                     </Text>
-                    <Text fontSize="$4" color="$red10" flex={1}>
+                    <Text fontSize="$4" color="$red10" flex={1} selectable>
                       {point.original}
                     </Text>
                   </XStack>
@@ -97,13 +97,13 @@ export function CorrectionResultDisplay({ correction }: CorrectionResultDisplayP
                     <Text fontSize="$3" color="$gray11" fontWeight="600" minWidth={50}>
                       修正
                     </Text>
-                    <Text fontSize="$4" color="$green10" flex={1}>
+                    <Text fontSize="$4" color="$green10" flex={1} selectable>
                       {point.corrected}
                     </Text>
                   </XStack>
 
                   <YStack padding="$3" backgroundColor="$gray3" borderRadius="$3" marginTop="$1">
-                    <Text fontSize="$3" color="$gray11" lineHeight="$4">
+                    <Text fontSize="$3" color="$gray11" lineHeight="$4" selectable>
                       {point.explanation}
                     </Text>
                   </YStack>
@@ -143,12 +143,12 @@ export function CorrectionResultDisplay({ correction }: CorrectionResultDisplayP
                 borderLeftColor="$purple10"
                 borderRadius="$3"
               >
-                <Text fontSize="$5" fontWeight="700" color="$purple10" lineHeight="$5">
+                <Text fontSize="$5" fontWeight="700" color="$purple10" lineHeight="$5" selectable>
                   {expr.expression}
                 </Text>
 
                 <YStack gap="$2">
-                  <Text fontSize="$3" color="$gray11" lineHeight="$4">
+                  <Text fontSize="$3" color="$gray11" lineHeight="$4" selectable>
                     <Text fontWeight="600">意味：</Text>
                     {expr.meaning}
                   </Text>
@@ -157,11 +157,11 @@ export function CorrectionResultDisplay({ correction }: CorrectionResultDisplayP
                     <Text fontSize="$2" color="$gray10" fontWeight="600">
                       使用例
                     </Text>
-                    <Text fontSize="$3" fontStyle="italic" color="$gray11" lineHeight="$4">
+                    <Text fontSize="$3" fontStyle="italic" color="$gray11" lineHeight="$4" selectable>
                       &quot;{expr.usage_example}&quot;
                     </Text>
                     {expr.usage_example_translation && (
-                      <Text fontSize="$3" color="$gray10" lineHeight="$4" marginTop="$1">
+                      <Text fontSize="$3" color="$gray10" lineHeight="$4" marginTop="$1" selectable>
                         {expr.usage_example_translation}
                       </Text>
                     )}
@@ -170,7 +170,7 @@ export function CorrectionResultDisplay({ correction }: CorrectionResultDisplayP
                   {expr.context && (
                     <XStack gap="$2" alignItems="flex-start">
                       <Ionicons name="information-circle" size={16} color={theme.purple10.get()} />
-                      <Text fontSize="$2" color="$gray10" flex={1} lineHeight="$1">
+                      <Text fontSize="$2" color="$gray10" flex={1} lineHeight="$1" selectable>
                         {expr.context}
                       </Text>
                     </XStack>

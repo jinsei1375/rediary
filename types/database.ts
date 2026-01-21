@@ -50,10 +50,8 @@ export type Profile = {
   id: string;
   email: string;
   display_name: string | null;
-  native_language: Language | null;
-  target_language: Language | null;
-  created_at: string | null;
-  updated_at: string | null;
+  created_at: string;
+  updated_at: string;
 };
 
 export type DiaryEntry = {
@@ -92,7 +90,7 @@ export type TranslationExercise = {
   is_completed: boolean | null;
   scheduled_date: string;
   completed_at: string | null;
-  created_at: string | null;
+  created_at: string;
 };
 
 export type UserSettings = {
@@ -113,8 +111,6 @@ export type UserSettings = {
 
 export type ProfileInsert = Omit<Profile, 'id' | 'created_at' | 'updated_at'> & {
   id: string;
-  native_language?: string;
-  target_language?: string;
   created_at?: string;
   updated_at?: string;
 };

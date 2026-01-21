@@ -61,8 +61,9 @@ export const DiaryForm = React.memo(
       (ref: React.RefObject<View>) => {
         // キーボードが表示されるのを待つ
         setTimeout(() => {
+          const scrollViewNode = scrollViewRef.current?.getScrollableNode?.() ?? scrollViewRef.current;
           ref.current?.measureLayout(
-            scrollViewRef.current as any,
+            scrollViewNode as any,
             (x, y) => {
               // タイトルがヘッダーの下に来るように調整
               // ヘッダー高さ + セーフエリア + 少しマージン
@@ -73,8 +74,8 @@ export const DiaryForm = React.memo(
               });
             },
             () => {
-              // measureLayoutが失敗した場合のフォールバック
-              console.log('measureLayout failed, using fallback');
+              // measureLayoutが失敗した場合は何もしない
+              // (キーボードが自動的にビューを調整する)
             },
           );
         }, 100);

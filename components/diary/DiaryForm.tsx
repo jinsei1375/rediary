@@ -58,19 +58,29 @@ export const DiaryForm = React.memo(
 
     // 共通のフォーカスハンドラー
     const handleFocus = useCallback(
-      (ref: React.RefObject<View>) => {
+      (ref: React.RefObject<View | null>, shouldScrollToTop: boolean = false) => {
         // キーボードが表示されるのを待つ
         setTimeout(() => {
-          const scrollViewNode = scrollViewRef.current?.getScrollableNode?.() ?? scrollViewRef.current;
-          ref.current?.measureLayout(
-            scrollViewNode as any,
+          if (!scrollViewRef.current || !ref.current) return;
+
+          // タイトルの場合は一番上にスクロール
+          if (shouldScrollToTop) {
+            scrollViewRef.current.scrollTo({
+              y: 0,
+              animated: true,
+            });
+            return;
+          }
+
+          ref.current.measureLayout(
+            scrollViewRef.current as any,
             (x, y) => {
-              // タイトルがヘッダーの下に来るように調整
+              // ラベルがヘッダーの下に来るように調整
               // ヘッダー高さ + セーフエリア + 少しマージン
               const offset = HEADER_HEIGHT + insets.top + 8;
-              scrollViewRef.current?.scrollTo({ 
-                y: Math.max(0, y - offset), 
-                animated: true 
+              scrollViewRef.current?.scrollTo({
+                y: Math.max(0, y - offset),
+                animated: true,
               });
             },
             () => {
@@ -84,15 +94,15 @@ export const DiaryForm = React.memo(
     );
 
     const handleTitleFocus = useCallback(() => {
-      handleFocus(titleRef);
+      handleFocus(titleRef, true);
     }, [handleFocus]);
 
     const handleContentFocus = useCallback(() => {
-      handleFocus(contentRef);
+      handleFocus(contentRef, false);
     }, [handleFocus]);
 
     const handleContentNativeFocus = useCallback(() => {
-      handleFocus(contentNativeRef);
+      handleFocus(contentNativeRef, false);
     }, [handleFocus]);
 
     return (

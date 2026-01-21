@@ -33,6 +33,11 @@ export type Database = {
         Insert: TranslationExerciseInsert;
         Update: TranslationExerciseUpdate;
       };
+      user_settings: {
+        Row: UserSettings;
+        Insert: UserSettingsInsert;
+        Update: UserSettingsUpdate;
+      };
     };
   };
 };
@@ -90,6 +95,18 @@ export type TranslationExercise = {
   created_at: string | null;
 };
 
+export type UserSettings = {
+  id: string;
+  user_id: string;
+  week_start: 'sun' | 'mon';
+  view_mode: 'month' | 'week';
+  theme: 'light' | 'dark' | 'system';
+  native_language: Language;
+  target_language: Language;
+  created_at: string;
+  updated_at: string;
+};
+
 // ============================================
 // Insert Types
 // ============================================
@@ -128,6 +145,12 @@ export type TranslationExerciseInsert = Omit<
   created_at?: string | null;
 };
 
+export type UserSettingsInsert = Omit<UserSettings, 'id' | 'created_at' | 'updated_at'> & {
+  id?: string;
+  created_at?: string;
+  updated_at?: string;
+};
+
 // ============================================
 // Update Types
 // ============================================
@@ -141,6 +164,8 @@ export type AiCorrectionUpdate = Partial<Omit<AiCorrection, 'id' | 'user_id' | '
 export type TranslationExerciseUpdate = Partial<
   Omit<TranslationExercise, 'id' | 'user_id' | 'created_at'>
 >;
+
+export type UserSettingsUpdate = Partial<Omit<UserSettings, 'id' | 'user_id' | 'created_at'>>;
 
 // ============================================
 // JSON Types

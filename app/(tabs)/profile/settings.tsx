@@ -1,73 +1,79 @@
 import { Header } from '@/components/common/Header';
+import { useAuth } from '@/contexts/AuthContext';
+import { getUserSettings, saveUserSettings } from '@/services/userSettingsService';
 import { Language } from '@/types/database';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Alert, ScrollView } from 'react-native';
+import { ActivityIndicator, Alert, ScrollView } from 'react-native';
 import { Button, Text, XStack, YStack } from 'tamagui';
 
-const LANGUAGES = [
-  { value: Language.JA, label: 'Japanese' },
-  { value: Language.EN, label: 'English' },
-];
-
-const STORAGE_KEYS = {
-  weekStart: 'settings:weekStart',
-  viewMode: 'settings:viewMode',
-  theme: 'settings:theme',
-  nativeLang: 'settings:nativeLang',
-  targetLang: 'settings:targetLang',
-};
-
 export default function ProfileSettingsScreen() {
-  const [weekStart, setWeekStart] = useState<'sun' | 'mon'>('mon');
+  const { user } = useAuth();
+  const [weekStart, setWeekStart] = useState<'sun' | 'mon'>('sun');
   const [viewMode, setViewMode] = useState<'month' | 'week'>('month');
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const [theme, setTheme] = useState<'light' | 'dark' | 'system'>('system');
+  const [nativeLanguage, setNativeLanguage] = useState<Language>(Language.JA);
+  const [targetLanguage, setTargetLanguage] = useState<Language>(Language.EN);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
   const load = useCallback(async () => {
+    if (!user?.id) return;
+
     try {
-      const [ws, vm, th, nl, tl] = await Promise.all([
-        AsyncStorage.getItem(STORAGE_KEYS.weekStart),
-        AsyncStorage.getItem(STORAGE_KEYS.viewMode),
-        AsyncStorage.getItem(STORAGE_KEYS.theme),
-        AsyncStorage.getItem(STORAGE_KEYS.nativeLang),
-        AsyncStorage.getItem(STORAGE_KEYS.targetLang),
-      ]);
-      if (ws === 'sun' || ws === 'mon') setWeekStart(ws);
-      if (vm === 'month' || vm === 'week') setViewMode(vm);
-      if (th === 'light' || th === 'dark') setTheme(th);
+      setLoading(true);
+      const settings = await getUserSettings(user.id);
+
+      if (settings) {
+        setWeekStart(settings.week_start);
+        setViewMode(settings.view_mode);
+        setTheme(settings.theme);
+        setNativeLanguage(settings.native_language);
+        setTargetLanguage(settings.target_language);
+      }
     } catch (e) {
       console.error('Load settings error', e);
+      Alert.alert('エラー', '設定の読み込みに失敗しました');
+    } finally {
+      setLoading(false);
     }
-  }, []);
+  }, [user?.id]);
 
   useEffect(() => {
     load();
   }, [load]);
 
-  const save = async (key: string, value: string) => {
+  const handleSave = async () => {
+    if (!user?.id) {
+      Alert.alert('エラー', 'ユーザー情報が取得できません');
+      return;
+    }
+
     try {
-      await AsyncStorage.setItem(key, value);
+      setSaving(true);
+      await saveUserSettings(user.id, {
+        week_start: weekStart,
+        view_mode: viewMode,
+        theme: theme,
+        native_language: nativeLanguage,
+        target_language: targetLanguage,
+      });
+      Alert.alert('成功', '設定を保存しました');
     } catch (e) {
       console.error('Save settings error', e);
-      Alert.alert('保存に失敗しました');
+      Alert.alert('エラー', '設定の保存に失敗しました');
+    } finally {
+      setSaving(false);
     }
   };
 
-  const setWeekStartAndSave = (v: 'sun' | 'mon') => {
-    setWeekStart(v);
-    save(STORAGE_KEYS.weekStart, v);
-  };
-
-  const setViewModeAndSave = (v: 'month' | 'week') => {
-    setViewMode(v);
-    save(STORAGE_KEYS.viewMode, v);
-  };
-
-  const setThemeAndSave = (v: 'light' | 'dark') => {
-    setTheme(v);
-    save(STORAGE_KEYS.theme, v);
-  };
+  if (loading) {
+    return (
+      <YStack flex={1} backgroundColor="$background" alignItems="center" justifyContent="center">
+        <ActivityIndicator size="large" />
+      </YStack>
+    );
+  }
 
   return (
     <YStack flex={1} backgroundColor="$background">
@@ -83,7 +89,7 @@ export default function ProfileSettingsScreen() {
             <XStack gap="$2">
               <Button
                 flex={1}
-                onPress={() => setWeekStartAndSave('sun')}
+                onPress={() => setWeekStart('sun')}
                 backgroundColor={weekStart === 'sun' ? '$primary' : '$background'}
                 borderWidth={1}
                 borderColor={weekStart === 'sun' ? '$primary' : '$borderColor'}
@@ -93,7 +99,7 @@ export default function ProfileSettingsScreen() {
 
               <Button
                 flex={1}
-                onPress={() => setWeekStartAndSave('mon')}
+                onPress={() => setWeekStart('mon')}
                 backgroundColor={weekStart === 'mon' ? '$primary' : '$background'}
                 borderWidth={1}
                 borderColor={weekStart === 'mon' ? '$primary' : '$borderColor'}
@@ -111,7 +117,7 @@ export default function ProfileSettingsScreen() {
             <XStack gap="$2">
               <Button
                 flex={1}
-                onPress={() => setViewModeAndSave('month')}
+                onPress={() => setViewMode('month')}
                 backgroundColor={viewMode === 'month' ? '$primary' : '$background'}
                 borderWidth={1}
                 borderColor={viewMode === 'month' ? '$primary' : '$borderColor'}
@@ -121,7 +127,7 @@ export default function ProfileSettingsScreen() {
 
               <Button
                 flex={1}
-                onPress={() => setViewModeAndSave('week')}
+                onPress={() => setViewMode('week')}
                 backgroundColor={viewMode === 'week' ? '$primary' : '$background'}
                 borderWidth={1}
                 borderColor={viewMode === 'week' ? '$primary' : '$borderColor'}
@@ -139,7 +145,7 @@ export default function ProfileSettingsScreen() {
             <XStack gap="$2">
               <Button
                 flex={1}
-                onPress={() => setThemeAndSave('light')}
+                onPress={() => setTheme('light')}
                 backgroundColor={theme === 'light' ? '$primary' : '$background'}
                 borderWidth={1}
                 borderColor={theme === 'light' ? '$primary' : '$borderColor'}
@@ -149,15 +155,43 @@ export default function ProfileSettingsScreen() {
 
               <Button
                 flex={1}
-                onPress={() => setThemeAndSave('dark')}
+                onPress={() => setTheme('dark')}
                 backgroundColor={theme === 'dark' ? '$primary' : '$background'}
                 borderWidth={1}
                 borderColor={theme === 'dark' ? '$primary' : '$borderColor'}
               >
                 <Text color={theme === 'dark' ? '$background' : '$color'}>ダーク</Text>
               </Button>
+
+              <Button
+                flex={1}
+                onPress={() => setTheme('system')}
+                backgroundColor={theme === 'system' ? '$primary' : '$background'}
+                borderWidth={1}
+                borderColor={theme === 'system' ? '$primary' : '$borderColor'}
+              >
+                <Text color={theme === 'system' ? '$background' : '$color'}>システム</Text>
+              </Button>
             </XStack>
           </YStack>
+
+          {/* 保存ボタン */}
+          <Button
+            size="$5"
+            backgroundColor="$primary"
+            color="$background"
+            onPress={handleSave}
+            disabled={saving}
+            marginTop="$4"
+          >
+            {saving ? (
+              <ActivityIndicator color="white" />
+            ) : (
+              <Text color="$background" fontWeight="600">
+                保存
+              </Text>
+            )}
+          </Button>
         </YStack>
       </ScrollView>
     </YStack>

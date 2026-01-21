@@ -1,5 +1,6 @@
 import { MonthYearPicker } from '@/components/calendar/MonthYearPicker';
 import { SwipeableCalendar } from '@/components/calendar/SwipeableCalendar';
+import { WeekCalendar } from '@/components/calendar/WeekCalendar';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSettings } from '@/contexts/SettingsContext';
 import { DiaryService } from '@/services/diaryService';
@@ -18,7 +19,7 @@ export default function HomeScreen() {
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const router = useRouter();
   const { session } = useAuth();
-  const { weekStart } = useSettings();
+  const { weekStart, viewMode } = useSettings();
 
   const today = new Date().toISOString().split('T')[0];
 
@@ -72,15 +73,27 @@ export default function HomeScreen() {
 
   return (
     <YStack flex={1} backgroundColor="$background">
-      <SwipeableCalendar
-        currentMonth={currentMonth}
-        diaryData={diaryData}
-        today={today}
-        weekStart={weekStart}
-        onDayPress={handleDayPress}
-        onMonthChange={handleMonthChange}
-        onMonthYearPress={handleMonthYearPress}
-      />
+      {viewMode === 'week' ? (
+        <WeekCalendar
+          currentMonth={currentMonth}
+          diaryData={diaryData}
+          today={today}
+          weekStart={weekStart}
+          onDayPress={handleDayPress}
+          onMonthChange={handleMonthChange}
+          onMonthYearPress={handleMonthYearPress}
+        />
+      ) : (
+        <SwipeableCalendar
+          currentMonth={currentMonth}
+          diaryData={diaryData}
+          today={today}
+          weekStart={weekStart}
+          onDayPress={handleDayPress}
+          onMonthChange={handleMonthChange}
+          onMonthYearPress={handleMonthYearPress}
+        />
+      )}
 
       <MonthYearPicker
         visible={showMonthPicker}

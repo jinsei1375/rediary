@@ -111,11 +111,13 @@ export default function ReviewScreen() {
   // Load exercise data when current exercise changes
   React.useEffect(() => {
     const loadCurrentExerciseData = async () => {
-      if (!currentExercise || showSettings) return;
+      // ユーザー未ログイン時や設定画面表示中は統計を取得しない
+      if (!currentExercise || showSettings || !session?.user?.id) return;
 
-      // Load statistics
+      // Load statistics (scoped to current user)
       const { data: statsData } = await ExerciseAttemptService.getExerciseStats(
         currentExercise.id,
+        session.user.id,
       );
       if (statsData) {
         setCurrentStats({

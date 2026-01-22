@@ -121,7 +121,7 @@ export const ReviewCard = React.memo(
       <YStack gap="$4" alignItems="center" flex={1} justifyContent="center">
         <YStack
           backgroundColor="$green2"
-          paddingHorizontal="$"
+          paddingHorizontal="$2"
           paddingVertical="$2"
           borderRadius="$4"
         >

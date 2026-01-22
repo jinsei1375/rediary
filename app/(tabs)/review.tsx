@@ -5,11 +5,11 @@ import { ReviewCard } from '@/components/review/ReviewCard';
 import { useAuth } from '@/contexts/AuthContext';
 import { ExerciseAttemptService } from '@/services/exerciseAttemptService';
 import { TranslationExerciseService } from '@/services/translationExerciseService';
-import type { TranslationExercise } from '@/types/database';
+import type { ExerciseAttempt, TranslationExercise } from '@/types/database';
 import { countFilteredExercises, filterExercises } from '@/utils/exerciseFilter';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
-import { useCallback, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Alert } from 'react-native';
 import { Button, ScrollView, Text, XStack, YStack, useTheme } from 'tamagui';
 
@@ -31,6 +31,13 @@ export default function ReviewScreen() {
   const [notRememberedCount, setNotRememberedCount] = useState(0);
   const [daysSinceLastAttempt, setDaysSinceLastAttempt] = useState(0);
 
+  // 現在の問題の統計情報と過去の回答
+  const [currentStats, setCurrentStats] = useState<{
+    rememberedCount: number;
+    notRememberedCount: number;
+  }>({ rememberedCount: 0, notRememberedCount: 0 });
+  const [pastAttempts, setPastAttempts] = useState<ExerciseAttempt[]>([]);
+
   // フィルター条件に合う問題数（フロントエンドで計算）
   const exerciseCount = countFilteredExercises(
     allExercises,
@@ -38,6 +45,9 @@ export default function ReviewScreen() {
     daysSinceLastAttempt,
     isRandom,
   );
+
+  // Current exercise
+  const currentExercise = exercises[currentIndex];
 
   // 全問題を取得（初回のみ）
   const loadAllExercises = useCallback(async () => {
@@ -84,6 +94,32 @@ export default function ReviewScreen() {
     setCurrentAttemptId(null);
   }, [allExercises, isRandom, notRememberedCount, daysSinceLastAttempt]);
 
+  // Load statistics and past attempts for current exercise
+  const loadCurrentExerciseData = useCallback(async () => {
+    if (!currentExercise) return;
+
+    // Load statistics
+    const { data: statsData } = await ExerciseAttemptService.getExerciseStats(currentExercise.id);
+    if (statsData) {
+      setCurrentStats({
+        rememberedCount: statsData.remembered_count,
+        notRememberedCount: statsData.not_remembered_count,
+      });
+    } else {
+      setCurrentStats({ rememberedCount: 0, notRememberedCount: 0 });
+    }
+
+    // Load past attempts
+    const { data: attemptsData } = await ExerciseAttemptService.getExerciseAttempts(
+      currentExercise.id,
+    );
+    if (attemptsData) {
+      setPastAttempts(attemptsData);
+    } else {
+      setPastAttempts([]);
+    }
+  }, [currentExercise]);
+
   const handleStartReview = useCallback(() => {
     loadExercises();
     setShowSettings(false);
@@ -97,6 +133,13 @@ export default function ReviewScreen() {
       loadAllExercises();
     }, [loadAllExercises]),
   );
+
+  // Load exercise data when current exercise changes
+  React.useEffect(() => {
+    if (currentExercise && !showSettings) {
+      loadCurrentExerciseData();
+    }
+  }, [currentExercise, loadCurrentExerciseData, showSettings]);
 
   const handleCheckAnswer = async () => {
     if (!session?.user?.id || !currentExercise || isFlipped) return;
@@ -161,26 +204,6 @@ export default function ReviewScreen() {
       ]);
     }
   };
-
-  const handlePrevious = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
-      setIsFlipped(false);
-      setUserAnswer('');
-      setCurrentAttemptId(null);
-    }
-  };
-
-  const handleNext = () => {
-    if (currentIndex < exercises.length - 1) {
-      setCurrentIndex(currentIndex + 1);
-      setIsFlipped(false);
-      setUserAnswer('');
-      setCurrentAttemptId(null);
-    }
-  };
-
-  const currentExercise = exercises[currentIndex];
 
   // 設定画面を表示
   if (showSettings) {
@@ -286,50 +309,11 @@ export default function ReviewScreen() {
           onRemembered={() => handleResponse(true)}
           onNotRemembered={() => handleResponse(false)}
           showButtons={!completedIds.has(currentExercise.id)}
+          rememberedCount={currentStats.rememberedCount}
+          notRememberedCount={currentStats.notRememberedCount}
+          pastAttempts={pastAttempts}
         />
       </ScrollView>
-
-      {/* Navigation buttons */}
-      <XStack
-        gap="$3"
-        paddingHorizontal="$4"
-        paddingVertical="$3"
-        backgroundColor="$background"
-        borderTopWidth={1}
-        borderTopColor="$borderColor"
-      >
-        <Button
-          flex={1}
-          size="$4"
-          backgroundColor="$gray3"
-          disabled={currentIndex === 0}
-          onPress={handlePrevious}
-          opacity={currentIndex === 0 ? 0.5 : 1}
-        >
-          <XStack gap="$2" alignItems="center">
-            <Ionicons name="chevron-back" size={20} color={theme.color.get()} />
-            <Text color="$color" fontWeight="600">
-              前へ
-            </Text>
-          </XStack>
-        </Button>
-
-        <Button
-          flex={1}
-          size="$4"
-          backgroundColor="$gray3"
-          disabled={currentIndex === exercises.length - 1}
-          onPress={handleNext}
-          opacity={currentIndex === exercises.length - 1 ? 0.5 : 1}
-        >
-          <XStack gap="$2" alignItems="center">
-            <Text color="$color" fontWeight="600">
-              次へ
-            </Text>
-            <Ionicons name="chevron-forward" size={20} color={theme.color.get()} />
-          </XStack>
-        </Button>
-      </XStack>
     </YStack>
   );
 }

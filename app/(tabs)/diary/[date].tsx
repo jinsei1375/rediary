@@ -9,7 +9,7 @@ import { DiaryService } from '@/services/diaryService';
 import type { AiCorrection, DiaryEntryInsert } from '@/types/database';
 import { Language } from '@/types/database';
 import type { DiaryFormData } from '@/types/ui';
-import { formatDate } from '@/utils';
+import { formatDate } from '@/utils/dateUtils';
 import { Portal } from '@tamagui/portal';
 import { useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';

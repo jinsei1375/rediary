@@ -35,6 +35,27 @@ export class TranslationExerciseService {
   }
 
   /**
+   * ユーザーの全ての翻訳問題を取得（exercise_attemptsも含む）
+   */
+  static async getByUserWithAttempts(userId: string) {
+    const { data, error } = await supabase
+      .from('translation_exercises')
+      .select(
+        `
+        *,
+        exercise_attempts!exercise_attempts_exercise_id_fkey (
+          id,
+          remembered,
+          attempted_at
+        )
+      `,
+      )
+      .eq('user_id', userId)
+      .order('scheduled_date', { ascending: true });
+    return { data, error };
+  }
+
+  /**
    * ユーザーの全ての翻訳問題を取得
    */
   static async getByUser(userId: string) {

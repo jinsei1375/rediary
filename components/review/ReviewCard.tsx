@@ -42,6 +42,35 @@ export const ReviewCard = React.memo(
     const theme = useTheme();
     const [showPastAnswersDialog, setShowPastAnswersDialog] = useState(false);
 
+    // Helper function to get attempt status properties
+    const getAttemptStatus = (remembered: boolean | null) => {
+      if (remembered === true) {
+        return {
+          icon: 'checkmark-circle' as const,
+          color: theme.green10.get(),
+          text: '覚えた',
+          bgColor: '$green2',
+          borderColor: '$green7',
+        };
+      } else if (remembered === false) {
+        return {
+          icon: 'close-circle' as const,
+          color: theme.red10.get(),
+          text: '覚えてない',
+          bgColor: '$red2',
+          borderColor: '$red7',
+        };
+      } else {
+        return {
+          icon: 'help-circle-outline' as const,
+          color: theme.gray10?.get() ?? '#999',
+          text: '未評価',
+          bgColor: '$gray2',
+          borderColor: '$gray7',
+        };
+      }
+    };
+
     const frontContent = (
       <YStack gap="$4" alignItems="center" flex={1} justifyContent="center">
         <YStack
@@ -146,7 +175,11 @@ export const ReviewCard = React.memo(
 
           {/* Statistics display */}
           <XStack gap="$2" alignItems="center">
-            <XStack gap="$1" alignItems="center">
+            <XStack 
+              gap="$1" 
+              alignItems="center"
+              accessibilityLabel={`覚えた回数: ${rememberedCount}`}
+            >
               <Ionicons name="checkmark-circle" size={18} color={theme.green10.get()} />
               <Text fontSize="$3" color="$green10" fontWeight="700">
                 {rememberedCount}
@@ -155,7 +188,11 @@ export const ReviewCard = React.memo(
             <Text fontSize="$3" color="$gray10">
               /
             </Text>
-            <XStack gap="$1" alignItems="center">
+            <XStack 
+              gap="$1" 
+              alignItems="center"
+              accessibilityLabel={`覚えてない回数: ${notRememberedCount}`}
+            >
               <Ionicons name="close-circle" size={18} color={theme.red10.get()} />
               <Text fontSize="$3" color="$red10" fontWeight="700">
                 {notRememberedCount}
@@ -356,72 +393,53 @@ export const ReviewCard = React.memo(
                   </YStack>
                 ) : (
                   <YStack gap="$3">
-                    {pastAttempts.map((attempt, index) => (
-                      <YStack
-                        key={attempt.id}
-                        padding="$3"
-                        backgroundColor={
-                          attempt.remembered === true
-                            ? '$green2'
-                            : attempt.remembered === false
-                              ? '$red2'
-                              : '$gray2'
-                        }
-                        borderRadius="$3"
-                        borderWidth={1}
-                        borderColor={
-                          attempt.remembered === true
-                            ? '$green7'
-                            : attempt.remembered === false
-                              ? '$red7'
-                              : '$gray7'
-                        }
-                      >
-                        <XStack justifyContent="space-between" alignItems="center" marginBottom="$2">
-                          <XStack gap="$2" alignItems="center">
-                            {attempt.remembered === true ? (
-                              <Ionicons name="checkmark-circle" size={20} color={theme.green10.get()} />
-                            ) : attempt.remembered === false ? (
-                              <Ionicons name="close-circle" size={20} color={theme.red10.get()} />
-                            ) : (
-                              <Ionicons name="help-circle-outline" size={20} color={theme.gray10.get()} />
-                            )}
-                            <Text fontSize="$3" fontWeight="600" color="$color">
-                              {attempt.remembered === true
-                                ? '覚えた'
-                                : attempt.remembered === false
-                                  ? '覚えてない'
-                                  : '未評価'}
+                    {pastAttempts.map((attempt) => {
+                      const status = getAttemptStatus(attempt.remembered);
+                      return (
+                        <YStack
+                          key={attempt.id}
+                          padding="$3"
+                          backgroundColor={status.bgColor}
+                          borderRadius="$3"
+                          borderWidth={1}
+                          borderColor={status.borderColor}
+                        >
+                          <XStack justifyContent="space-between" alignItems="center" marginBottom="$2">
+                            <XStack gap="$2" alignItems="center">
+                              <Ionicons name={status.icon} size={20} color={status.color} />
+                              <Text fontSize="$3" fontWeight="600" color="$color">
+                                {status.text}
+                              </Text>
+                            </XStack>
+                            <Text fontSize="$2" color="$gray11">
+                              {new Date(attempt.attempted_at).toLocaleString('ja-JP', {
+                                year: 'numeric',
+                                month: '2-digit',
+                                day: '2-digit',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                              })}
                             </Text>
                           </XStack>
-                          <Text fontSize="$2" color="$gray11">
-                            {new Date(attempt.attempted_at).toLocaleString('ja-JP', {
-                              year: 'numeric',
-                              month: '2-digit',
-                              day: '2-digit',
-                              hour: '2-digit',
-                              minute: '2-digit',
-                            })}
-                          </Text>
-                        </XStack>
-                        {attempt.user_answer && (
-                          <YStack gap="$1">
-                            <Text fontSize="$2" color="$gray11" fontWeight="600">
-                              あなたの回答:
-                            </Text>
-                            <RNText
-                              style={{
-                                fontSize: 14,
-                                lineHeight: 20,
-                                color: theme.color.get(),
-                              }}
-                            >
-                              {attempt.user_answer}
-                            </RNText>
-                          </YStack>
-                        )}
-                      </YStack>
-                    ))}
+                          {attempt.user_answer && (
+                            <YStack gap="$1">
+                              <Text fontSize="$2" color="$gray11" fontWeight="600">
+                                あなたの回答:
+                              </Text>
+                              <RNText
+                                style={{
+                                  fontSize: 14,
+                                  lineHeight: 20,
+                                  color: theme.color.get(),
+                                }}
+                              >
+                                {attempt.user_answer}
+                              </RNText>
+                            </YStack>
+                          )}
+                        </YStack>
+                      );
+                    })}
                   </YStack>
                 )}
               </RNScrollView>

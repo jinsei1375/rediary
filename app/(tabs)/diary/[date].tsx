@@ -220,46 +220,48 @@ export default function DiaryDetailScreen() {
         onFormChange={onFormChange}
         onSave={handleSave}
         saving={saving}
-      >
-        {/* AI添削ボタン */}
-        {!loading && existingEntryId && !aiCorrection && (
-          <Button
-            onPress={handleAiCorrectionClick}
-            disabled={!formData.content.trim() || !formData.content_native.trim() || aiCorrecting}
-            height="$5"
-            width="90%"
-            maxWidth={400}
-            marginTop="$4"
-            alignSelf="center"
-            backgroundColor="$purple10"
-            borderRadius="$4"
-            pressStyle={{
-              opacity: 0.85,
-            }}
-            hoverStyle={{
-              opacity: 0.9,
-            }}
-            opacity={
-              !formData.content.trim() || !formData.content_native.trim() || aiCorrecting ? 0.5 : 1
-            }
-          >
-            <XStack gap="$3" alignItems="center" justifyContent="center">
-              {aiCorrecting && <Spinner color="$background" size="small" />}
-              <Text color="$background" fontSize="$6" fontWeight="700" letterSpacing={1}>
-                {aiCorrecting ? 'AI添削中...' : 'AI添削'}
-              </Text>
-            </XStack>
-          </Button>
-        )}
+      />
 
-        {/* AI添削結果表示 */}
-        {aiCorrection && (
-          <YStack marginTop="$4">
-            <Separator marginBottom="$4" />
-            <CorrectionResultDisplay correction={aiCorrection} />
-          </YStack>
-        )}
-      </DiaryForm>
+      {/* AI添削ボタン */}
+      {!loading && existingEntryId && !aiCorrection && (
+        <Button
+          onPress={handleAiCorrectionClick}
+          disabled={!formData.content.trim() || !formData.content_native.trim() || aiCorrecting}
+          height="$5"
+          width="90%"
+          maxWidth={400}
+          marginTop="$4"
+          marginBottom="$4"
+          marginHorizontal="$4"
+          alignSelf="center"
+          backgroundColor="$purple10"
+          borderRadius="$4"
+          pressStyle={{
+            opacity: 0.85,
+          }}
+          hoverStyle={{
+            opacity: 0.9,
+          }}
+          opacity={
+            !formData.content.trim() || !formData.content_native.trim() || aiCorrecting ? 0.5 : 1
+          }
+        >
+          <XStack gap="$3" alignItems="center" justifyContent="center">
+            {aiCorrecting && <Spinner color="$background" size="small" />}
+            <Text color="$background" fontSize="$5" fontWeight="bold" letterSpacing={1}>
+              {aiCorrecting ? 'AI添削中...' : 'AI添削'}
+            </Text>
+          </XStack>
+        </Button>
+      )}
+
+      {/* AI添削結果表示 */}
+      {aiCorrection && (
+        <YStack paddingHorizontal="$4" paddingBottom="$4">
+          <Separator marginBottom="$4" />
+          <CorrectionResultDisplay correction={aiCorrection} />
+        </YStack>
+      )}
 
       {/* 確認モーダル */}
       <CorrectionConfirmModal

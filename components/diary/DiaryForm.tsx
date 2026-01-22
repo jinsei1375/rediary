@@ -20,7 +20,6 @@ type DiaryFormProps = {
   onFormChange: (field: keyof DiaryFormData, value: string) => void;
   onSave: () => void;
   saving: boolean;
-  children?: React.ReactNode;
 };
 
 const MAX_LENGTH_ENGLISH = 1500;
@@ -30,7 +29,7 @@ const MAX_LENGTH_JAPANESE = 1000;
 const HEADER_HEIGHT = 60;
 
 export const DiaryForm = React.memo(
-  ({ formData, onFormChange, onSave, saving, children }: DiaryFormProps) => {
+  ({ formData, onFormChange, onSave, saving }: DiaryFormProps) => {
     const theme = useTheme();
     const insets = useSafeAreaInsets();
     const scrollViewRef = useRef<ScrollView>(null);
@@ -154,30 +153,28 @@ export const DiaryForm = React.memo(
               />
             </View>
 
-            {children}
+            <Button
+              backgroundColor={isSaveDisabled ? '$gray8' : '$primary'}
+              marginTop="$4"
+              height="$5"
+              borderRadius="$3"
+              onPress={onSave}
+              disabled={isSaveDisabled}
+              alignItems="center"
+              justifyContent="center"
+              pressStyle={{
+                backgroundColor: isSaveDisabled ? '$gray8' : '$primaryPress',
+              }}
+            >
+              {saving ? (
+                <Spinner color="$background" />
+              ) : (
+                <Text color="$background" fontSize="$5" fontWeight="bold">
+                  保存
+                </Text>
+              )}
+            </Button>
           </ScrollView>
-
-          <Button
-            backgroundColor={isSaveDisabled ? '$gray8' : '$primary'}
-            margin="$4"
-            height="$5"
-            borderRadius="$3"
-            onPress={onSave}
-            disabled={isSaveDisabled}
-            alignItems="center"
-            justifyContent="center"
-            pressStyle={{
-              backgroundColor: isSaveDisabled ? '$gray8' : '$primaryPress',
-            }}
-          >
-            {saving ? (
-              <Spinner color="$background" />
-            ) : (
-              <Text color="$background" fontSize="$5" fontWeight="bold">
-                保存
-              </Text>
-            )}
-          </Button>
         </YStack>
 
         {Platform.OS === 'ios' && (

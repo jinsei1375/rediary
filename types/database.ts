@@ -38,6 +38,11 @@ export type Database = {
         Insert: UserSettingsInsert;
         Update: UserSettingsUpdate;
       };
+      exercise_attempts: {
+        Row: ExerciseAttempt;
+        Insert: ExerciseAttemptInsert;
+        Update: ExerciseAttemptUpdate;
+      };
     };
   };
 };
@@ -82,14 +87,11 @@ export type TranslationExercise = {
   id: string;
   user_id: string;
   diary_entry_id: string | null;
-  source_text: string;
-  source_language: Language;
+  native_text: string;
+  native_language: Language;
   target_language: Language;
-  correct_translation: string | null;
-  user_translation: string | null;
-  is_completed: boolean | null;
+  target_text: string | null;
   scheduled_date: string;
-  completed_at: string | null;
   created_at: string;
 };
 
@@ -103,6 +105,16 @@ export type UserSettings = {
   target_language: Language;
   created_at: string;
   updated_at: string;
+};
+
+export type ExerciseAttempt = {
+  id: string;
+  user_id: string;
+  exercise_id: string;
+  user_answer: string;
+  remembered: boolean | null;
+  attempted_at: string;
+  created_at: string;
 };
 
 // ============================================
@@ -129,22 +141,21 @@ export type AiCorrectionInsert = Omit<AiCorrection, 'id' | 'created_at'> & {
   created_at?: string;
 };
 
-export type TranslationExerciseInsert = Omit<
-  TranslationExercise,
-  'id' | 'created_at' | 'is_completed' | 'user_translation' | 'completed_at' | 'diary_entry_id'
-> & {
+export type TranslationExerciseInsert = Omit<TranslationExercise, 'id' | 'created_at'> & {
   id?: string;
-  diary_entry_id?: string | null;
-  is_completed?: boolean;
-  user_translation?: string | null;
-  completed_at?: string | null;
-  created_at?: string | null;
+  created_at?: string;
 };
 
 export type UserSettingsInsert = Omit<UserSettings, 'id' | 'created_at' | 'updated_at'> & {
   id?: string;
   created_at?: string;
   updated_at?: string;
+};
+
+export type ExerciseAttemptInsert = Omit<ExerciseAttempt, 'id' | 'created_at' | 'attempted_at'> & {
+  id?: string;
+  attempted_at?: string;
+  created_at?: string;
 };
 
 // ============================================
@@ -162,6 +173,8 @@ export type TranslationExerciseUpdate = Partial<
 >;
 
 export type UserSettingsUpdate = Partial<Omit<UserSettings, 'id' | 'user_id' | 'created_at'>>;
+
+export type ExerciseAttemptUpdate = Partial<Omit<ExerciseAttempt, 'id' | 'user_id' | 'created_at'>>;
 
 // ============================================
 // JSON Types
@@ -204,4 +217,12 @@ export type DiaryWithCorrections = DiaryEntry & {
 export type ExerciseWithStatus = TranslationExercise & {
   score?: number;
   feedback?: string;
+};
+
+// Exercise with attempt statistics
+export type ExerciseWithStats = TranslationExercise & {
+  total_attempts: number;
+  remembered_count: number;
+  not_remembered_count: number;
+  last_attempt?: ExerciseAttempt;
 };

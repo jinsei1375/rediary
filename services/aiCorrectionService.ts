@@ -47,7 +47,7 @@ export class AiCorrectionService {
     nativeContent: string,
     userContent: string,
     nativeLanguage: Language,
-    targetLanguage: Language
+    targetLanguage: Language,
   ): Promise<{ data: OpenAIResponse | null; error: Error | null }> {
     try {
       const apiKey = process.env.EXPO_PUBLIC_OPENAI_API_KEY;
@@ -109,7 +109,7 @@ export class AiCorrectionService {
     nativeContent: string,
     userContent: string,
     nativeLanguage: Language,
-    targetLanguage: Language
+    targetLanguage: Language,
   ): string {
     const languageNames = {
       [Language.EN]: 'English',
@@ -169,14 +169,14 @@ Please respond in the following JSON format:
     nativeContent: string,
     userContent: string,
     nativeLanguage: Language,
-    targetLanguage: Language
+    targetLanguage: Language,
   ) {
     // AI添削をリクエスト
     const { data: aiResponse, error: aiError } = await this.requestCorrection(
       nativeContent,
       userContent,
       nativeLanguage,
-      targetLanguage
+      targetLanguage,
     );
 
     if (aiError || !aiResponse) {
@@ -203,7 +203,7 @@ Please respond in the following JSON format:
         diaryEntryId,
         aiResponse.native_expressions,
         targetLanguage,
-        nativeLanguage
+        nativeLanguage,
       );
     }
 
@@ -217,16 +217,16 @@ Please respond in the following JSON format:
     userId: string,
     diaryEntryId: string,
     nativeExpressions: NativeExpression[],
-    sourceLanguage: Language,
-    targetLanguage: Language
+    targetLanguage: Language,
+    nativeLanguage: Language,
   ) {
     const exercises = nativeExpressions.map((expr) => ({
       user_id: userId,
       diary_entry_id: diaryEntryId,
-      source_text: expr.usage_example,
-      source_language: sourceLanguage,
+      native_text: expr.usage_example, // 英語の使用例
+      native_language: nativeLanguage,
       target_language: targetLanguage,
-      correct_translation: expr.usage_example_translation,
+      target_text: expr.usage_example_translation, // 日本語の翻訳
       scheduled_date: new Date().toISOString().split('T')[0], // 今日の日付
     }));
 

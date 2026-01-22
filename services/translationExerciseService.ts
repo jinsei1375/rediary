@@ -42,33 +42,21 @@ export class TranslationExerciseService {
       .from('translation_exercises')
       .select('*')
       .eq('user_id', userId)
-      .order('created_at', { ascending: false });
+      .order('scheduled_date', { ascending: true });
     return { data, error };
   }
 
   /**
-   * 未完了の翻訳問題を取得
+   * スケジュール日付で翻訳問題を取得（復習対象）
    */
-  static async getIncomplete(userId: string) {
+  static async getScheduled(userId: string, upToDate?: string) {
+    const targetDate = upToDate || new Date().toISOString().split('T')[0];
     const { data, error } = await supabase
       .from('translation_exercises')
       .select('*')
       .eq('user_id', userId)
-      .eq('is_completed', false)
-      .order('created_at', { ascending: false });
-    return { data, error };
-  }
-
-  /**
-   * 完了済みの翻訳問題を取得
-   */
-  static async getCompleted(userId: string) {
-    const { data, error } = await supabase
-      .from('translation_exercises')
-      .select('*')
-      .eq('user_id', userId)
-      .eq('is_completed', true)
-      .order('completed_at', { ascending: false });
+      .lte('scheduled_date', targetDate)
+      .order('scheduled_date', { ascending: true });
     return { data, error };
   }
 
@@ -79,23 +67,6 @@ export class TranslationExerciseService {
     const { data, error } = await supabase
       .from('translation_exercises')
       .update(updates)
-      .eq('id', id)
-      .select()
-      .single();
-    return { data, error };
-  }
-
-  /**
-   * 翻訳問題を完了にする
-   */
-  static async complete(id: string, userTranslation: string) {
-    const { data, error } = await supabase
-      .from('translation_exercises')
-      .update({
-        is_completed: true,
-        user_translation: userTranslation,
-        completed_at: new Date().toISOString(),
-      })
       .eq('id', id)
       .select()
       .single();

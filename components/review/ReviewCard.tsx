@@ -25,6 +25,38 @@ type ReviewCardProps = {
   pastAttempts?: ExerciseAttempt[];
 };
 
+// Helper function to get attempt status properties (outside component to avoid recreation)
+const getAttemptStatus = (
+  remembered: boolean | null,
+  theme: ReturnType<typeof useTheme>,
+) => {
+  if (remembered === true) {
+    return {
+      icon: 'checkmark-circle' as const,
+      color: theme.green10?.get() ?? '#10b981',
+      text: '覚えた',
+      bgColor: '$green2',
+      borderColor: '$green7',
+    };
+  } else if (remembered === false) {
+    return {
+      icon: 'close-circle' as const,
+      color: theme.red10?.get() ?? '#ef4444',
+      text: '覚えてない',
+      bgColor: '$red2',
+      borderColor: '$red7',
+    };
+  } else {
+    return {
+      icon: 'help-circle-outline' as const,
+      color: theme.gray10?.get() ?? '#999',
+      text: '未評価',
+      bgColor: '$gray2',
+      borderColor: '$gray7',
+    };
+  }
+};
+
 export const ReviewCard = React.memo(
   ({
     exercise,
@@ -41,35 +73,6 @@ export const ReviewCard = React.memo(
   }: ReviewCardProps) => {
     const theme = useTheme();
     const [showPastAnswersDialog, setShowPastAnswersDialog] = useState(false);
-
-    // Helper function to get attempt status properties
-    const getAttemptStatus = (remembered: boolean | null) => {
-      if (remembered === true) {
-        return {
-          icon: 'checkmark-circle' as const,
-          color: theme.green10.get(),
-          text: '覚えた',
-          bgColor: '$green2',
-          borderColor: '$green7',
-        };
-      } else if (remembered === false) {
-        return {
-          icon: 'close-circle' as const,
-          color: theme.red10.get(),
-          text: '覚えてない',
-          bgColor: '$red2',
-          borderColor: '$red7',
-        };
-      } else {
-        return {
-          icon: 'help-circle-outline' as const,
-          color: theme.gray10?.get() ?? '#999',
-          text: '未評価',
-          bgColor: '$gray2',
-          borderColor: '$gray7',
-        };
-      }
-    };
 
     const frontContent = (
       <YStack gap="$4" alignItems="center" flex={1} justifyContent="center">
@@ -180,7 +183,7 @@ export const ReviewCard = React.memo(
               alignItems="center"
               accessibilityLabel={`覚えた回数: ${rememberedCount}`}
             >
-              <Ionicons name="checkmark-circle" size={18} color={theme.green10.get()} />
+              <Ionicons name="checkmark-circle" size={18} color={theme.green10?.get() ?? '#10b981'} />
               <Text fontSize="$3" color="$green10" fontWeight="700">
                 {rememberedCount}
               </Text>
@@ -193,7 +196,7 @@ export const ReviewCard = React.memo(
               alignItems="center"
               accessibilityLabel={`覚えてない回数: ${notRememberedCount}`}
             >
-              <Ionicons name="close-circle" size={18} color={theme.red10.get()} />
+              <Ionicons name="close-circle" size={18} color={theme.red10?.get() ?? '#ef4444'} />
               <Text fontSize="$3" color="$red10" fontWeight="700">
                 {notRememberedCount}
               </Text>
@@ -274,6 +277,7 @@ export const ReviewCard = React.memo(
           }}
           animation="quick"
           marginTop="$2"
+          accessibilityLabel="過去の解答データを表示"
         >
           <XStack gap="$2" alignItems="center">
             <Ionicons name="time-outline" size={18} color={theme.color.get()} />
@@ -379,12 +383,13 @@ export const ReviewCard = React.memo(
                   pressStyle={{
                     backgroundColor: '$gray4',
                   }}
+                  accessibilityLabel="ダイアログを閉じる"
                 >
                   <Ionicons name="close" size={20} color={theme.color.get()} />
                 </Button>
               </XStack>
 
-              <RNScrollView style={{ maxHeight: 400 }}>
+              <RNScrollView style={{ flex: 1, maxHeight: '100%' }}>
                 {pastAttempts.length === 0 ? (
                   <YStack alignItems="center" paddingVertical="$8">
                     <Ionicons name="document-outline" size={48} color={theme.gray10?.get() ?? '#999'} />
@@ -395,7 +400,7 @@ export const ReviewCard = React.memo(
                 ) : (
                   <YStack gap="$3">
                     {pastAttempts.map((attempt) => {
-                      const status = getAttemptStatus(attempt.remembered);
+                      const status = getAttemptStatus(attempt.remembered, theme);
                       return (
                         <YStack
                           key={attempt.id}

@@ -35,11 +35,12 @@ export const updateExerciseAttempt = async (attemptId: string, remembered: boole
 /**
  * 特定の練習問題の回答履歴を取得
  */
-export const getExerciseAttempts = async (exerciseId: string) => {
+export const getExerciseAttempts = async (exerciseId: string, userId: string) => {
   return await supabase
     .from('exercise_attempts')
     .select('*')
     .eq('exercise_id', exerciseId)
+    .eq('user_id', userId)
     .order('attempted_at', { ascending: false });
 };
 

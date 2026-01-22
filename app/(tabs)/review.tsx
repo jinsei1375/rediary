@@ -94,32 +94,6 @@ export default function ReviewScreen() {
     setCurrentAttemptId(null);
   }, [allExercises, isRandom, notRememberedCount, daysSinceLastAttempt]);
 
-  // Load statistics and past attempts for current exercise
-  const loadCurrentExerciseData = useCallback(async () => {
-    if (!currentExercise) return;
-
-    // Load statistics
-    const { data: statsData } = await ExerciseAttemptService.getExerciseStats(currentExercise.id);
-    if (statsData) {
-      setCurrentStats({
-        rememberedCount: statsData.remembered_count,
-        notRememberedCount: statsData.not_remembered_count,
-      });
-    } else {
-      setCurrentStats({ rememberedCount: 0, notRememberedCount: 0 });
-    }
-
-    // Load past attempts
-    const { data: attemptsData } = await ExerciseAttemptService.getExerciseAttempts(
-      currentExercise.id,
-    );
-    if (attemptsData) {
-      setPastAttempts(attemptsData);
-    } else {
-      setPastAttempts([]);
-    }
-  }, [currentExercise]);
-
   const handleStartReview = useCallback(() => {
     loadExercises();
     setShowSettings(false);
@@ -136,10 +110,35 @@ export default function ReviewScreen() {
 
   // Load exercise data when current exercise changes
   React.useEffect(() => {
-    if (currentExercise && !showSettings) {
-      loadCurrentExerciseData();
-    }
-  }, [currentExercise, loadCurrentExerciseData, showSettings]);
+    const loadCurrentExerciseData = async () => {
+      if (!currentExercise || showSettings) return;
+
+      // Load statistics
+      const { data: statsData } = await ExerciseAttemptService.getExerciseStats(
+        currentExercise.id,
+      );
+      if (statsData) {
+        setCurrentStats({
+          rememberedCount: statsData.remembered_count,
+          notRememberedCount: statsData.not_remembered_count,
+        });
+      } else {
+        setCurrentStats({ rememberedCount: 0, notRememberedCount: 0 });
+      }
+
+      // Load past attempts
+      const { data: attemptsData } = await ExerciseAttemptService.getExerciseAttempts(
+        currentExercise.id,
+      );
+      if (attemptsData) {
+        setPastAttempts(attemptsData);
+      } else {
+        setPastAttempts([]);
+      }
+    };
+
+    loadCurrentExerciseData();
+  }, [currentExercise, showSettings]);
 
   const handleCheckAnswer = async () => {
     if (!session?.user?.id || !currentExercise || isFlipped) return;

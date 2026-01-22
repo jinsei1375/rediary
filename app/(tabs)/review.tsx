@@ -114,33 +114,40 @@ export default function ReviewScreen() {
       // ユーザー未ログイン時や設定画面表示中は統計を取得しない
       if (!currentExercise || showSettings || !session?.user?.id) return;
 
-      // Load statistics (scoped to current user)
-      const { data: statsData } = await ExerciseAttemptService.getExerciseStats(
-        currentExercise.id,
-        session.user.id,
-      );
-      if (statsData) {
-        setCurrentStats({
-          rememberedCount: statsData.remembered_count,
-          notRememberedCount: statsData.not_remembered_count,
-        });
-      } else {
-        setCurrentStats({ rememberedCount: 0, notRememberedCount: 0 });
-      }
+      try {
+        // Load statistics (scoped to current user)
+        const { data: statsData, error: statsError } =
+          await ExerciseAttemptService.getExerciseStats(currentExercise.id, session.user.id);
+        if (statsError) {
+          console.error('Error loading exercise stats:', statsError);
+        }
+        if (statsData) {
+          setCurrentStats({
+            rememberedCount: statsData.remembered_count,
+            notRememberedCount: statsData.not_remembered_count,
+          });
+        } else {
+          setCurrentStats({ rememberedCount: 0, notRememberedCount: 0 });
+        }
 
-      // Load past attempts
-      const { data: attemptsData } = await ExerciseAttemptService.getExerciseAttempts(
-        currentExercise.id,
-      );
-      if (attemptsData) {
-        setPastAttempts(attemptsData);
-      } else {
-        setPastAttempts([]);
+        // Load past attempts (scoped to current user)
+        const { data: attemptsData, error: attemptsError } =
+          await ExerciseAttemptService.getExerciseAttempts(currentExercise.id, session.user.id);
+        if (attemptsError) {
+          console.error('Error loading past attempts:', attemptsError);
+        }
+        if (attemptsData) {
+          setPastAttempts(attemptsData);
+        } else {
+          setPastAttempts([]);
+        }
+      } catch (error) {
+        console.error('Error loading exercise data:', error);
       }
     };
 
     loadCurrentExerciseData();
-  }, [currentExercise, showSettings]);
+  }, [currentExercise, showSettings, session?.user?.id]);
 
   const handleCheckAnswer = async () => {
     if (!session?.user?.id || !currentExercise || isFlipped) return;
@@ -166,7 +173,7 @@ export default function ReviewScreen() {
   };
 
   const handleResponse = async (remembered: boolean) => {
-    if (!currentAttemptId) {
+    if (!currentAttemptId || !session?.user?.id) {
       Alert.alert('エラー', '先に答えを確認してください');
       return;
     }
@@ -181,6 +188,30 @@ export default function ReviewScreen() {
       console.error('Error updating attempt:', error);
       Alert.alert('エラー', '回答の更新に失敗しました');
       return;
+    }
+
+    // Refresh statistics and past attempts after response
+    try {
+      const { data: statsData } = await ExerciseAttemptService.getExerciseStats(
+        currentExercise.id,
+        session.user.id,
+      );
+      if (statsData) {
+        setCurrentStats({
+          rememberedCount: statsData.remembered_count,
+          notRememberedCount: statsData.not_remembered_count,
+        });
+      }
+
+      const { data: attemptsData } = await ExerciseAttemptService.getExerciseAttempts(
+        currentExercise.id,
+        session.user.id,
+      );
+      if (attemptsData) {
+        setPastAttempts(attemptsData);
+      }
+    } catch (error) {
+      console.error('Error refreshing exercise data:', error);
     }
 
     // 完了済みとしてマーク

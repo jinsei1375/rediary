@@ -345,6 +345,7 @@ export const ReviewCard = React.memo(
           visible={showPastAnswersDialog}
           transparent
           animationType="fade"
+          accessibilityViewIsModal
           onRequestClose={() => setShowPastAnswersDialog(false)}
         >
           <YStack

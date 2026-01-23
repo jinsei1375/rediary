@@ -23,11 +23,16 @@ export const createExerciseAttempt = async (
 /**
  * 練習問題の回答履歴を更新（rememberedフラグをセット）
  */
-export const updateExerciseAttempt = async (attemptId: string, remembered: boolean) => {
+export const updateExerciseAttempt = async (
+  attemptId: string,
+  remembered: boolean,
+  userId: string,
+) => {
   return await supabase
     .from('exercise_attempts')
     .update({ remembered })
     .eq('id', attemptId)
+    .eq('user_id', userId)
     .select()
     .single();
 };
@@ -64,11 +69,12 @@ export const getUserAttempts = async (userId: string, limit?: number) => {
 /**
  * 特定の練習問題の統計情報を取得
  */
-export const getExerciseStats = async (exerciseId: string) => {
+export const getExerciseStats = async (exerciseId: string, userId: string) => {
   const { data, error } = await supabase
     .from('exercise_attempts')
     .select('remembered')
-    .eq('exercise_id', exerciseId);
+    .eq('exercise_id', exerciseId)
+    .eq('user_id', userId);
 
   if (error || !data) {
     return {

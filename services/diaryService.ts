@@ -7,8 +7,13 @@ export class DiaryService {
     return { data, error };
   }
 
-  static async getById(id: string) {
-    const { data, error } = await supabase.from('diary_entries').select('*').eq('id', id).single();
+  static async getById(id: string, userId: string) {
+    const { data, error } = await supabase
+      .from('diary_entries')
+      .select('*')
+      .eq('id', id)
+      .eq('user_id', userId)
+      .single();
     return { data, error };
   }
 
@@ -37,18 +42,23 @@ export class DiaryService {
     return { data, error };
   }
 
-  static async update(id: string, updates: DiaryEntryUpdate) {
+  static async update(id: string, updates: DiaryEntryUpdate, userId: string) {
     const { data, error } = await supabase
       .from('diary_entries')
       .update(updates)
       .eq('id', id)
+      .eq('user_id', userId)
       .select()
       .single();
     return { data, error };
   }
 
-  static async delete(id: string) {
-    const { error } = await supabase.from('diary_entries').delete().eq('id', id);
+  static async delete(id: string, userId: string) {
+    const { error } = await supabase
+      .from('diary_entries')
+      .delete()
+      .eq('id', id)
+      .eq('user_id', userId);
     return { error };
   }
 

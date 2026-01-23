@@ -19,18 +19,18 @@ export default function HomeScreen() {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const router = useRouter();
-  const { session } = useAuth();
+  const { user } = useAuth();
   const { weekStart, viewMode, loading: settingsLoading } = useSettings();
 
   const today = new Date().toISOString().split('T')[0];
 
   const loadDiaryDates = useCallback(async () => {
-    if (!session?.user?.id) return;
+    if (!user?.id) return;
 
     const year = currentMonth.getFullYear();
     const month = currentMonth.getMonth() + 1;
 
-    const { data, error } = await DiaryService.getTitlesForMonth(session.user.id, year, month);
+    const { data, error } = await DiaryService.getTitlesForMonth(user.id, year, month);
     if (error || !data) return;
 
     const diaryMap: CalendarDiaryData = {};
@@ -40,7 +40,7 @@ export default function HomeScreen() {
       };
     });
     setDiaryData(diaryMap);
-  }, [session?.user?.id, currentMonth]);
+  }, [user?.id, currentMonth]);
 
   useFocusEffect(
     useCallback(() => {

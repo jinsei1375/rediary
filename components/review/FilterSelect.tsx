@@ -5,7 +5,7 @@ import { Adapt, Select, Sheet, Text, YStack, useTheme } from 'tamagui';
 type FilterSelectProps = {
   label: string;
   value: number;
-  options: Array<{ label: string; value: number }>;
+  options: { label: string; value: number }[];
   onValueChange: (value: number) => void;
 };
 

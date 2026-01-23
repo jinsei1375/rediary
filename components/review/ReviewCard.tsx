@@ -1,4 +1,4 @@
-import type { TranslationExercise } from '@/types/database';
+import type { ExerciseAttempt, TranslationExercise } from '@/types/database';
 import {
   getLanguageExpressionLabel,
   getLanguageInstructionText,
@@ -6,8 +6,8 @@ import {
   getOriginalTextLabel,
 } from '@/utils/languageUtils';
 import { Ionicons } from '@expo/vector-icons';
-import React from 'react';
-import { Text as RNText } from 'react-native';
+import React, { useState } from 'react';
+import { Modal, ScrollView as RNScrollView, Text as RNText } from 'react-native';
 import { Button, Input, Text, XStack, YStack, useTheme } from 'tamagui';
 import { FlashCard } from './FlashCard';
 
@@ -20,6 +20,41 @@ type ReviewCardProps = {
   onRemembered: () => void;
   onNotRemembered: () => void;
   showButtons: boolean;
+  rememberedCount?: number;
+  notRememberedCount?: number;
+  pastAttempts?: ExerciseAttempt[];
+};
+
+// Helper function to get attempt status properties (outside component to avoid recreation)
+const getAttemptStatus = (
+  remembered: boolean | null,
+  theme: ReturnType<typeof useTheme>,
+) => {
+  if (remembered === true) {
+    return {
+      icon: 'checkmark-circle' as const,
+      color: theme.green10?.get() ?? '#10b981',
+      text: '覚えた',
+      bgColor: '$green2',
+      borderColor: '$green7',
+    };
+  } else if (remembered === false) {
+    return {
+      icon: 'close-circle' as const,
+      color: theme.red10?.get() ?? '#ef4444',
+      text: '覚えてない',
+      bgColor: '$red2',
+      borderColor: '$red7',
+    };
+  } else {
+    return {
+      icon: 'help-circle-outline' as const,
+      color: theme.gray10?.get() ?? '#999',
+      text: '未評価',
+      bgColor: '$gray2',
+      borderColor: '$gray7',
+    };
+  }
 };
 
 export const ReviewCard = React.memo(
@@ -32,8 +67,12 @@ export const ReviewCard = React.memo(
     onRemembered,
     onNotRemembered,
     showButtons,
+    rememberedCount = 0,
+    notRememberedCount = 0,
+    pastAttempts = [],
   }: ReviewCardProps) => {
     const theme = useTheme();
+    const [showPastAnswersDialog, setShowPastAnswersDialog] = useState(false);
 
     const frontContent = (
       <YStack gap="$4" alignItems="center" flex={1} justifyContent="center">
@@ -119,16 +158,51 @@ export const ReviewCard = React.memo(
 
     const backContent = (
       <YStack gap="$4" alignItems="center" flex={1} justifyContent="center">
-        <YStack
-          backgroundColor="$green2"
+        {/* Header with title and stats */}
+        <XStack
+          width="100%"
+          justifyContent="space-between"
+          alignItems="center"
           paddingHorizontal="$2"
-          paddingVertical="$2"
-          borderRadius="$4"
         >
-          <Text fontSize="$3" color="$green10" fontWeight="600">
-            模範解答
-          </Text>
-        </YStack>
+          <YStack
+            backgroundColor="$green2"
+            paddingHorizontal="$2"
+            paddingVertical="$2"
+            borderRadius="$4"
+          >
+            <Text fontSize="$3" color="$green10" fontWeight="600">
+              模範解答
+            </Text>
+          </YStack>
+
+          {/* Statistics display */}
+          <XStack gap="$2" alignItems="center">
+            <XStack 
+              gap="$1" 
+              alignItems="center"
+              accessibilityLabel={`覚えた回数: ${rememberedCount}`}
+            >
+              <Ionicons name="checkmark-circle" size={18} color={theme.green10?.get() ?? '#10b981'} />
+              <Text fontSize="$3" color="$green10" fontWeight="700">
+                {rememberedCount}
+              </Text>
+            </XStack>
+            <Text fontSize="$3" color="$gray10">
+              /
+            </Text>
+            <XStack 
+              gap="$1" 
+              alignItems="center"
+              accessibilityLabel={`覚えてない回数: ${notRememberedCount}`}
+            >
+              <Ionicons name="close-circle" size={18} color={theme.red10?.get() ?? '#ef4444'} />
+              <Text fontSize="$3" color="$red10" fontWeight="700">
+                {notRememberedCount}
+              </Text>
+            </XStack>
+          </XStack>
+        </XStack>
 
         <YStack
           gap="$3"
@@ -189,6 +263,29 @@ export const ReviewCard = React.memo(
             {exercise.native_text}
           </RNText>
         </YStack>
+
+        {/* View Past Answers Button */}
+        <Button
+          size="$3"
+          backgroundColor="$gray3"
+          borderColor="$gray7"
+          borderWidth={1}
+          onPress={() => setShowPastAnswersDialog(true)}
+          pressStyle={{
+            backgroundColor: '$gray4',
+            scale: 0.98,
+          }}
+          animation="quick"
+          marginTop="$2"
+          accessibilityLabel="過去の解答データを表示"
+        >
+          <XStack gap="$2" alignItems="center">
+            <Ionicons name="time-outline" size={18} color={theme.color.get()} />
+            <Text fontSize="$3" fontWeight="600" color="$color">
+              過去の解答データを見る
+            </Text>
+          </XStack>
+        </Button>
       </YStack>
     );
 
@@ -246,6 +343,115 @@ export const ReviewCard = React.memo(
             </Button>
           </XStack>
         )}
+
+        {/* Past Answers Dialog */}
+        <Modal
+          visible={showPastAnswersDialog}
+          transparent
+          animationType="fade"
+          accessibilityViewIsModal
+          onRequestClose={() => setShowPastAnswersDialog(false)}
+        >
+          <YStack
+            flex={1}
+            backgroundColor="rgba(0,0,0,0.5)"
+            justifyContent="center"
+            alignItems="center"
+            paddingHorizontal="$4"
+          >
+            <YStack
+              backgroundColor="$background"
+              borderRadius="$4"
+              padding="$4"
+              width="90%"
+              maxHeight="80%"
+              shadowColor="$shadowColor"
+              shadowOffset={{ width: 0, height: 4 }}
+              shadowOpacity={0.3}
+              shadowRadius={8}
+              elevation={5}
+            >
+              <XStack justifyContent="space-between" alignItems="center" marginBottom="$3">
+                <Text fontSize="$6" fontWeight="700" color="$color">
+                  過去の解答データ
+                </Text>
+                <Button
+                  size="$3"
+                  circular
+                  backgroundColor="$gray3"
+                  onPress={() => setShowPastAnswersDialog(false)}
+                  pressStyle={{
+                    backgroundColor: '$gray4',
+                  }}
+                  accessibilityLabel="ダイアログを閉じる"
+                >
+                  <Ionicons name="close" size={20} color={theme.color.get()} />
+                </Button>
+              </XStack>
+
+              <RNScrollView style={{ flex: 1, maxHeight: '100%' }}>
+                {pastAttempts.length === 0 ? (
+                  <YStack alignItems="center" paddingVertical="$8">
+                    <Ionicons name="document-outline" size={48} color={theme.gray10?.get() ?? '#999'} />
+                    <Text fontSize="$4" color="$gray10" marginTop="$3" textAlign="center">
+                      まだ解答データがありません
+                    </Text>
+                  </YStack>
+                ) : (
+                  <YStack gap="$3">
+                    {pastAttempts.map((attempt) => {
+                      const status = getAttemptStatus(attempt.remembered, theme);
+                      return (
+                        <YStack
+                          key={attempt.id}
+                          padding="$3"
+                          backgroundColor={status.bgColor}
+                          borderRadius="$3"
+                          borderWidth={1}
+                          borderColor={status.borderColor}
+                        >
+                          <XStack justifyContent="space-between" alignItems="center" marginBottom="$2">
+                            <XStack gap="$2" alignItems="center">
+                              <Ionicons name={status.icon} size={20} color={status.color} />
+                              <Text fontSize="$3" fontWeight="600" color="$color">
+                                {status.text}
+                              </Text>
+                            </XStack>
+                            <Text fontSize="$2" color="$gray11">
+                              {new Date(attempt.attempted_at).toLocaleString('ja-JP', {
+                                year: 'numeric',
+                                month: '2-digit',
+                                day: '2-digit',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                              })}
+                            </Text>
+                          </XStack>
+                          {attempt.user_answer && (
+                            <YStack gap="$1">
+                              <Text fontSize="$2" color="$gray11" fontWeight="600">
+                                あなたの回答:
+                              </Text>
+                              <RNText
+                                style={{
+                                  fontSize: 14,
+                                  lineHeight: 20,
+                                  color: theme.color.get(),
+                                }}
+                              >
+                                {attempt.user_answer}
+                              </RNText>
+                            </YStack>
+                          )}
+                        </YStack>
+                      );
+                    })}
+                  </YStack>
+                )}
+              </RNScrollView>
+            </YStack>
+          </YStack>
+        </Modal>
       </YStack>
     );
   },

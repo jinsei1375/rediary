@@ -14,7 +14,7 @@ import { Alert } from 'react-native';
 import { Button, ScrollView, Text, XStack, YStack, useTheme } from 'tamagui';
 
 export default function ReviewScreen() {
-  const { session } = useAuth();
+  const { user } = useAuth();
   const theme = useTheme();
   const [exercises, setExercises] = useState<TranslationExercise[]>([]);
   const [allExercises, setAllExercises] = useState<any[]>([]); // 全問題（attemptsを含む）
@@ -51,13 +51,13 @@ export default function ReviewScreen() {
 
   // 全問題を取得（初回のみ）
   const loadAllExercises = useCallback(async () => {
-    if (!session?.user?.id) {
+    if (!user?.id) {
       return;
     }
 
     setLoading(true);
 
-    const { data, error } = await TranslationExerciseService.getByUserWithAttempts(session.user.id);
+    const { data, error } = await TranslationExerciseService.getByUserWithAttempts(user.id);
 
     if (error) {
       console.error('Error loading all exercises:', error);
@@ -68,7 +68,7 @@ export default function ReviewScreen() {
     }
 
     setLoading(false);
-  }, [session?.user?.id]);
+  }, [user?.id]);
 
   const loadExercises = useCallback(() => {
     // フロントエンドでフィルタリング
@@ -112,12 +112,12 @@ export default function ReviewScreen() {
   React.useEffect(() => {
     const loadCurrentExerciseData = async () => {
       // ユーザー未ログイン時や設定画面表示中は統計を取得しない
-      if (!currentExercise || showSettings || !session?.user?.id) return;
+      if (!currentExercise || showSettings || !user?.id) return;
 
       try {
         // Load statistics (scoped to current user)
         const { data: statsData, error: statsError } =
-          await ExerciseAttemptService.getExerciseStats(currentExercise.id, session.user.id);
+          await ExerciseAttemptService.getExerciseStats(currentExercise.id, user.id);
         if (statsError) {
           console.error('Error loading exercise stats:', statsError);
         }
@@ -132,7 +132,7 @@ export default function ReviewScreen() {
 
         // Load past attempts (scoped to current user)
         const { data: attemptsData, error: attemptsError } =
-          await ExerciseAttemptService.getExerciseAttempts(currentExercise.id, session.user.id);
+          await ExerciseAttemptService.getExerciseAttempts(currentExercise.id, user.id);
         if (attemptsError) {
           console.error('Error loading past attempts:', attemptsError);
         }
@@ -147,14 +147,14 @@ export default function ReviewScreen() {
     };
 
     loadCurrentExerciseData();
-  }, [currentExercise, showSettings, session?.user?.id]);
+  }, [currentExercise, showSettings, user?.id]);
 
   const handleCheckAnswer = async () => {
-    if (!session?.user?.id || !currentExercise || isFlipped) return;
+    if (!user?.id || !currentExercise || isFlipped) return;
 
     // レコードを作成（rememberedはnull）
     const { data, error } = await ExerciseAttemptService.createExerciseAttempt(
-      session.user.id,
+      user.id,
       currentExercise.id,
       userAnswer,
       null, // まだ覚えたかどうかは未定
@@ -173,7 +173,7 @@ export default function ReviewScreen() {
   };
 
   const handleResponse = async (remembered: boolean) => {
-    if (!currentAttemptId || !session?.user?.id) {
+    if (!currentAttemptId || !user?.id) {
       Alert.alert('エラー', '先に答えを確認してください');
       return;
     }
@@ -182,6 +182,7 @@ export default function ReviewScreen() {
     const { error } = await ExerciseAttemptService.updateExerciseAttempt(
       currentAttemptId,
       remembered,
+      user.id,
     );
 
     if (error) {
@@ -194,7 +195,7 @@ export default function ReviewScreen() {
     try {
       const { data: statsData } = await ExerciseAttemptService.getExerciseStats(
         currentExercise.id,
-        session.user.id,
+        user.id,
       );
       if (statsData) {
         setCurrentStats({
@@ -205,7 +206,7 @@ export default function ReviewScreen() {
 
       const { data: attemptsData } = await ExerciseAttemptService.getExerciseAttempts(
         currentExercise.id,
-        session.user.id,
+        user.id,
       );
       if (attemptsData) {
         setPastAttempts(attemptsData);

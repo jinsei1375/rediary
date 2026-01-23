@@ -19,11 +19,12 @@ export class AiCorrectionService {
   /**
    * 日記エントリーIDからAI添削を取得
    */
-  static async getByDiaryEntryId(diaryEntryId: string) {
+  static async getByDiaryEntryId(diaryEntryId: string, userId: string) {
     const { data, error } = await supabase
       .from('ai_corrections')
       .select('*')
       .eq('diary_entry_id', diaryEntryId)
+      .eq('user_id', userId)
       .maybeSingle();
     return { data, error };
   }
@@ -31,8 +32,12 @@ export class AiCorrectionService {
   /**
    * AI添削を削除
    */
-  static async delete(id: string) {
-    const { error } = await supabase.from('ai_corrections').delete().eq('id', id);
+  static async delete(id: string, userId: string) {
+    const { error } = await supabase
+      .from('ai_corrections')
+      .delete()
+      .eq('id', id)
+      .eq('user_id', userId);
     return { error };
   }
 

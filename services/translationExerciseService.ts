@@ -25,11 +25,12 @@ export class TranslationExerciseService {
   /**
    * IDで翻訳問題を取得
    */
-  static async getById(id: string) {
+  static async getById(id: string, userId: string) {
     const { data, error } = await supabase
       .from('translation_exercises')
       .select('*')
       .eq('id', id)
+      .eq('user_id', userId)
       .single();
     return { data, error };
   }
@@ -84,11 +85,12 @@ export class TranslationExerciseService {
   /**
    * 翻訳問題を更新
    */
-  static async update(id: string, updates: TranslationExerciseUpdate) {
+  static async update(id: string, updates: TranslationExerciseUpdate, userId: string) {
     const { data, error } = await supabase
       .from('translation_exercises')
       .update(updates)
       .eq('id', id)
+      .eq('user_id', userId)
       .select()
       .single();
     return { data, error };
@@ -97,8 +99,12 @@ export class TranslationExerciseService {
   /**
    * 翻訳問題を削除
    */
-  static async delete(id: string) {
-    const { error } = await supabase.from('translation_exercises').delete().eq('id', id);
+  static async delete(id: string, userId: string) {
+    const { error } = await supabase
+      .from('translation_exercises')
+      .delete()
+      .eq('id', id)
+      .eq('user_id', userId);
     return { error };
   }
 }

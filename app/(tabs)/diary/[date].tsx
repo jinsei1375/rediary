@@ -18,7 +18,7 @@ import { Button, Separator, Spinner, Text, XStack, YStack } from 'tamagui';
 
 export default function DiaryDetailScreen() {
   const { date } = useLocalSearchParams<{ date: string }>();
-  const { session } = useAuth();
+  const { user } = useAuth();
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const [existingEntryId, setExistingEntryId] = useState<string | null>(null);
@@ -38,7 +38,7 @@ export default function DiaryDetailScreen() {
   // 日付が変更されたら既存データをロード
   useEffect(() => {
     const loadDiaryEntry = async () => {
-      if (!session?.user?.id || !date) {
+      if (!user?.id || !date) {
         setLoading(false);
         return;
       }
@@ -48,7 +48,7 @@ export default function DiaryDetailScreen() {
       setAiCorrection(null);
       setExistingEntryId(null);
 
-      const { data, error } = await DiaryService.getByDate(session.user.id, date);
+      const { data, error } = await DiaryService.getByDate(user.id, date);
 
       if (error) {
         console.error('Error loading diary:', error);
@@ -65,7 +65,10 @@ export default function DiaryDetailScreen() {
         });
 
         // AI添削も読み込む
-        const { data: correctionData } = await AiCorrectionService.getByDiaryEntryId(data.id);
+        const { data: correctionData } = await AiCorrectionService.getByDiaryEntryId(
+          data.id,
+          user.id,
+        );
         if (correctionData) {
           setAiCorrection(correctionData);
         }
@@ -84,10 +87,10 @@ export default function DiaryDetailScreen() {
     };
 
     loadDiaryEntry();
-  }, [date, session?.user?.id]);
+  }, [date, user?.id]);
 
   const handleSave = useCallback(async () => {
-    if (!session?.user?.id) {
+    if (!user?.id) {
       Alert.alert('エラー', 'ログインが必要です');
       return;
     }
@@ -102,17 +105,21 @@ export default function DiaryDetailScreen() {
     try {
       if (existingEntryId) {
         // 既存データの更新
-        const { error } = await DiaryService.update(existingEntryId, {
-          title: formData.title.trim(),
-          content: formData.content.trim(),
-          content_native: formData.content_native.trim(),
-        });
+        const { error } = await DiaryService.update(
+          existingEntryId,
+          {
+            title: formData.title.trim(),
+            content: formData.content.trim(),
+            content_native: formData.content_native.trim(),
+          },
+          user.id,
+        );
 
         if (error) throw error;
       } else {
         // 新規作成
         const diaryEntry: DiaryEntryInsert = {
-          user_id: session.user.id,
+          user_id: user.id,
           title: formData.title.trim(),
           content: formData.content.trim(),
           content_native: formData.content_native.trim(),
@@ -132,7 +139,7 @@ export default function DiaryDetailScreen() {
     } finally {
       setSaving(false);
     }
-  }, [session?.user?.id, formData, existingEntryId]);
+  }, [user?.id, formData, existingEntryId]);
 
   const onFormChange = useCallback((field: keyof DiaryFormData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -149,7 +156,7 @@ export default function DiaryDetailScreen() {
 
   // AI添削実行
   const handleConfirmCorrection = useCallback(async () => {
-    if (!session?.user?.id) {
+    if (!user?.id) {
       Alert.alert('エラー', 'ログインが必要です');
       return;
     }
@@ -163,7 +170,7 @@ export default function DiaryDetailScreen() {
       // 未保存の場合は先に保存する
       if (!diaryId) {
         const diaryEntry: DiaryEntryInsert = {
-          user_id: session.user.id,
+          user_id: user.id,
           title: formData.title.trim(),
           content: formData.content.trim(),
           content_native: formData.content_native.trim(),
@@ -181,7 +188,7 @@ export default function DiaryDetailScreen() {
 
       // AI添削を実行
       const { data, error } = await AiCorrectionService.correctAndSave(
-        session.user.id,
+        user.id,
         diaryId as string,
         formData.content_native.trim(),
         formData.content.trim(),
@@ -200,7 +207,7 @@ export default function DiaryDetailScreen() {
     } finally {
       setAiCorrecting(false);
     }
-  }, [session?.user?.id, existingEntryId, formData]);
+  }, [user?.id, existingEntryId, formData]);
 
   if (!date) {
     return null;

@@ -14,7 +14,7 @@ import { Portal } from '@tamagui/portal';
 import { useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { Alert } from 'react-native';
-import { Button, Separator, Spinner, Text, XStack, YStack } from 'tamagui';
+import { Button, ScrollView, Separator, Spinner, Text, XStack, YStack } from 'tamagui';
 
 export default function DiaryDetailScreen() {
   const { date } = useLocalSearchParams<{ date: string }>();
@@ -221,54 +221,56 @@ export default function DiaryDetailScreen() {
     <YStack flex={1} backgroundColor="$background">
       <Header title={formatDate(date)} />
 
-      {/* 日記フォーム */}
-      <DiaryForm
-        formData={formData}
-        onFormChange={onFormChange}
-        onSave={handleSave}
-        saving={saving}
-      />
+      <ScrollView flex={1} showsVerticalScrollIndicator={false}>
+        {/* 日記フォーム */}
+        <DiaryForm
+          formData={formData}
+          onFormChange={onFormChange}
+          onSave={handleSave}
+          saving={saving}
+        />
 
-      {/* AI添削ボタン */}
-      {!loading && existingEntryId && !aiCorrection && (
-        <Button
-          onPress={handleAiCorrectionClick}
-          disabled={!formData.content.trim() || !formData.content_native.trim() || aiCorrecting}
-          height="$5"
-          width="90%"
-          maxWidth={400}
-          marginTop="$4"
-          marginBottom="$4"
-          marginHorizontal="$4"
-          alignSelf="center"
-          backgroundColor="$purple10"
-          borderRadius="$4"
-          pressStyle={{
-            opacity: 0.85,
-          }}
-          hoverStyle={{
-            opacity: 0.9,
-          }}
-          opacity={
-            !formData.content.trim() || !formData.content_native.trim() || aiCorrecting ? 0.5 : 1
-          }
-        >
-          <XStack gap="$3" alignItems="center" justifyContent="center">
-            {aiCorrecting && <Spinner color="$background" size="small" />}
-            <Text color="$background" fontSize="$5" fontWeight="bold" letterSpacing={1}>
-              {aiCorrecting ? 'AI添削中...' : 'AI添削'}
-            </Text>
-          </XStack>
-        </Button>
-      )}
+        {/* AI添削ボタン */}
+        {!loading && existingEntryId && !aiCorrection && (
+          <Button
+            onPress={handleAiCorrectionClick}
+            disabled={!formData.content.trim() || !formData.content_native.trim() || aiCorrecting}
+            height="$5"
+            width="90%"
+            maxWidth={400}
+            marginTop="$4"
+            marginBottom="$4"
+            marginHorizontal="$4"
+            alignSelf="center"
+            backgroundColor="$purple10"
+            borderRadius="$4"
+            pressStyle={{
+              opacity: 0.85,
+            }}
+            hoverStyle={{
+              opacity: 0.9,
+            }}
+            opacity={
+              !formData.content.trim() || !formData.content_native.trim() || aiCorrecting ? 0.5 : 1
+            }
+          >
+            <XStack gap="$3" alignItems="center" justifyContent="center">
+              {aiCorrecting && <Spinner color="$background" size="small" />}
+              <Text color="$background" fontSize="$5" fontWeight="bold" letterSpacing={1}>
+                {aiCorrecting ? 'AI添削中...' : 'AI添削'}
+              </Text>
+            </XStack>
+          </Button>
+        )}
 
-      {/* AI添削結果表示 */}
-      {aiCorrection && (
-        <YStack paddingHorizontal="$4" paddingBottom="$4">
-          <Separator marginBottom="$4" />
-          <CorrectionResultDisplay correction={aiCorrection} />
-        </YStack>
-      )}
+        {/* AI添削結果表示 */}
+        {aiCorrection && (
+          <YStack paddingHorizontal="$4" paddingBottom="$4">
+            <Separator marginBottom="$4" />
+            <CorrectionResultDisplay correction={aiCorrection} />
+          </YStack>
+        )}
+      </ScrollView>
 
       {/* 確認モーダル */}
       <CorrectionConfirmModal

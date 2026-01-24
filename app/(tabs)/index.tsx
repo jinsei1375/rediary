@@ -14,22 +14,30 @@ export default function HomeScreen() {
 
   const today = new Date().toISOString().split('T')[0];
 
-  const loadDiaryCount = useCallback(async () => {
-    if (!user?.id) return;
-
-    const { count, error } = await DiaryService.getTotalCount(user.id);
-    if (error) {
-      console.error('Error loading diary count:', error);
-      return;
-    }
-
-    setDiaryCount(count ?? 0);
-  }, [user?.id]);
-
   useFocusEffect(
     useCallback(() => {
+      let isCancelled = false;
+
+      const loadDiaryCount = async () => {
+        if (!user?.id) return;
+
+        const { count, error } = await DiaryService.getTotalCount(user.id);
+        if (error) {
+          console.error('Error loading diary count:', error);
+          return;
+        }
+
+        if (!isCancelled) {
+          setDiaryCount(count ?? 0);
+        }
+      };
+
       loadDiaryCount();
-    }, [loadDiaryCount]),
+
+      return () => {
+        isCancelled = true;
+      };
+    }, [user?.id]),
   );
 
   const handleWriteDiary = () => {

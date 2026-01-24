@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-import { Modal } from 'react-native';
+import { Modal, TouchableWithoutFeedback } from 'react-native';
 import { Button, Text, XStack, YStack, useTheme } from 'tamagui';
 
 type DialogProps = {
@@ -24,25 +24,30 @@ export const Dialog = React.memo(
         accessibilityViewIsModal
         onRequestClose={onClose}
       >
-        <YStack
-          flex={1}
-          backgroundColor="rgba(0,0,0,0.5)"
-          justifyContent="center"
-          alignItems="center"
-          paddingHorizontal="$4"
-        >
+        <YStack flex={1} justifyContent="center" alignItems="center" paddingHorizontal="$4">
+          <TouchableWithoutFeedback onPress={onClose}>
+            <YStack
+              position="absolute"
+              top={0}
+              left={0}
+              right={0}
+              bottom={0}
+              backgroundColor="rgba(0,0,0,0.5)"
+            />
+          </TouchableWithoutFeedback>
+
           <YStack
             backgroundColor="$background"
             borderRadius="$4"
             padding="$4"
             width={width}
             height={height}
-            alignSelf="center"
             shadowColor="$shadowColor"
             shadowOffset={{ width: 0, height: 4 }}
             shadowOpacity={0.3}
             shadowRadius={8}
             elevation={5}
+            zIndex={1}
           >
             <XStack justifyContent="space-between" alignItems="center" marginBottom="$3">
               <Text fontSize="$6" fontWeight="700" color="$color">

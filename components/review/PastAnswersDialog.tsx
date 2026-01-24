@@ -2,8 +2,7 @@ import { Dialog } from '@/components/common/Dialog';
 import type { ExerciseAttempt } from '@/types/database';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-import { ScrollView as RNScrollView } from 'react-native';
-import { Text, YStack, useTheme } from 'tamagui';
+import { ScrollView, Text, YStack, useTheme } from 'tamagui';
 import { PastAttemptItem } from './PastAttemptItem';
 
 type PastAnswersDialogProps = {
@@ -32,9 +31,10 @@ export const PastAnswersDialog = React.memo(
         height={getDialogHeight(pastAttempts.length)}
       >
         <YStack flex={1} overflow="hidden">
-          <RNScrollView
-            style={{ flex: 1 }}
-            contentContainerStyle={{ paddingBottom: 20, paddingRight: 10 }}
+          <ScrollView
+            flex={1}
+            paddingBottom="$5"
+            paddingRight="$2.5"
             showsVerticalScrollIndicator={true}
           >
             {pastAttempts.length === 0 ? (
@@ -51,7 +51,7 @@ export const PastAnswersDialog = React.memo(
                 ))}
               </YStack>
             )}
-          </RNScrollView>
+          </ScrollView>
         </YStack>
       </Dialog>
     );

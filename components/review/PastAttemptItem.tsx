@@ -15,7 +15,7 @@ const getAttemptStatus = (remembered: boolean | null, theme: ReturnType<typeof u
       color: theme.green10?.get(),
       text: '覚えた',
       bgColor: '$green2',
-      borderColor: '$green8',
+      borderColor: '$green7',
     };
   } else if (remembered === false) {
     return {
@@ -23,7 +23,7 @@ const getAttemptStatus = (remembered: boolean | null, theme: ReturnType<typeof u
       color: theme.red10?.get(),
       text: '覚えてない',
       bgColor: '$red2',
-      borderColor: '$red8',
+      borderColor: '$red7',
     };
   } else {
     return {

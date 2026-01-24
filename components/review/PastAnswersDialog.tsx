@@ -1,8 +1,9 @@
+import { Dialog } from '@/components/common/Dialog';
 import type { ExerciseAttempt } from '@/types/database';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-import { Modal, ScrollView as RNScrollView } from 'react-native';
-import { Button, Text, XStack, YStack, useTheme } from 'tamagui';
+import { ScrollView as RNScrollView } from 'react-native';
+import { Text, YStack, useTheme } from 'tamagui';
 import { PastAttemptItem } from './PastAttemptItem';
 
 type PastAnswersDialogProps = {
@@ -24,79 +25,35 @@ export const PastAnswersDialog = React.memo(
     const theme = useTheme();
 
     return (
-      <Modal
+      <Dialog
         visible={visible}
-        transparent
-        animationType="fade"
-        accessibilityViewIsModal
-        onRequestClose={onClose}
+        onClose={onClose}
+        title="過去の解答"
+        height={getDialogHeight(pastAttempts.length)}
       >
-        <YStack
-          flex={1}
-          backgroundColor="rgba(0,0,0,0.5)"
-          justifyContent="center"
-          alignItems="center"
-          paddingHorizontal="$4"
-        >
-          <YStack
-            backgroundColor="$background"
-            borderRadius="$4"
-            padding="$4"
-            width="90%"
-            height={getDialogHeight(pastAttempts.length)}
-            alignSelf="center"
-            shadowColor="$shadowColor"
-            shadowOffset={{ width: 0, height: 4 }}
-            shadowOpacity={0.3}
-            shadowRadius={8}
-            elevation={5}
+        <YStack flex={1} overflow="hidden">
+          <RNScrollView
+            style={{ flex: 1 }}
+            contentContainerStyle={{ paddingBottom: 20, paddingRight: 10 }}
+            showsVerticalScrollIndicator={true}
           >
-            <XStack justifyContent="space-between" alignItems="center" marginBottom="$3">
-              <Text fontSize="$6" fontWeight="700" color="$color">
-                過去の解答
-              </Text>
-              <Button
-                size="$3"
-                circular
-                backgroundColor="$gray3"
-                onPress={onClose}
-                pressStyle={{
-                  backgroundColor: '$gray4',
-                }}
-              >
-                <Ionicons name="close" size={20} color={theme.color.get()} />
-              </Button>
-            </XStack>
-
-            <YStack flex={1} overflow="hidden">
-              <RNScrollView
-                style={{ flex: 1 }}
-                contentContainerStyle={{ paddingBottom: 20, paddingRight: 10 }}
-                showsVerticalScrollIndicator={true}
-              >
-                {pastAttempts.length === 0 ? (
-                  <YStack alignItems="center" paddingVertical="$8">
-                    <Ionicons
-                      name="document-outline"
-                      size={48}
-                      color={theme.gray10?.get() ?? '#999'}
-                    />
-                    <Text fontSize="$4" color="$gray10" marginTop="$3" textAlign="center">
-                      まだ解答データがありません
-                    </Text>
-                  </YStack>
-                ) : (
-                  <YStack gap="$3">
-                    {pastAttempts.map((attempt) => (
-                      <PastAttemptItem key={attempt.id} attempt={attempt} />
-                    ))}
-                  </YStack>
-                )}
-              </RNScrollView>
-            </YStack>
-          </YStack>
+            {pastAttempts.length === 0 ? (
+              <YStack alignItems="center" paddingVertical="$8">
+                <Ionicons name="document-outline" size={48} color={theme.gray10?.get() ?? '#999'} />
+                <Text fontSize="$4" color="$gray10" marginTop="$3" textAlign="center">
+                  まだ解答データがありません
+                </Text>
+              </YStack>
+            ) : (
+              <YStack gap="$3">
+                {pastAttempts.map((attempt) => (
+                  <PastAttemptItem key={attempt.id} attempt={attempt} />
+                ))}
+              </YStack>
+            )}
+          </RNScrollView>
         </YStack>
-      </Modal>
+      </Dialog>
     );
   },
 );

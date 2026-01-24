@@ -165,8 +165,8 @@ export default function PrivacyPolicyScreen() {
 
           <YStack marginTop="$4">
             <Text fontSize="$2" color="$placeholderColor" textAlign="center">
-              制定日：2026/1/24{'\n'}
-              最終更新日：2026/1/24
+              制定日：2026年1月24日{'\n'}
+              最終更新日：2026年1月24日
             </Text>
           </YStack>
         </YStack>

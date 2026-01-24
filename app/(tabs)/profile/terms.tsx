@@ -63,8 +63,17 @@ export default function TermsScreen() {
             <Text fontSize="$5" fontWeight="600" color="$color">
               第4条（本アプリの提供の停止等）
             </Text>
-            <Text fontSize="$3" color="$color" lineHeight={24}>
+            <Text fontSize="$3" color="$color" lineHeight={24} marginBottom="$2">
               運営者は、以下のいずれかの事由があると判断した場合、ユーザーに事前に通知することなく本アプリの全部または一部の提供を停止または中断することができるものとします。
+            </Text>
+            <Text fontSize="$3" color="$color" lineHeight={24}>
+              • システムの保守点検または更新を行う場合
+            </Text>
+            <Text fontSize="$3" color="$color" lineHeight={24}>
+              • 地震、落雷、火災、停電等により提供が困難な場合
+            </Text>
+            <Text fontSize="$3" color="$color" lineHeight={24}>
+              • その他、運営者が必要と判断した場合
             </Text>
           </YStack>
 

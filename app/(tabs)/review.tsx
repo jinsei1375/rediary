@@ -104,9 +104,11 @@ export default function ReviewScreen() {
   // タブバーの表示制御
   useEffect(() => {
     navigation.setOptions({
-      tabBarStyle: showSettings ? { paddingTop: 10, height: 40 } : { display: 'none' },
+      tabBarStyle: showSettings
+        ? { paddingTop: 10, height: 40, backgroundColor: theme.background.val }
+        : { display: 'none' },
     });
-  }, [showSettings, navigation]);
+  }, [showSettings, navigation, theme.background]);
 
   const handleStartReview = useCallback(() => {
     loadExercises();

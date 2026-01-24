@@ -142,7 +142,7 @@ export default function TermsScreen() {
 
           <YStack marginTop="$4">
             <Text fontSize="$2" color="$placeholderColor" textAlign="center">
-              制定日：2026年1月24日
+              制定日：2026/1/24
             </Text>
           </YStack>
         </YStack>

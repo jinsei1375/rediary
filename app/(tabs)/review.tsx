@@ -314,7 +314,7 @@ export default function ReviewScreen() {
   }
 
   return (
-    <YStack flex={1} backgroundColor="$background">
+    <YStack flex={1} backgroundColor="$bgPrimary">
       <Header
         title="復習"
         showBackButton={!showSettings}

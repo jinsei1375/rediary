@@ -24,7 +24,7 @@ export const Dialog = React.memo(
             opacity={0.5}
             enterStyle={{ opacity: 0 }}
             exitStyle={{ opacity: 0 }}
-            backgroundColor="$backgroundStrong"
+            backgroundColor="$cardBg"
             onPress={onClose}
           />
           <TamaguiDialog.Content
@@ -37,7 +37,7 @@ export const Dialog = React.memo(
             width={width}
             height={height}
             padding="$4"
-            backgroundColor="$background"
+            backgroundColor="$bgPrimary"
             borderRadius="$4"
             shadowColor="$shadowColor"
             shadowOffset={{ width: 0, height: 4 }}
@@ -46,7 +46,7 @@ export const Dialog = React.memo(
             elevation={5}
           >
             <XStack justifyContent="space-between" alignItems="center" marginBottom="$3">
-              <TamaguiDialog.Title fontSize="$7" fontWeight="700" color="$color">
+              <TamaguiDialog.Title fontSize="$7" fontWeight="700" color="$textPrimary">
                 {title}
               </TamaguiDialog.Title>
               <TamaguiDialog.Close asChild>
@@ -63,7 +63,7 @@ export const Dialog = React.memo(
               </TamaguiDialog.Close>
             </XStack>
 
-            {height === 'auto' ? <YStack>{children}</YStack> : <YStack flex={1}>{children}</YStack>}
+            <YStack flex={height === 'auto' ? undefined : 1}>{children}</YStack>
           </TamaguiDialog.Content>
         </TamaguiDialog.Portal>
       </TamaguiDialog>

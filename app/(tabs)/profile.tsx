@@ -83,6 +83,11 @@ export default function SettingsScreen() {
           backgroundColor="$cardBg"
           onPress={() => router.push('/(tabs)/profile/terms')}
         />
+        <ListItem
+          title="よくある質問"
+          backgroundColor="$cardBg"
+          onPress={() => router.push('/(tabs)/profile/faq')}
+        />
       </YStack>
 
       <Button

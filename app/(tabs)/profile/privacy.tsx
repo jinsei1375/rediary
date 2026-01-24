@@ -14,173 +14,161 @@ export default function PrivacyPolicyScreen() {
       />
       <ScrollView>
         <YStack padding="$4" gap="$4">
-          <Text fontSize="$3" color="$color" lineHeight={24}>
-            Rediary（以下「当アプリ」）は、ユーザーの皆様の個人情報保護を最重要課題と考え、以下のプライバシーポリシーに基づき適切に取り扱います。
-          </Text>
-
           <YStack gap="$2">
-            <Text fontSize="$6" fontWeight="bold" color="$color">
+            <Text fontSize="$5" fontWeight="600" color="$color">
               1. 収集する情報
             </Text>
-            <Text fontSize="$3" color="$color" lineHeight={24}>
-              当アプリは、以下の情報を収集します：
-            </Text>
-            <YStack paddingLeft="$3" gap="$2">
-              <Text fontSize="$3" color="$color" lineHeight={24}>
-                • アカウント情報（メールアドレス、パスワード）
-              </Text>
-              <Text fontSize="$3" color="$color" lineHeight={24}>
-                • プロフィール情報（Google OAuth使用時）
-              </Text>
-              <Text fontSize="$3" color="$color" lineHeight={24}>
-                • 日記の内容および言語学習データ
-              </Text>
-              <Text fontSize="$3" color="$color" lineHeight={24}>
-                • 学習記録と進捗情報
-              </Text>
-              <Text fontSize="$3" color="$color" lineHeight={24}>
-                • アプリの使用状況に関するデータ
-              </Text>
-            </YStack>
-          </YStack>
-
-          <YStack gap="$2">
-            <Text fontSize="$6" fontWeight="bold" color="$color">
-              2. AI技術の使用について
+            <Text fontSize="$3" color="$color" lineHeight={24} marginBottom="$2">
+              本アプリでは、以下の情報を収集する場合があります：
             </Text>
             <Text fontSize="$3" color="$color" lineHeight={24}>
-              当アプリは、OpenAI APIを使用して以下の機能を提供しています：
+              • アカウント情報（メールアドレス、パスワード）
             </Text>
-            <YStack paddingLeft="$3" gap="$2">
-              <Text fontSize="$3" color="$color" lineHeight={24}>
-                • 日記の文章校正と提案
-              </Text>
-              <Text fontSize="$3" color="$color" lineHeight={24}>
-                • 言語学習のための添削
-              </Text>
-              <Text fontSize="$3" color="$color" lineHeight={24}>
-                • ネイティブ表現の提案
-              </Text>
-            </YStack>
-            <Text fontSize="$3" color="$color" lineHeight={24} marginTop="$2">
-              ユーザーが入力した日記の内容は、AI処理のためにOpenAI社のサーバーに送信されます。OpenAI社のデータ使用に関する詳細は、OpenAI社のプライバシーポリシーをご確認ください。
+            <Text fontSize="$3" color="$color" lineHeight={24}>
+              • プロフィール情報（Google OAuth使用時）
+            </Text>
+            <Text fontSize="$3" color="$color" lineHeight={24}>
+              • 日記の内容および言語学習データ
+            </Text>
+            <Text fontSize="$3" color="$color" lineHeight={24}>
+              • 学習記録と進捗情報
+            </Text>
+            <Text fontSize="$3" color="$color" lineHeight={24}>
+              • アプリの利用状況
+            </Text>
+            <Text fontSize="$3" color="$color" lineHeight={24}>
+              • デバイス情報（OS、機種など）
             </Text>
           </YStack>
 
           <YStack gap="$2">
-            <Text fontSize="$6" fontWeight="bold" color="$color">
-              3. 情報の利用目的
+            <Text fontSize="$5" fontWeight="600" color="$color">
+              2. 情報の利用目的
             </Text>
-            <Text fontSize="$3" color="$color" lineHeight={24}>
+            <Text fontSize="$3" color="$color" lineHeight={24} marginBottom="$2">
               収集した情報は以下の目的で利用します：
             </Text>
-            <YStack paddingLeft="$3" gap="$2">
-              <Text fontSize="$3" color="$color" lineHeight={24}>
-                • サービスの提供および改善
-              </Text>
-              <Text fontSize="$3" color="$color" lineHeight={24}>
-                • ユーザーサポート
-              </Text>
-              <Text fontSize="$3" color="$color" lineHeight={24}>
-                • 学習効果の分析と最適化
-              </Text>
-              <Text fontSize="$3" color="$color" lineHeight={24}>
-                • セキュリティの維持
-              </Text>
-              <Text fontSize="$3" color="$color" lineHeight={24}>
-                • 法令遵守
-              </Text>
-            </YStack>
-          </YStack>
-
-          <YStack gap="$2">
-            <Text fontSize="$6" fontWeight="bold" color="$color">
-              4. 情報の第三者提供
+            <Text fontSize="$3" color="$color" lineHeight={24}>
+              • アプリの機能提供
             </Text>
             <Text fontSize="$3" color="$color" lineHeight={24}>
-              当アプリは、以下の場合を除き、ユーザーの個人情報を第三者に提供しません：
-            </Text>
-            <YStack paddingLeft="$3" gap="$2">
-              <Text fontSize="$3" color="$color" lineHeight={24}>
-                • ユーザーの同意がある場合
-              </Text>
-              <Text fontSize="$3" color="$color" lineHeight={24}>
-                • 法令に基づく場合
-              </Text>
-              <Text fontSize="$3" color="$color" lineHeight={24}>
-                • サービス提供に必要な範囲で業務委託先（OpenAI等）に提供する場合
-              </Text>
-            </YStack>
-          </YStack>
-
-          <YStack gap="$2">
-            <Text fontSize="$6" fontWeight="bold" color="$color">
-              5. データの保管と保護
+              • サービスの改善
             </Text>
             <Text fontSize="$3" color="$color" lineHeight={24}>
-              当アプリは、Supabaseを使用してデータを安全に保管しています。適切な技術的・組織的セキュリティ対策を講じ、不正アクセス、紛失、破壊、改ざん、漏洩から保護します。
-            </Text>
-          </YStack>
-
-          <YStack gap="$2">
-            <Text fontSize="$6" fontWeight="bold" color="$color">
-              6. ユーザーの権利
+              • 技術的な問題の解決
             </Text>
             <Text fontSize="$3" color="$color" lineHeight={24}>
-              ユーザーは以下の権利を有します：
+              • ユーザーサポート
             </Text>
-            <YStack paddingLeft="$3" gap="$2">
-              <Text fontSize="$3" color="$color" lineHeight={24}>
-                • 自己の個人情報の開示請求
-              </Text>
-              <Text fontSize="$3" color="$color" lineHeight={24}>
-                • 個人情報の訂正、削除の請求
-              </Text>
-              <Text fontSize="$3" color="$color" lineHeight={24}>
-                • アカウントの削除
-              </Text>
-            </YStack>
           </YStack>
 
           <YStack gap="$2">
-            <Text fontSize="$6" fontWeight="bold" color="$color">
-              7. Cookieとトラッキング
+            <Text fontSize="$5" fontWeight="600" color="$color">
+              3. 情報の第三者提供
             </Text>
             <Text fontSize="$3" color="$color" lineHeight={24}>
-              当アプリは、ユーザー体験の向上のためにローカルストレージを使用します。これには認証情報や設定情報が含まれます。
+              本アプリの運営者は、法令に基づく場合を除き、ユーザーの同意なく個人情報を第三者に提供することはありません。
             </Text>
           </YStack>
 
           <YStack gap="$2">
-            <Text fontSize="$6" fontWeight="bold" color="$color">
-              8. 子供のプライバシー
+            <Text fontSize="$5" fontWeight="600" color="$color">
+              4. データの保存期間
             </Text>
             <Text fontSize="$3" color="$color" lineHeight={24}>
-              当アプリは13歳未満のユーザーを対象としていません。13歳未満の方は保護者の同意を得てご利用ください。
+              ユーザーの情報は、アプリの利用に必要な期間中保存されます。アカウントを削除した場合、データベース内の情報は削除されます。
             </Text>
           </YStack>
 
           <YStack gap="$2">
-            <Text fontSize="$6" fontWeight="bold" color="$color">
+            <Text fontSize="$5" fontWeight="600" color="$color">
+              5. セキュリティ
+            </Text>
+            <Text fontSize="$3" color="$color" lineHeight={24}>
+              本アプリの運営者は、収集した情報の安全性を確保するため、適切な技術的・組織的措置を講じています。
+            </Text>
+          </YStack>
+
+          <YStack gap="$2">
+            <Text fontSize="$5" fontWeight="600" color="$color">
+              6. 外部サービス
+            </Text>
+            <Text fontSize="$3" color="$color" lineHeight={24} marginBottom="$2">
+              本アプリは以下の外部サービスを利用しています：
+            </Text>
+            <Text fontSize="$3" color="$color" lineHeight={24}>
+              • Supabase（データベース）
+            </Text>
+            <Text fontSize="$3" color="$color" lineHeight={24}>
+              • OpenAI（AI文章校正）
+            </Text>
+            <Text fontSize="$3" color="$color" lineHeight={24}>
+              • Expo（アプリ開発プラットフォーム）
+            </Text>
+            <Text fontSize="$3" color="$color" lineHeight={24} marginTop="$2">
+              これらのサービスにはそれぞれのプライバシーポリシーが適用されます。当アプリは、ユーザーの日記内容、学習データ等をSupabase（米国のデータセンターを利用する場合があります）およびOpenAI（AI添削機能使用時）に送信・保存します。
+            </Text>
+          </YStack>
+
+          <YStack gap="$2">
+            <Text fontSize="$5" fontWeight="600" color="$color">
+              7. AI技術の使用について
+            </Text>
+            <Text fontSize="$3" color="$color" lineHeight={24}>
+              本アプリでは、OpenAI APIを使用して日記の文章校正、添削、ネイティブ表現の提案機能を提供しています。AI添削機能を使用する際、ユーザーが入力した日記の内容はOpenAI社のサーバーに送信されます。送信されたデータの取り扱いについては、OpenAI社のプライバシーポリシーに従います。
+            </Text>
+          </YStack>
+
+          <YStack gap="$2">
+            <Text fontSize="$5" fontWeight="600" color="$color">
+              8. お問い合わせ
+            </Text>
+            <Text fontSize="$3" color="$color" lineHeight={24}>
+              本プライバシーポリシーに関するお問い合わせは、お問い合わせフォームからご連絡ください。
+            </Text>
+          </YStack>
+
+          <YStack gap="$2">
+            <Text fontSize="$5" fontWeight="600" color="$color">
               9. プライバシーポリシーの変更
             </Text>
             <Text fontSize="$3" color="$color" lineHeight={24}>
-              当アプリは、必要に応じてプライバシーポリシーを変更することがあります。重要な変更がある場合は、アプリ内で通知します。
+              本アプリの運営者は、必要に応じて本プライバシーポリシーを変更することがあります。重要な変更がある場合は、アプリ内で通知いたします。
             </Text>
           </YStack>
 
           <YStack gap="$2">
-            <Text fontSize="$6" fontWeight="bold" color="$color">
-              10. お問い合わせ
+            <Text fontSize="$5" fontWeight="600" color="$color">
+              10. ユーザーの権利
             </Text>
             <Text fontSize="$3" color="$color" lineHeight={24}>
-              プライバシーに関するご質問やご懸念がある場合は、アプリ内のサポート機能からお問い合わせください。
+              • データの確認・修正・削除を要求する権利
+            </Text>
+            <Text fontSize="$3" color="$color" lineHeight={24}>
+              • データポータビリティの権利
+            </Text>
+            <Text fontSize="$3" color="$color" lineHeight={24}>
+              • サービス利用停止の権利
             </Text>
           </YStack>
 
-          <Text fontSize="$2" color="$placeholderColor" marginTop="$4">
-            最終更新日: 2026年1月24日
-          </Text>
+          <YStack gap="$2">
+            <Text fontSize="$5" fontWeight="600" color="$color">
+              11. お問い合わせ窓口
+            </Text>
+            <Text fontSize="$3" color="$color" lineHeight={24}>
+              本アプリに関するお問い合わせは、下記の窓口までご連絡ください。{'\n'}
+              運営者：ensei{'\n'}
+              E-mail: jinsei1375@gmail.com
+            </Text>
+          </YStack>
+
+          <YStack marginTop="$4">
+            <Text fontSize="$2" color="$placeholderColor" textAlign="center">
+              制定日：2026/1/24{'\n'}
+              最終更新日：2026/1/24
+            </Text>
+          </YStack>
         </YStack>
       </ScrollView>
     </YStack>

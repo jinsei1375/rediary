@@ -1,7 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-import { Modal, TouchableWithoutFeedback } from 'react-native';
-import { Button, Text, XStack, YStack, useTheme } from 'tamagui';
+import { Button, Dialog as TamaguiDialog, XStack, YStack, useTheme } from 'tamagui';
 
 type DialogProps = {
   visible: boolean;
@@ -17,59 +16,65 @@ export const Dialog = React.memo(
     const theme = useTheme();
 
     return (
-      <Modal
-        visible={visible}
-        transparent
-        animationType="fade"
-        accessibilityViewIsModal
-        onRequestClose={onClose}
-      >
-        <YStack flex={1} justifyContent="center" alignItems="center" paddingHorizontal="$4">
-          <TouchableWithoutFeedback onPress={onClose}>
-            <YStack
-              position="absolute"
-              top={0}
-              left={0}
-              right={0}
-              bottom={0}
-              backgroundColor="rgba(0,0,0,0.5)"
-            />
-          </TouchableWithoutFeedback>
-
-          <YStack
-            backgroundColor="$background"
-            borderRadius="$4"
-            padding="$4"
+      <TamaguiDialog modal open={visible} onOpenChange={(open) => !open && onClose()}>
+        <TamaguiDialog.Portal>
+          <TamaguiDialog.Overlay
+            key="overlay"
+            animation="quick"
+            opacity={0.5}
+            enterStyle={{ opacity: 0 }}
+            exitStyle={{ opacity: 0 }}
+            backgroundColor="$backgroundStrong"
+            onPress={onClose}
+          />
+          <TamaguiDialog.Content
+            bordered
+            elevate
+            key="content"
+            animateOnly={['transform', 'opacity']}
+            animation={[
+              'quick',
+              {
+                opacity: {
+                  overshootClamping: true,
+                },
+              },
+            ]}
+            enterStyle={{ x: 0, y: -20, opacity: 0, scale: 0.9 }}
+            exitStyle={{ x: 0, y: 10, opacity: 0, scale: 0.95 }}
             width={width}
             height={height}
+            padding="$4"
+            backgroundColor="$background"
+            borderRadius="$4"
             shadowColor="$shadowColor"
             shadowOffset={{ width: 0, height: 4 }}
             shadowOpacity={0.3}
             shadowRadius={8}
             elevation={5}
-            zIndex={1}
           >
             <XStack justifyContent="space-between" alignItems="center" marginBottom="$3">
-              <Text fontSize="$6" fontWeight="700" color="$color">
+              <TamaguiDialog.Title fontSize="$6" fontWeight="700" color="$color">
                 {title}
-              </Text>
-              <Button
-                size="$3"
-                circular
-                backgroundColor="$gray3"
-                onPress={onClose}
-                pressStyle={{
-                  backgroundColor: '$gray4',
-                }}
-              >
-                <Ionicons name="close" size={20} color={theme.color.get()} />
-              </Button>
+              </TamaguiDialog.Title>
+              <TamaguiDialog.Close asChild>
+                <Button
+                  size="$3"
+                  circular
+                  backgroundColor="$gray3"
+                  pressStyle={{
+                    backgroundColor: '$gray4',
+                  }}
+                >
+                  <Ionicons name="close" size={20} color={theme.color.get()} />
+                </Button>
+              </TamaguiDialog.Close>
             </XStack>
 
-            {children}
-          </YStack>
-        </YStack>
-      </Modal>
+            <YStack flex={1}>{children}</YStack>
+          </TamaguiDialog.Content>
+        </TamaguiDialog.Portal>
+      </TamaguiDialog>
     );
   },
 );

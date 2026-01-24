@@ -15,7 +15,7 @@ export const ExerciseCountDisplay = React.memo(({ count }: ExerciseCountDisplayP
       marginTop="$2"
     >
       <Text fontSize="$3" color="$gray11" marginBottom="$1">
-        該当する問題
+        条件に合致した問題数
       </Text>
       <XStack gap="$1" alignItems="baseline">
         <Text fontSize="$9" fontWeight="bold" color="$blue10">

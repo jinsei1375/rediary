@@ -1,6 +1,5 @@
-import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-import { ScrollView, Text, YStack, useTheme } from 'tamagui';
+import { H4, ScrollView, Text, YStack, useTheme } from 'tamagui';
 import { ExerciseCountDisplay } from './ExerciseCountDisplay';
 import { FilterSelect } from './FilterSelect';
 import { RandomToggle } from './RandomToggle';
@@ -64,10 +63,7 @@ export const FilterSettings = React.memo(
           width="100%"
         >
           <YStack alignItems="center" gap="$2">
-            <Ionicons name="filter" size={48} color={theme.blue10.get()} />
-            <Text fontSize="$8" fontWeight="bold" color="$color">
-              表示設定
-            </Text>
+            <H4 color="$color">表示設定</H4>
             <Text fontSize="$3" color="$gray11" textAlign="center">
               復習する問題の条件を選択してください
             </Text>

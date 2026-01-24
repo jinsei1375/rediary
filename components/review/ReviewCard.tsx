@@ -26,10 +26,7 @@ type ReviewCardProps = {
 };
 
 // Helper function to get attempt status properties (outside component to avoid recreation)
-const getAttemptStatus = (
-  remembered: boolean | null,
-  theme: ReturnType<typeof useTheme>,
-) => {
+const getAttemptStatus = (remembered: boolean | null, theme: ReturnType<typeof useTheme>) => {
   if (remembered === true) {
     return {
       icon: 'checkmark-circle' as const,
@@ -73,6 +70,16 @@ export const ReviewCard = React.memo(
   }: ReviewCardProps) => {
     const theme = useTheme();
     const [showPastAnswersDialog, setShowPastAnswersDialog] = useState(false);
+
+    // ダイアログの高さを動的に計算（データ件数に応じて）
+    const getDialogHeight = () => {
+      const itemCount = pastAttempts.length;
+      if (itemCount === 0) return '30%'; // データなし
+      if (itemCount === 1) return '35%'; // 1件
+      if (itemCount === 2) return '45%'; // 2件
+      if (itemCount === 3) return '50%'; // 3件
+      return '60%'; // 5件以上
+    };
 
     const frontContent = (
       <YStack gap="$4" alignItems="center" flex={1} justifyContent="center">
@@ -178,12 +185,16 @@ export const ReviewCard = React.memo(
 
           {/* Statistics display */}
           <XStack gap="$2" alignItems="center">
-            <XStack 
-              gap="$1" 
+            <XStack
+              gap="$1"
               alignItems="center"
               accessibilityLabel={`覚えた回数: ${rememberedCount}`}
             >
-              <Ionicons name="checkmark-circle" size={18} color={theme.green10?.get() ?? '#10b981'} />
+              <Ionicons
+                name="checkmark-circle"
+                size={18}
+                color={theme.green10?.get() ?? '#10b981'}
+              />
               <Text fontSize="$3" color="$green10" fontWeight="700">
                 {rememberedCount}
               </Text>
@@ -191,8 +202,8 @@ export const ReviewCard = React.memo(
             <Text fontSize="$3" color="$gray10">
               /
             </Text>
-            <XStack 
-              gap="$1" 
+            <XStack
+              gap="$1"
               alignItems="center"
               accessibilityLabel={`覚えてない回数: ${notRememberedCount}`}
             >
@@ -364,7 +375,8 @@ export const ReviewCard = React.memo(
               borderRadius="$4"
               padding="$4"
               width="90%"
-              maxHeight="80%"
+              height={getDialogHeight()}
+              alignSelf="center"
               shadowColor="$shadowColor"
               shadowOffset={{ width: 0, height: 4 }}
               shadowOpacity={0.3}
@@ -383,55 +395,63 @@ export const ReviewCard = React.memo(
                   pressStyle={{
                     backgroundColor: '$gray4',
                   }}
-                  accessibilityLabel="ダイアログを閉じる"
                 >
                   <Ionicons name="close" size={20} color={theme.color.get()} />
                 </Button>
               </XStack>
 
-              <RNScrollView style={{ flex: 1, maxHeight: '100%' }}>
-                {pastAttempts.length === 0 ? (
-                  <YStack alignItems="center" paddingVertical="$8">
-                    <Ionicons name="document-outline" size={48} color={theme.gray10?.get() ?? '#999'} />
-                    <Text fontSize="$4" color="$gray10" marginTop="$3" textAlign="center">
-                      まだ解答データがありません
-                    </Text>
-                  </YStack>
-                ) : (
-                  <YStack gap="$3">
-                    {pastAttempts.map((attempt) => {
-                      const status = getAttemptStatus(attempt.remembered, theme);
-                      return (
-                        <YStack
-                          key={attempt.id}
-                          padding="$3"
-                          backgroundColor={status.bgColor}
-                          borderRadius="$3"
-                          borderWidth={1}
-                          borderColor={status.borderColor}
-                        >
-                          <XStack justifyContent="space-between" alignItems="center" marginBottom="$2">
-                            <XStack gap="$2" alignItems="center">
-                              <Ionicons name={status.icon} size={20} color={status.color} />
-                              <Text fontSize="$3" fontWeight="600" color="$color">
-                                {status.text}
+              <YStack flex={1} overflow="hidden">
+                <RNScrollView
+                  style={{ flex: 1 }}
+                  contentContainerStyle={{ paddingBottom: 20, paddingRight: 10 }}
+                  showsVerticalScrollIndicator={true}
+                >
+                  {pastAttempts.length === 0 ? (
+                    <YStack alignItems="center" paddingVertical="$8">
+                      <Ionicons
+                        name="document-outline"
+                        size={48}
+                        color={theme.gray10?.get() ?? '#999'}
+                      />
+                      <Text fontSize="$4" color="$gray10" marginTop="$3" textAlign="center">
+                        まだ解答データがありません
+                      </Text>
+                    </YStack>
+                  ) : (
+                    <YStack gap="$3">
+                      {pastAttempts.map((attempt) => {
+                        const status = getAttemptStatus(attempt.remembered, theme);
+                        return (
+                          <YStack
+                            key={attempt.id}
+                            padding="$3"
+                            backgroundColor={status.bgColor}
+                            borderRadius="$3"
+                            borderWidth={1}
+                            borderColor={status.borderColor}
+                          >
+                            <XStack
+                              justifyContent="space-between"
+                              alignItems="center"
+                              marginBottom="$2"
+                            >
+                              <XStack gap="$2" alignItems="center">
+                                <Ionicons name={status.icon} size={20} color={status.color} />
+                                <Text fontSize="$3" fontWeight="600" color="$color">
+                                  {status.text}
+                                </Text>
+                              </XStack>
+                              <Text fontSize="$2" color="$gray11">
+                                {new Date(attempt.attempted_at).toLocaleString('ja-JP', {
+                                  year: 'numeric',
+                                  month: '2-digit',
+                                  day: '2-digit',
+                                  hour: '2-digit',
+                                  minute: '2-digit',
+                                })}
                               </Text>
                             </XStack>
-                            <Text fontSize="$2" color="$gray11">
-                              {new Date(attempt.attempted_at).toLocaleString('ja-JP', {
-                                year: 'numeric',
-                                month: '2-digit',
-                                day: '2-digit',
-                                hour: '2-digit',
-                                minute: '2-digit',
-                              })}
-                            </Text>
-                          </XStack>
-                          {attempt.user_answer && (
                             <YStack gap="$1">
-                              <Text fontSize="$2" color="$gray11" fontWeight="600">
-                                あなたの回答:
-                              </Text>
                               <RNText
                                 style={{
                                   fontSize: 14,
@@ -439,16 +459,16 @@ export const ReviewCard = React.memo(
                                   color: theme.color.get(),
                                 }}
                               >
-                                {attempt.user_answer}
+                                {attempt.user_answer || '(回答なし)'}
                               </RNText>
                             </YStack>
-                          )}
-                        </YStack>
-                      );
-                    })}
-                  </YStack>
-                )}
-              </RNScrollView>
+                          </YStack>
+                        );
+                      })}
+                    </YStack>
+                  )}
+                </RNScrollView>
+              </YStack>
             </YStack>
           </YStack>
         </Modal>

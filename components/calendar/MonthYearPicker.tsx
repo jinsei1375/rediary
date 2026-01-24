@@ -78,13 +78,13 @@ export const MonthYearPicker = ({
           maxWidth="90%"
         >
           <YStack gap="$3" padding="$4">
-            <Dialog.Title fontSize="$6" fontWeight="bold" textAlign="center" color="$color">
+            <Dialog.Title fontSize="$6" fontWeight="bold" textAlign="center" color="$textPrimary">
               年月選択
             </Dialog.Title>
 
             <XStack gap="$3" height={200}>
               <YStack flex={1}>
-                <Text fontSize="$4" marginBottom="$2" color="$color">
+                <Text fontSize="$4" marginBottom="$2" color="$textPrimary">
                   年
                 </Text>
                 <ScrollView
@@ -121,7 +121,7 @@ export const MonthYearPicker = ({
                           {year}
                         </Text>
                       </Button>
-                    )
+                    ),
                   )}
                 </ScrollView>
               </YStack>

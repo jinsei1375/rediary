@@ -234,7 +234,7 @@ export default function DiaryDetailScreen() {
   }
 
   return (
-    <YStack flex={1} backgroundColor="$background">
+    <YStack flex={1} backgroundColor="$bgPrimary">
       <Header title={formatDate(date)} onBack={() => router.push('/(tabs)')} />
 
       <ScrollView flex={1} showsVerticalScrollIndicator={false}>
@@ -321,8 +321,8 @@ export default function DiaryDetailScreen() {
               alignItems="center"
               gap="$3"
             >
-              <Spinner size="large" color="$primary" />
-              <Text fontSize="$6" fontWeight="bold" color="$color">
+              <Spinner size="large" color="$accentBlue" />
+              <Text fontSize="$6" fontWeight="bold" color="$textPrimary">
                 AI添削中...
               </Text>
               <Text fontSize="$3" color="$gray10">

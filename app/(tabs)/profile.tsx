@@ -40,7 +40,7 @@ export default function SettingsScreen() {
   }, [user?.id]);
 
   return (
-    <YStack flex={1} padding="$4" backgroundColor="$background">
+    <YStack flex={1} padding="$4" backgroundColor="$bgPrimary">
       <Text fontSize="$8" fontWeight="bold" marginBottom="$2">
         プロフィール
       </Text>
@@ -51,7 +51,7 @@ export default function SettingsScreen() {
       )}
 
       <XStack
-        backgroundColor="$backgroundStrong"
+        backgroundColor="$cardBg"
         padding="$4"
         borderRadius="$4"
         marginBottom="$4"
@@ -70,17 +70,17 @@ export default function SettingsScreen() {
       <YStack flex={1} space="$2">
         <ListItem
           title="個人設定"
-          backgroundColor="$backgroundStrong"
+          backgroundColor="$cardBg"
           onPress={() => router.push('/(tabs)/profile/settings')}
         />
         <ListItem
           title="プライバシーポリシー"
-          backgroundColor="$backgroundStrong"
+          backgroundColor="$cardBg"
           onPress={() => router.push('/(tabs)/profile/privacy')}
         />
         <ListItem
           title="利用規約"
-          backgroundColor="$backgroundStrong"
+          backgroundColor="$cardBg"
           onPress={() => router.push('/(tabs)/profile/terms')}
         />
       </YStack>

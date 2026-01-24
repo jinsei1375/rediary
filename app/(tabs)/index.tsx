@@ -1,115 +1,102 @@
-import { MonthYearPicker } from '@/components/calendar/MonthYearPicker';
-import { SwipeableCalendar } from '@/components/calendar/SwipeableCalendar';
-import { WeekCalendar } from '@/components/calendar/WeekCalendar';
-import { Loading } from '@/components/common/Loading';
 import { useAuth } from '@/contexts/AuthContext';
-import { useSettings } from '@/contexts/SettingsContext';
-import { DiaryService } from '@/services/diaryService';
-import type { CalendarDiaryData } from '@/types/ui';
-import { useFocusEffect } from '@react-navigation/native';
+import { DiaryService } from '@/services';
+import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import React, { useCallback, useState } from 'react';
-import type { DateData } from 'react-native-calendars';
-import { YStack } from 'tamagui';
+import { useEffect, useState } from 'react';
+import { Button, H2, Text, XStack, YStack, useTheme } from 'tamagui';
 
 export default function HomeScreen() {
-  const [diaryData, setDiaryData] = useState<CalendarDiaryData>({});
-  const [currentMonth, setCurrentMonth] = useState(new Date());
-  const [showMonthPicker, setShowMonthPicker] = useState(false);
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const router = useRouter();
   const { user } = useAuth();
-  const { weekStart, viewMode, loading: settingsLoading } = useSettings();
+  const theme = useTheme();
+  const [diaryCount, setDiaryCount] = useState<number>(0);
 
   const today = new Date().toISOString().split('T')[0];
 
-  const loadDiaryDates = useCallback(async () => {
-    if (!user?.id) return;
+  useEffect(() => {
+    const loadDiaryCount = async () => {
+      if (!user?.id) return;
 
-    const year = currentMonth.getFullYear();
-    const month = currentMonth.getMonth() + 1;
+      const { count, error } = await DiaryService.getTotalCount(user.id);
+      if (error) {
+        console.error('Error loading diary count:', error);
+        return;
+      }
+      if (count) {
+        setDiaryCount(count);
+      }
+    };
+    loadDiaryCount();
+  }, [user?.id]);
 
-    const { data, error } = await DiaryService.getTitlesForMonth(user.id, year, month);
-    if (error || !data) return;
-
-    const diaryMap: CalendarDiaryData = {};
-    data.forEach((entry) => {
-      diaryMap[entry.entry_date] = {
-        title: entry.title,
-      };
-    });
-    setDiaryData(diaryMap);
-  }, [user?.id, currentMonth]);
-
-  useFocusEffect(
-    useCallback(() => {
-      loadDiaryDates();
-    }, [loadDiaryDates]),
-  );
-
-  const handleDayPress = (day: DateData) => {
+  const handleWriteDiary = () => {
     router.push({
       pathname: '/(tabs)/diary/[date]',
-      params: { date: day.dateString },
+      params: { date: today },
     } as any);
   };
 
-  const handleMonthChange = (date: Date) => {
-    setCurrentMonth(date);
+  const handleReview = () => {
+    router.push('/(tabs)/review');
   };
-
-  const handleMonthYearPress = () => {
-    const year = currentMonth.getFullYear();
-    const month = currentMonth.getMonth() + 1;
-    setSelectedYear(year);
-    setSelectedMonth(month);
-    setShowMonthPicker(true);
-  };
-
-  const handleMonthYearConfirm = () => {
-    setCurrentMonth(new Date(selectedYear, selectedMonth - 1, 1));
-    setShowMonthPicker(false);
-  };
-
-  // 設定の読み込み中はローディング画面を表示
-  if (settingsLoading) {
-    return <Loading />;
-  }
 
   return (
-    <YStack flex={1} backgroundColor="$background">
-      {viewMode === 'week' ? (
-        <WeekCalendar
-          currentMonth={currentMonth}
-          diaryData={diaryData}
-          today={today}
-          weekStart={weekStart}
-          onDayPress={handleDayPress}
-          onMonthChange={handleMonthChange}
-          onMonthYearPress={handleMonthYearPress}
-        />
-      ) : (
-        <SwipeableCalendar
-          currentMonth={currentMonth}
-          diaryData={diaryData}
-          today={today}
-          weekStart={weekStart}
-          onDayPress={handleDayPress}
-          onMonthChange={handleMonthChange}
-          onMonthYearPress={handleMonthYearPress}
-        />
-      )}
+    <YStack flex={1} backgroundColor="$bgPrimary" padding="$6" gap="$6">
+      <YStack gap="$3" marginTop="$8">
+        <H2 fontSize="$9" fontWeight="bold" color="$textPrimary">
+          ようこそ
+        </H2>
+      </YStack>
 
-      <MonthYearPicker
-        visible={showMonthPicker}
-        selectedYear={selectedYear}
-        selectedMonth={selectedMonth}
-        onYearChange={setSelectedYear}
-        onMonthChange={setSelectedMonth}
-        onConfirm={handleMonthYearConfirm}
-        onCancel={() => setShowMonthPicker(false)}
-      />
+      <YStack backgroundColor="$cardBg" padding="$6" borderRadius="$6" alignItems="center" gap="$3">
+        <Text fontSize="$3" color="$textSecondary">
+          日記を書いた日数
+        </Text>
+        <XStack alignItems="baseline" gap="$2">
+          <Text fontSize="$10" fontWeight="bold" color="$accentBlue">
+            {diaryCount}
+          </Text>
+          <Text fontSize="$6" color="$textSecondary">
+            日
+          </Text>
+        </XStack>
+      </YStack>
+
+      <YStack gap="$4" flex={1}>
+        <Button
+          size="$6"
+          backgroundColor="$btnPrimaryBg"
+          onPress={handleWriteDiary}
+          borderRadius="$4"
+          color="$btnPrimaryText"
+          pressStyle={{
+            backgroundColor: '$btnPrimaryBg',
+            scale: 0.98,
+          }}
+          icon={<Ionicons name="create-outline" size={24} color={theme.btnPrimaryText.get()} />}
+        >
+          <Text fontSize="$5" fontWeight="600" color="$btnPrimaryText">
+            今日の日記を書く
+          </Text>
+        </Button>
+
+        <Button
+          size="$6"
+          backgroundColor="$btnPrimaryBg"
+          color="$btnPrimaryText"
+          onPress={handleReview}
+          borderRadius="$4"
+          pressStyle={{
+            backgroundColor: '$btnPrimaryBg',
+            scale: 0.98,
+          }}
+          icon={<Ionicons name="book-outline" size={24} color={theme.btnPrimaryText.get()} />}
+        >
+          <Text fontSize="$5" fontWeight="600" color="$btnPrimaryText">
+            復習する
+          </Text>
+        </Button>
+      </YStack>
     </YStack>
   );
 }

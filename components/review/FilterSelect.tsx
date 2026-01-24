@@ -15,13 +15,13 @@ export const FilterSelect = React.memo(
 
     return (
       <YStack gap="$3">
-        <Text fontSize="$4" fontWeight="600" color="$color">
+        <Text fontSize="$4" fontWeight="600" color="$textPrimary">
           {label}
         </Text>
         <Select value={value.toString()} onValueChange={(val) => onValueChange(parseInt(val, 10))}>
           <Select.Trigger
             borderColor="$borderColor"
-            backgroundColor="$background"
+            backgroundColor="$bgPrimary"
             height="$5"
             iconAfter={<Ionicons name="chevron-down" size={20} color={theme.color.get()} />}
           >

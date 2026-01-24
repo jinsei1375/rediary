@@ -21,7 +21,7 @@ export const Header = React.memo(({ title, showBackButton = true, onBack }: Head
 
   return (
     <YStack
-      backgroundColor="$background"
+      backgroundColor="$bgPrimary"
       borderBottomWidth={1}
       borderBottomColor="$borderColor"
       paddingVertical="$3"
@@ -36,12 +36,12 @@ export const Header = React.memo(({ title, showBackButton = true, onBack }: Head
             onPress={handleBack}
             pressStyle={{ opacity: 0.7 }}
           >
-            <Text color="$primary" fontSize="$4">
+            <Text color="$accentBlue" fontSize="$4">
               ← 戻る
             </Text>
           </Button>
         )}
-        <Text fontSize="$6" fontWeight="bold" color="$color">
+        <Text fontSize="$6" fontWeight="bold" color="$textPrimary">
           {title}
         </Text>
       </XStack>

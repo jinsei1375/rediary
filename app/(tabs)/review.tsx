@@ -10,14 +10,15 @@ import { ExerciseAttemptService } from '@/services/exerciseAttemptService';
 import { TranslationExerciseService } from '@/services/translationExerciseService';
 import type { ExerciseAttempt, ExerciseResult, TranslationExercise } from '@/types/database';
 import { countFilteredExercises, filterExercises } from '@/utils/exerciseFilter';
-import { useFocusEffect } from '@react-navigation/native';
-import React, { useCallback, useState } from 'react';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Alert } from 'react-native';
 import { ScrollView, YStack, useTheme } from 'tamagui';
 
 export default function ReviewScreen() {
   const { user } = useAuth();
   const theme = useTheme();
+  const navigation = useNavigation();
   const [exercises, setExercises] = useState<TranslationExercise[]>([]);
   const [allExercises, setAllExercises] = useState<any[]>([]); // 全問題（attemptsを含む）
   const [loading, setLoading] = useState(false);
@@ -99,6 +100,13 @@ export default function ReviewScreen() {
     setUserAnswer('');
     setCurrentAttemptId(null);
   }, [allExercises, isRandom, notRememberedCount, daysSinceLastAttempt]);
+
+  // タブバーの表示制御
+  useEffect(() => {
+    navigation.setOptions({
+      tabBarStyle: showSettings ? { paddingTop: 10, height: 40 } : { display: 'none' },
+    });
+  }, [showSettings, navigation]);
 
   const handleStartReview = useCallback(() => {
     loadExercises();
@@ -305,7 +313,16 @@ export default function ReviewScreen() {
 
   return (
     <YStack flex={1} backgroundColor="$background">
-      <Header title="復習" />
+      <Header
+        title="復習"
+        showBackButton={!showSettings}
+        onBack={() => {
+          setShowSettings(true);
+          setShowResults(false);
+          setExercises([]);
+          setResults([]);
+        }}
+      />
       {content}
     </YStack>
   );

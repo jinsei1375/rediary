@@ -226,3 +226,10 @@ export type ExerciseWithStats = TranslationExercise & {
   not_remembered_count: number;
   last_attempt?: ExerciseAttempt;
 };
+
+// Exercise result for review session
+export type ExerciseResult = {
+  exercise: TranslationExercise;
+  userAnswer: string;
+  remembered: boolean;
+};

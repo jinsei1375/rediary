@@ -5,16 +5,20 @@ import { useTheme } from 'tamagui';
 
 export default function TabLayout() {
   const theme = useTheme();
+  const backgroundColor = theme.background.val;
+  const tabBarColor = theme.color.val;
 
   return (
     <Tabs
+      key={backgroundColor}
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: '#5B8CFF',
+        tabBarInactiveTintColor: tabBarColor,
         tabBarStyle: {
           paddingTop: 10,
           height: 40,
-          backgroundColor: theme.background.val,
+          backgroundColor: backgroundColor,
         },
       }}
     >
@@ -77,6 +81,13 @@ export default function TabLayout() {
       />
       <Tabs.Screen
         name="profile/terms"
+        options={{
+          href: null,
+          headerShown: false,
+        }}
+      />
+      <Tabs.Screen
+        name="profile/faq"
         options={{
           href: null,
           headerShown: false,

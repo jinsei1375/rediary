@@ -3,7 +3,7 @@ import { ChevronDown, ChevronUp } from '@tamagui/lucide-icons';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { ScrollView } from 'react-native';
-import { Button, Text, XStack, YStack } from 'tamagui';
+import { Text, XStack, YStack } from 'tamagui';
 
 interface FAQItem {
   question: string;
@@ -58,13 +58,11 @@ const faqData: FAQItem[] = [
   },
   {
     question: '複数のデバイスで使用できますか？',
-    answer:
-      'はい。同じアカウントでログインすれば、複数のデバイスでデータを同期して使用できます。',
+    answer: 'はい。同じアカウントでログインすれば、複数のデバイスでデータを同期して使用できます。',
   },
   {
     question: '過去の日記を検索できますか？',
-    answer:
-      'はい。カレンダービューから日付を選択することで、過去の日記を簡単に閲覧できます。',
+    answer: 'はい。カレンダービューから日付を選択することで、過去の日記を簡単に閲覧できます。',
   },
   {
     question: '学習の進捗はどのように確認できますか？',
@@ -108,24 +106,22 @@ function FAQItemComponent({ item }: { item: FAQItem }) {
 
   return (
     <YStack backgroundColor="$backgroundStrong" borderRadius="$4" overflow="hidden">
-      <Button
-        backgroundColor="transparent"
+      <XStack
         padding="$4"
-        onPress={() => setIsOpen(!isOpen)}
-        borderWidth={0}
+        alignItems="center"
+        justifyContent="space-between"
         pressStyle={{ opacity: 0.7 }}
+        onPress={() => setIsOpen(!isOpen)}
       >
-        <XStack flex={1} alignItems="center" justifyContent="space-between">
-          <Text flex={1} fontSize="$4" fontWeight="600" color="$color" textAlign="left">
-            {item.question}
-          </Text>
-          {isOpen ? (
-            <ChevronUp size={20} color="$color" />
-          ) : (
-            <ChevronDown size={20} color="$color" />
-          )}
-        </XStack>
-      </Button>
+        <Text flex={1} fontSize="$4" fontWeight="600" color="$color" paddingRight="$3">
+          {item.question}
+        </Text>
+        {isOpen ? (
+          <ChevronUp size={20} color="$color" flexShrink={0} />
+        ) : (
+          <ChevronDown size={20} color="$color" flexShrink={0} />
+        )}
+      </XStack>
       {isOpen && (
         <YStack padding="$4" paddingTop="$0">
           <Text fontSize="$3" color="$color" lineHeight={24}>
@@ -148,9 +144,6 @@ export default function FAQScreen() {
       />
       <ScrollView>
         <YStack padding="$4" gap="$3">
-          <Text fontSize="$3" color="$placeholderColor" marginBottom="$2">
-            Rediary に関するよくある質問と回答をまとめました。
-          </Text>
           {faqData.map((item, index) => (
             <FAQItemComponent key={index} item={item} />
           ))}

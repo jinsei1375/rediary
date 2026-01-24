@@ -63,7 +63,9 @@ export const FilterSettings = React.memo(
           width="100%"
         >
           <YStack alignItems="center" gap="$2">
-            <H4 color="$color">表示設定</H4>
+            <H4 color="$color" fontWeight="700">
+              表示設定
+            </H4>
             <Text fontSize="$3" color="$gray11" textAlign="center">
               復習する問題の条件を選択してください
             </Text>

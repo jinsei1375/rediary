@@ -228,10 +228,10 @@ Please respond in the following JSON format:
     const exercises = nativeExpressions.map((expr) => ({
       user_id: userId,
       diary_entry_id: diaryEntryId,
-      native_text: expr.usage_example, // 英語の使用例
+      native_text: expr.usage_example_translation, // native_languageの文章（日本語の翻訳）
       native_language: nativeLanguage,
       target_language: targetLanguage,
-      target_text: expr.usage_example_translation, // 日本語の翻訳
+      target_text: expr.usage_example, // target_languageの文章（英語の使用例）
       scheduled_date: new Date().toISOString().split('T')[0], // 今日の日付
     }));
 

@@ -46,7 +46,7 @@ export const getExerciseAttempts = async (exerciseId: string, userId: string) =>
     .select('*')
     .eq('exercise_id', exerciseId)
     .eq('user_id', userId)
-    .order('attempted_at', { ascending: false });
+    .order('attempted_at', { ascending: true });
 };
 
 /**

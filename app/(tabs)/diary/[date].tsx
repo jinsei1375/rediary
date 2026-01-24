@@ -14,12 +14,13 @@ import { Portal } from '@tamagui/portal';
 import { router, useLocalSearchParams, useNavigation } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { Alert } from 'react-native';
-import { Button, ScrollView, Separator, Spinner, Text, XStack, YStack } from 'tamagui';
+import { Button, ScrollView, Separator, Spinner, Text, XStack, YStack, useTheme } from 'tamagui';
 
 export default function DiaryDetailScreen() {
   const { date } = useLocalSearchParams<{ date: string }>();
   const { user } = useAuth();
   const navigation = useNavigation();
+  const theme = useTheme();
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const [existingEntryId, setExistingEntryId] = useState<string | null>(null);
@@ -45,10 +46,10 @@ export default function DiaryDetailScreen() {
     // 画面から離れる時にタブバーを再表示
     return () => {
       navigation.setOptions({
-        tabBarStyle: { paddingTop: 10, height: 40 },
+        tabBarStyle: { paddingTop: 10, height: 40, backgroundColor: theme.background.val },
       });
     };
-  }, [navigation]);
+  }, [navigation, theme.background]);
 
   // 日付が変更されたら既存データをロード
   useEffect(() => {
@@ -245,18 +246,28 @@ export default function DiaryDetailScreen() {
           saving={saving}
         />
 
-        {/* AI添削ボタン */}
-        {!loading && existingEntryId && !aiCorrection && (
+        {/* AI添削結果表示 */}
+        {aiCorrection && (
+          <YStack paddingHorizontal="$4" paddingBottom="$4">
+            <Separator marginBottom="$4" />
+            <CorrectionResultDisplay correction={aiCorrection} />
+          </YStack>
+        )}
+      </ScrollView>
+
+      {/* AI添削ボタン（下部固定） */}
+      {!loading && existingEntryId && !aiCorrection && (
+        <YStack
+          backgroundColor="$background"
+          paddingHorizontal="$4"
+          paddingVertical="$3"
+          borderTopWidth={1}
+          borderTopColor="$borderColor"
+        >
           <Button
             onPress={handleAiCorrectionClick}
             disabled={!formData.content.trim() || !formData.content_native.trim() || aiCorrecting}
             height="$5"
-            width="90%"
-            maxWidth={400}
-            marginTop="$4"
-            marginBottom="$4"
-            marginHorizontal="$4"
-            alignSelf="center"
             backgroundColor="$purple10"
             borderRadius="$4"
             pressStyle={{
@@ -276,16 +287,8 @@ export default function DiaryDetailScreen() {
               </Text>
             </XStack>
           </Button>
-        )}
-
-        {/* AI添削結果表示 */}
-        {aiCorrection && (
-          <YStack paddingHorizontal="$4" paddingBottom="$4">
-            <Separator marginBottom="$4" />
-            <CorrectionResultDisplay correction={aiCorrection} />
-          </YStack>
-        )}
-      </ScrollView>
+        </YStack>
+      )}
 
       {/* 確認モーダル */}
       <CorrectionConfirmModal

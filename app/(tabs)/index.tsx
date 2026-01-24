@@ -1,8 +1,9 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { DiaryService } from '@/services';
 import { Ionicons } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Button, H2, Text, XStack, YStack, useTheme } from 'tamagui';
 
 export default function HomeScreen() {
@@ -13,21 +14,23 @@ export default function HomeScreen() {
 
   const today = new Date().toISOString().split('T')[0];
 
-  useEffect(() => {
-    const loadDiaryCount = async () => {
-      if (!user?.id) return;
+  const loadDiaryCount = useCallback(async () => {
+    if (!user?.id) return;
 
-      const { count, error } = await DiaryService.getTotalCount(user.id);
-      if (error) {
-        console.error('Error loading diary count:', error);
-        return;
-      }
-      if (count) {
-        setDiaryCount(count);
-      }
-    };
-    loadDiaryCount();
+    const { count, error } = await DiaryService.getTotalCount(user.id);
+    if (error) {
+      console.error('Error loading diary count:', error);
+      return;
+    }
+
+    setDiaryCount(count ?? 0);
   }, [user?.id]);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadDiaryCount();
+    }, [loadDiaryCount]),
+  );
 
   const handleWriteDiary = () => {
     router.push({

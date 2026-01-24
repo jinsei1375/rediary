@@ -46,7 +46,7 @@ export const ResultItem = React.memo(({ result, index }: ResultItemProps) => {
         <Text fontSize="$2" color="$gray11" fontWeight="600">
           模範解答
         </Text>
-        <Text fontSize="$4" color="$green10" fontWeight="500">
+        <Text fontSize="$4" color="$color" fontWeight="500">
           {result.exercise.target_text}
         </Text>
       </YStack>

@@ -11,7 +11,7 @@ import { Language } from '@/types/database';
 import type { DiaryFormData } from '@/types/ui';
 import { formatDate } from '@/utils/dateUtils';
 import { Portal } from '@tamagui/portal';
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams, useNavigation } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { Alert } from 'react-native';
 import { Button, ScrollView, Separator, Spinner, Text, XStack, YStack } from 'tamagui';
@@ -19,6 +19,7 @@ import { Button, ScrollView, Separator, Spinner, Text, XStack, YStack } from 'ta
 export default function DiaryDetailScreen() {
   const { date } = useLocalSearchParams<{ date: string }>();
   const { user } = useAuth();
+  const navigation = useNavigation();
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const [existingEntryId, setExistingEntryId] = useState<string | null>(null);
@@ -34,6 +35,20 @@ export default function DiaryDetailScreen() {
     content_native: '',
     entry_date: date || '',
   });
+
+  // タブバーを非表示にする
+  useEffect(() => {
+    navigation.setOptions({
+      tabBarStyle: { display: 'none' },
+    });
+
+    // 画面から離れる時にタブバーを再表示
+    return () => {
+      navigation.setOptions({
+        tabBarStyle: { paddingTop: 10, height: 40 },
+      });
+    };
+  }, [navigation]);
 
   // 日付が変更されたら既存データをロード
   useEffect(() => {
@@ -219,7 +234,7 @@ export default function DiaryDetailScreen() {
 
   return (
     <YStack flex={1} backgroundColor="$background">
-      <Header title={formatDate(date)} />
+      <Header title={formatDate(date)} onBack={() => router.push('/(tabs)')} />
 
       <ScrollView flex={1} showsVerticalScrollIndicator={false}>
         {/* 日記フォーム */}

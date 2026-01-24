@@ -31,17 +31,9 @@ export const Dialog = React.memo(
             bordered
             elevate
             key="content"
-            animateOnly={['transform', 'opacity']}
-            animation={[
-              'quick',
-              {
-                opacity: {
-                  overshootClamping: true,
-                },
-              },
-            ]}
-            enterStyle={{ x: 0, y: -20, opacity: 0, scale: 0.9 }}
-            exitStyle={{ x: 0, y: 10, opacity: 0, scale: 0.95 }}
+            animation="quick"
+            enterStyle={{ opacity: 0, scale: 0.9 }}
+            exitStyle={{ opacity: 0, scale: 0.95 }}
             width={width}
             height={height}
             padding="$4"
@@ -54,7 +46,7 @@ export const Dialog = React.memo(
             elevation={5}
           >
             <XStack justifyContent="space-between" alignItems="center" marginBottom="$3">
-              <TamaguiDialog.Title fontSize="$6" fontWeight="700" color="$color">
+              <TamaguiDialog.Title fontSize="$7" fontWeight="700" color="$color">
                 {title}
               </TamaguiDialog.Title>
               <TamaguiDialog.Close asChild>
@@ -71,7 +63,7 @@ export const Dialog = React.memo(
               </TamaguiDialog.Close>
             </XStack>
 
-            <YStack flex={1}>{children}</YStack>
+            {height === 'auto' ? <YStack>{children}</YStack> : <YStack flex={1}>{children}</YStack>}
           </TamaguiDialog.Content>
         </TamaguiDialog.Portal>
       </TamaguiDialog>

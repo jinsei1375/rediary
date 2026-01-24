@@ -9,13 +9,7 @@ type CorrectionConfirmModalProps = {
   userContent: string;
 };
 
-export function CorrectionConfirmModal({
-  open,
-  onConfirm,
-  onCancel,
-  nativeContent,
-  userContent,
-}: CorrectionConfirmModalProps) {
+export function CorrectionConfirmModal({ open, onConfirm, onCancel }: CorrectionConfirmModalProps) {
   return (
     <Dialog visible={open} onClose={onCancel} title="AI添削を実行しますか？" height="auto">
       <YStack gap="$4">

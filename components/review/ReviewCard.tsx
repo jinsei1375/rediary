@@ -288,12 +288,11 @@ export const ReviewCard = React.memo(
           }}
           animation="quick"
           marginTop="$2"
-          accessibilityLabel="過去の解答データを表示"
         >
           <XStack gap="$2" alignItems="center">
             <Ionicons name="time-outline" size={18} color={theme.color.get()} />
             <Text fontSize="$3" fontWeight="600" color="$color">
-              過去の解答データを見る
+              過去の解答を見る
             </Text>
           </XStack>
         </Button>
@@ -385,7 +384,7 @@ export const ReviewCard = React.memo(
             >
               <XStack justifyContent="space-between" alignItems="center" marginBottom="$3">
                 <Text fontSize="$6" fontWeight="700" color="$color">
-                  過去の解答データ
+                  過去の解答
                 </Text>
                 <Button
                   size="$3"

@@ -237,7 +237,12 @@ export default function DiaryDetailScreen() {
     <YStack flex={1} backgroundColor="$bgPrimary">
       <Header title={formatDate(date)} onBack={() => router.push('/(tabs)')} />
 
-      <ScrollView flex={1} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        flex={1}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        automaticallyAdjustKeyboardInsets
+      >
         {/* 日記フォーム */}
         <DiaryForm
           formData={formData}

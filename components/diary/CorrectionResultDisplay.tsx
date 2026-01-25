@@ -1,6 +1,9 @@
 import type { AiCorrection, CorrectionPoint, NativeExpression } from '@/types/database';
 import { Ionicons } from '@expo/vector-icons';
-import { H5, Separator, Text, useTheme, XStack, YStack } from 'tamagui';
+import * as Clipboard from 'expo-clipboard';
+import { useState } from 'react';
+import { Alert } from 'react-native';
+import { Button, H5, Separator, Text, useTheme, XStack, YStack } from 'tamagui';
 
 type CorrectionResultDisplayProps = {
   correction: AiCorrection;
@@ -8,8 +11,20 @@ type CorrectionResultDisplayProps = {
 
 export function CorrectionResultDisplay({ correction }: CorrectionResultDisplayProps) {
   const theme = useTheme();
+  const [copied, setCopied] = useState(false);
   const correctionPoints = correction.correction_points as unknown as CorrectionPoint[];
   const nativeExpressions = correction.native_expressions as unknown as NativeExpression[];
+
+  const handleCopy = async () => {
+    try {
+      await Clipboard.setStringAsync(correction.corrected_content);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (error) {
+      console.error('Copy error:', error);
+      Alert.alert('エラー', 'コピーに失敗しました');
+    }
+  };
 
   const getCorrectionTypeLabel = (type: CorrectionPoint['type']) => {
     const labels = {
@@ -35,11 +50,30 @@ export function CorrectionResultDisplay({ correction }: CorrectionResultDisplayP
     <YStack gap="$5" paddingTop="$2">
       {/* 添削後の自然な英語 */}
       <YStack gap="$3">
-        <XStack gap="$2" alignItems="center">
-          <Ionicons name="checkmark-circle" size={20} color={theme.success.get()} />
-          <H5 fontWeight="800" fontSize="$7" color="$color">
-            添削後の自然な英語
-          </H5>
+        <XStack gap="$2" alignItems="center" justifyContent="space-between">
+          <XStack gap="$2" alignItems="center" flex={1}>
+            <Ionicons name="checkmark-circle" size={20} color={theme.success.get()} />
+            <H5 fontWeight="800" fontSize="$7" color="$color">
+              添削後の自然な英語
+            </H5>
+          </XStack>
+          <Button
+            size="$3"
+            chromeless
+            onPress={handleCopy}
+            icon={
+              <Ionicons
+                name={copied ? 'checkmark' : 'copy-outline'}
+                size={18}
+                color={copied ? theme.success.get() : theme.blue10.get()}
+              />
+            }
+            pressStyle={{ opacity: 0.7 }}
+          >
+            <Text fontSize="$3" color={copied ? '$success' : '$blue10'} fontWeight="600">
+              {copied ? 'コピー済み' : 'コピー'}
+            </Text>
+          </Button>
         </XStack>
         <YStack
           padding="$3"
@@ -124,12 +158,20 @@ export function CorrectionResultDisplay({ correction }: CorrectionResultDisplayP
 
       {/* ネイティブがよく使う表現 */}
       <YStack gap="$3">
-        <XStack gap="$2" alignItems="center">
-          <Ionicons name="language" size={20} color={theme.purple10.get()} />
-          <H5 fontWeight="700" fontSize="$7" color="$color">
-            ネイティブ表現
-          </H5>
-        </XStack>
+        <YStack gap="$2">
+          <XStack gap="$2" alignItems="center">
+            <Ionicons name="language" size={20} color={theme.purple10.get()} />
+            <H5 fontWeight="700" fontSize="$7" color="$color">
+              ネイティブ表現
+            </H5>
+          </XStack>
+          <XStack gap="$2" alignItems="center" paddingLeft="$1">
+            <Ionicons name="information-circle-outline" size={16} color={theme.blue10.get()} />
+            <Text fontSize="$2" color="$gray11" lineHeight="$3">
+              ここで提案された表現は、復習機能で翻訳練習ができます
+            </Text>
+          </XStack>
+        </YStack>
 
         {nativeExpressions && nativeExpressions.length > 0 ? (
           <YStack gap="$3">

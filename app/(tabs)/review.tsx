@@ -37,6 +37,8 @@ export default function ReviewScreen() {
   const [isRandom, setIsRandom] = useState(false);
   const [notRememberedCount, setNotRememberedCount] = useState(0);
   const [daysSinceLastAttempt, setDaysSinceLastAttempt] = useState(0);
+  const [questionCount, setQuestionCount] = useState(5);
+  const [excludeRemembered, setExcludeRemembered] = useState(false);
 
   // 現在の問題の統計情報と過去の回答
   const [currentStats, setCurrentStats] = useState<{
@@ -51,6 +53,7 @@ export default function ReviewScreen() {
     notRememberedCount,
     daysSinceLastAttempt,
     isRandom,
+    excludeRemembered,
   );
 
   // Current exercise
@@ -84,7 +87,8 @@ export default function ReviewScreen() {
       notRememberedCount,
       daysSinceLastAttempt,
       isRandom,
-      5, // 上限5問
+      questionCount,
+      excludeRemembered,
     );
 
     // exercise_attemptsプロパティを削除
@@ -99,7 +103,14 @@ export default function ReviewScreen() {
     setCompletedIds(new Set());
     setUserAnswer('');
     setCurrentAttemptId(null);
-  }, [allExercises, isRandom, notRememberedCount, daysSinceLastAttempt]);
+  }, [
+    allExercises,
+    isRandom,
+    notRememberedCount,
+    daysSinceLastAttempt,
+    questionCount,
+    excludeRemembered,
+  ]);
 
   // タブバーの表示制御
   useEffect(() => {
@@ -281,10 +292,14 @@ export default function ReviewScreen() {
         isRandom={isRandom}
         notRememberedCount={notRememberedCount}
         daysSinceLastAttempt={daysSinceLastAttempt}
+        questionCount={questionCount}
+        excludeRemembered={excludeRemembered}
         exerciseCount={exerciseCount}
         onIsRandomChange={setIsRandom}
         onNotRememberedCountChange={setNotRememberedCount}
         onDaysSinceLastAttemptChange={setDaysSinceLastAttempt}
+        onQuestionCountChange={setQuestionCount}
+        onExcludeRememberedChange={setExcludeRemembered}
         onStartReview={handleStartReview}
       />
     );

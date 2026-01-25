@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, Dimensions, Easing } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
-import { Text, YStack, useTheme } from 'tamagui';
+import { Text, XStack, YStack, useTheme } from 'tamagui';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
@@ -20,7 +20,7 @@ export const CircularProgress = ({
   const animatedProgress = useRef(new Animated.Value(0)).current;
 
   const size = Math.min(Dimensions.get('window').width * 0.5, 200);
-  const strokeWidth = 16;
+  const strokeWidth = 20;
   const radius = (size - strokeWidth) / 2;
   const circumference = radius * 2 * Math.PI;
 
@@ -76,12 +76,14 @@ export const CircularProgress = ({
           />
         </Svg>
         <YStack position="absolute" alignItems="center">
-          <Text fontSize="$10" fontWeight="bold" color={getResultColor()}>
-            {rememberedCount}
-          </Text>
-          <Text fontSize="$6" color="$gray11">
-            / {totalQuestions}
-          </Text>
+          <XStack gap="$1" alignItems="baseline">
+            <Text fontSize="$10" fontWeight="bold" color={getResultColor()}>
+              {rememberedCount}
+            </Text>
+            <Text fontSize="$6" color="$gray11">
+              / {totalQuestions}
+            </Text>
+          </XStack>
         </YStack>
       </YStack>
     </YStack>

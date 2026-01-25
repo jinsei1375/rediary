@@ -21,10 +21,22 @@ export function filterExercises(
   daysSinceLastAttempt: number,
   isRandom: boolean,
   limit: number = 5,
+  excludeRemembered: boolean = false,
 ): ExerciseWithAttempts[] {
   // ランダムの場合
   if (isRandom) {
-    const shuffled = [...exercises].sort(() => Math.random() - 0.5);
+    let filteredExercises = exercises;
+
+    // 「覚えた」を除外する場合
+    if (excludeRemembered) {
+      filteredExercises = exercises.filter((exercise) => {
+        const attempts = exercise.exercise_attempts || [];
+        // 一度も「覚えた」にチェックがついていない問題のみ
+        return !attempts.some((a) => a.remembered === true);
+      });
+    }
+
+    const shuffled = [...filteredExercises].sort(() => Math.random() - 0.5);
     return shuffled.slice(0, limit);
   }
 
@@ -32,6 +44,14 @@ export function filterExercises(
   const now = new Date();
   const filtered = exercises.filter((exercise) => {
     const attempts = exercise.exercise_attempts || [];
+
+    // 「覚えた」を除外する場合
+    if (excludeRemembered) {
+      // 一度でも「覚えた」にチェックがついている問題は除外
+      if (attempts.some((a) => a.remembered === true)) {
+        return false;
+      }
+    }
 
     // 「覚えてない」回数フィルター
     if (notRememberedCount > 0) {
@@ -80,14 +100,28 @@ export function countFilteredExercises(
   notRememberedCount: number,
   daysSinceLastAttempt: number,
   isRandom: boolean,
+  excludeRemembered: boolean = false,
 ): number {
   if (isRandom) {
+    if (excludeRemembered) {
+      return exercises.filter((exercise) => {
+        const attempts = exercise.exercise_attempts || [];
+        return !attempts.some((a) => a.remembered === true);
+      }).length;
+    }
     return exercises.length;
   }
 
   const now = new Date();
   const filtered = exercises.filter((exercise) => {
     const attempts = exercise.exercise_attempts || [];
+
+    // 「覚えた」を除外する場合
+    if (excludeRemembered) {
+      if (attempts.some((a) => a.remembered === true)) {
+        return false;
+      }
+    }
 
     // 「覚えてない」回数フィルター
     if (notRememberedCount > 0) {

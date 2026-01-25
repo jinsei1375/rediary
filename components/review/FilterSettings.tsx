@@ -1,18 +1,22 @@
 import React from 'react';
-import { H4, ScrollView, Text, YStack, useTheme } from 'tamagui';
+import { H4, ScrollView, YStack, useTheme } from 'tamagui';
 import { ExerciseCountDisplay } from './ExerciseCountDisplay';
 import { FilterSelect } from './FilterSelect';
-import { RandomToggle } from './RandomToggle';
 import { StartReviewButton } from './StartReviewButton';
+import { ToggleSwitch } from './ToggleSwitch';
 
 type FilterSettingsProps = {
   isRandom: boolean;
   notRememberedCount: number;
   daysSinceLastAttempt: number;
+  questionCount: number;
+  excludeRemembered: boolean;
   exerciseCount: number;
   onIsRandomChange: (value: boolean) => void;
   onNotRememberedCountChange: (value: number) => void;
   onDaysSinceLastAttemptChange: (value: number) => void;
+  onQuestionCountChange: (value: number) => void;
+  onExcludeRememberedChange: (value: boolean) => void;
   onStartReview: () => void;
 };
 
@@ -33,15 +37,27 @@ const DAYS_OPTIONS = [
   { label: '30日以上', value: 30 },
 ];
 
+const QUESTION_COUNT_OPTIONS = [
+  { label: '1問', value: 1 },
+  { label: '2問', value: 2 },
+  { label: '3問', value: 3 },
+  { label: '4問', value: 4 },
+  { label: '5問', value: 5 },
+];
+
 export const FilterSettings = React.memo(
   ({
     isRandom,
     notRememberedCount,
     daysSinceLastAttempt,
+    questionCount,
+    excludeRemembered,
     exerciseCount,
     onIsRandomChange,
     onNotRememberedCountChange,
     onDaysSinceLastAttemptChange,
+    onQuestionCountChange,
+    onExcludeRememberedChange,
     onStartReview,
   }: FilterSettingsProps) => {
     const theme = useTheme();
@@ -62,16 +78,27 @@ export const FilterSettings = React.memo(
           alignSelf="center"
           width="100%"
         >
-          <YStack alignItems="center" gap="$2">
+          <YStack alignItems="center">
             <H4 color="$color" fontWeight="700">
               表示設定
             </H4>
-            <Text fontSize="$3" color="$gray11" textAlign="center">
-              復習する問題の条件を選択してください
-            </Text>
           </YStack>
 
-          <RandomToggle isRandom={isRandom} onToggle={onIsRandomChange} />
+          <FilterSelect
+            label="問題数"
+            value={questionCount}
+            options={QUESTION_COUNT_OPTIONS}
+            onValueChange={onQuestionCountChange}
+          />
+
+          <ToggleSwitch checked={isRandom} onToggle={onIsRandomChange} />
+
+          <ToggleSwitch
+            checked={excludeRemembered}
+            onToggle={onExcludeRememberedChange}
+            label="「覚えた」を除外"
+            icon="close-circle-outline"
+          />
 
           {!isRandom && (
             <>

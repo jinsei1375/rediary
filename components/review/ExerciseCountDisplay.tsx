@@ -7,18 +7,12 @@ type ExerciseCountDisplayProps = {
 
 export const ExerciseCountDisplay = React.memo(({ count }: ExerciseCountDisplayProps) => {
   return (
-    <YStack
-      alignItems="center"
-      padding="$3"
-      backgroundColor="$blue2"
-      borderRadius="$3"
-      marginTop="$2"
-    >
+    <YStack alignItems="center" padding="$3" backgroundColor="$blue2" borderRadius="$3">
       <Text fontSize="$3" color="$gray11" marginBottom="$1">
         条件に合致した問題数
       </Text>
       <XStack gap="$1" alignItems="baseline">
-        <Text fontSize="$9" fontWeight="bold" color="$blue10">
+        <Text fontSize="$8" fontWeight="bold" color="$blue10">
           {count}
         </Text>
         <Text fontSize="$5" color="$gray11">

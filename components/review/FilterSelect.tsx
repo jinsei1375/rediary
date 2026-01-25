@@ -14,7 +14,7 @@ export const FilterSelect = React.memo(
     const theme = useTheme();
 
     return (
-      <YStack gap="$3">
+      <YStack gap="$2">
         <Text fontSize="$4" fontWeight="600" color="$textPrimary">
           {label}
         </Text>

@@ -38,6 +38,11 @@ export default function SettingsScreen() {
           onPress={() => router.push('/(tabs)/profile/settings')}
         />
         <ListItem
+          title="利用ガイド"
+          backgroundColor="$cardBg"
+          onPress={() => router.push('/(tabs)/profile/guide')}
+        />
+        <ListItem
           title="プライバシーポリシー"
           backgroundColor="$cardBg"
           onPress={() => router.push('/(tabs)/profile/privacy')}

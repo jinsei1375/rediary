@@ -18,6 +18,7 @@ export function AiCorrectionButton({ onPress, disabled, loading }: AiCorrectionB
       opacity={disabled ? 0.5 : 1}
       pressStyle={{
         backgroundColor: '$primaryPress',
+        scale: 0.98,
       }}
       hoverStyle={{
         backgroundColor: '$primaryHover',

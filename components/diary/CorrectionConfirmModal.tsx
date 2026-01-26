@@ -1,5 +1,6 @@
 import { Dialog } from '@/components/common/Dialog';
-import { Button, Text, XStack, YStack } from 'tamagui';
+import { ModalButton } from '@/components/common/PrimaryButton';
+import { Text, XStack, YStack } from 'tamagui';
 
 type CorrectionConfirmModalProps = {
   open: boolean;
@@ -18,28 +19,12 @@ export function CorrectionConfirmModal({ open, onConfirm, onCancel }: Correction
         </Text>
 
         <XStack gap="$3" justifyContent="flex-end" marginTop="$2">
-          <Button
-            onPress={onCancel}
-            backgroundColor="$backgroundHover"
-            color="$color"
-            borderRadius="$3"
-            pressStyle={{
-              backgroundColor: '$backgroundPress',
-            }}
-          >
+          <ModalButton variant="secondary" onPress={onCancel} borderRadius="$3">
             キャンセル
-          </Button>
-          <Button
-            backgroundColor="$primary"
-            color="$background"
-            onPress={onConfirm}
-            borderRadius="$3"
-            pressStyle={{
-              backgroundColor: '$primaryPress',
-            }}
-          >
+          </ModalButton>
+          <ModalButton variant="primary" onPress={onConfirm} borderRadius="$3">
             実行
-          </Button>
+          </ModalButton>
         </XStack>
       </YStack>
     </Dialog>

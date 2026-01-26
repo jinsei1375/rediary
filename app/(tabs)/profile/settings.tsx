@@ -1,4 +1,5 @@
 import { Header } from '@/components/common/Header';
+import { SaveButton } from '@/components/common/PrimaryButton';
 import { useSettings } from '@/contexts/SettingsContext';
 import { Language } from '@/types/database';
 import { router } from 'expo-router';
@@ -153,14 +154,7 @@ export default function ProfileSettingsScreen() {
           </YStack>
 
           {/* 保存ボタン */}
-          <Button
-            size="$5"
-            backgroundColor="$primary"
-            color="$background"
-            onPress={handleSave}
-            disabled={saving}
-            marginTop="$4"
-          >
+          <SaveButton size="$5" disabled={saving} marginTop="$4" onPress={handleSave}>
             {saving ? (
               <ActivityIndicator color="white" />
             ) : (
@@ -168,7 +162,7 @@ export default function ProfileSettingsScreen() {
                 保存
               </Text>
             )}
-          </Button>
+          </SaveButton>
         </YStack>
       </ScrollView>
     </YStack>

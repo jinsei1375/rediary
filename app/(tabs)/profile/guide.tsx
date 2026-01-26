@@ -88,9 +88,6 @@ export default function UserGuideScreen() {
         <YStack padding="$4" gap="$4">
           {/* Welcome Section */}
           <YStack gap="$3">
-            <Text fontSize="$6" fontWeight="bold" color="$color">
-              Rediaryへようこそ！
-            </Text>
             <Text fontSize="$3" color="$color" lineHeight={22}>
               Rediaryは、日記を書くことで言語学習を楽しく続けられるアプリです。書いた表現を繰り返し思い出すことで、「使える言語」へと変えていきましょう。
             </Text>

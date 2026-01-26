@@ -35,26 +35,31 @@ export default function SettingsScreen() {
         <ListItem
           title="個人設定"
           backgroundColor="$cardBg"
+          borderRadius="$4"
           onPress={() => router.push('/(tabs)/profile/settings')}
         />
         <ListItem
           title="利用ガイド"
           backgroundColor="$cardBg"
+          borderRadius="$4"
           onPress={() => router.push('/(tabs)/profile/guide')}
         />
         <ListItem
           title="プライバシーポリシー"
           backgroundColor="$cardBg"
+          borderRadius="$4"
           onPress={() => router.push('/(tabs)/profile/privacy')}
         />
         <ListItem
           title="利用規約"
           backgroundColor="$cardBg"
+          borderRadius="$4"
           onPress={() => router.push('/(tabs)/profile/terms')}
         />
         <ListItem
           title="よくある質問"
           backgroundColor="$cardBg"
+          borderRadius="$4"
           onPress={() => router.push('/(tabs)/profile/faq')}
         />
       </YStack>

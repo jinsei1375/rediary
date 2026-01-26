@@ -1,6 +1,7 @@
+import { SaveButton } from '@/components/common/PrimaryButton';
 import type { DiaryFormData } from '@/types/ui';
 import React, { useCallback } from 'react';
-import { Button, Spinner, Text, YStack } from 'tamagui';
+import { Spinner, Text, YStack } from 'tamagui';
 import { DiaryTextInput } from './DiaryTextInput';
 
 type DiaryFormProps = {
@@ -63,18 +64,14 @@ export const DiaryForm = React.memo(
           maxLength={MAX_LENGTH_JAPANESE}
         />
 
-        <Button
-          backgroundColor={isSaveDisabled ? '$gray8' : '$primary'}
+        <SaveButton
+          disabled={isSaveDisabled}
           marginTop="$4"
           height="$5"
           borderRadius="$3"
           onPress={onSave}
-          disabled={isSaveDisabled}
           alignItems="center"
           justifyContent="center"
-          pressStyle={{
-            backgroundColor: isSaveDisabled ? '$gray8' : '$primaryPress',
-          }}
         >
           {saving ? (
             <Spinner color="$background" />
@@ -83,7 +80,7 @@ export const DiaryForm = React.memo(
               保存
             </Text>
           )}
-        </Button>
+        </SaveButton>
       </YStack>
     );
   },

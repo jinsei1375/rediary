@@ -1,7 +1,8 @@
+import { ActionButton } from '@/components/common/PrimaryButton';
 import type { ExerciseResult } from '@/types/database';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-import { Button, H4, ScrollView, Text, XStack, YStack } from 'tamagui';
+import { H4, ScrollView, Text, XStack, YStack } from 'tamagui';
 import { CircularProgress } from './CircularProgress';
 import { ResultItem } from './ResultItem';
 
@@ -40,22 +41,14 @@ export const ResultScreen = ({ results, onBackToSettings }: ResultScreenProps) =
       </ScrollView>
 
       <YStack padding="$4" gap="$3">
-        <Button
-          size="$5"
-          backgroundColor="$blue10"
-          onPress={onBackToSettings}
-          pressStyle={{
-            backgroundColor: '$blue11',
-            scale: 0.98,
-          }}
-        >
+        <ActionButton size="$5" onPress={onBackToSettings}>
           <XStack gap="$2" alignItems="center">
             <Ionicons name="refresh" size={24} color="white" />
             <Text fontSize="$5" fontWeight="700" color="white">
               もう一度復習する
             </Text>
           </XStack>
-        </Button>
+        </ActionButton>
       </YStack>
     </YStack>
   );

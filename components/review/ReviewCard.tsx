@@ -1,3 +1,9 @@
+import {
+  ActionButton,
+  ErrorButton,
+  SecondaryButton,
+  SuccessButton,
+} from '@/components/common/PrimaryButton';
 import type { ExerciseAttempt, TranslationExercise } from '@/types/database';
 import {
   getLanguageExpressionLabel,
@@ -8,7 +14,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { Text as RNText } from 'react-native';
-import { Button, Input, Text, XStack, YStack, useTheme } from 'tamagui';
+import { Input, Text, XStack, YStack, useTheme } from 'tamagui';
 import { FlashCard } from './FlashCard';
 import { PastAnswersDialog } from './PastAnswersDialog';
 
@@ -102,17 +108,11 @@ export const ReviewCard = React.memo(
               borderWidth: 2,
             }}
           />
-          <Button
+          <ActionButton
             size="$4"
-            backgroundColor="$blue10"
             onPress={onCheckAnswer}
             disabled={isFlipped}
             opacity={isFlipped ? 0.5 : 1}
-            pressStyle={{
-              backgroundColor: '$blue11',
-              scale: 0.98,
-            }}
-            animation="quick"
           >
             <XStack gap="$2" alignItems="center">
               <Ionicons name="eye" size={20} color="white" />
@@ -120,7 +120,7 @@ export const ReviewCard = React.memo(
                 答えを確認
               </Text>
             </XStack>
-          </Button>
+          </ActionButton>
         </YStack>
       </YStack>
     );
@@ -238,26 +238,14 @@ export const ReviewCard = React.memo(
         </YStack>
 
         {/* View Past Answers Button */}
-        <Button
-          size="$3"
-          backgroundColor="$gray3"
-          borderColor="$gray7"
-          borderWidth={1}
-          onPress={() => setShowPastAnswersDialog(true)}
-          pressStyle={{
-            backgroundColor: '$gray4',
-            scale: 0.98,
-          }}
-          animation="quick"
-          marginTop="$2"
-        >
+        <SecondaryButton size="$3" onPress={() => setShowPastAnswersDialog(true)} marginTop="$2">
           <XStack gap="$2" alignItems="center">
             <Ionicons name="time-outline" size={18} color={theme.color.get()} />
             <Text fontSize="$3" fontWeight="600" color="$color">
               過去の解答を見る
             </Text>
           </XStack>
-        </Button>
+        </SecondaryButton>
       </YStack>
     );
 
@@ -272,47 +260,23 @@ export const ReviewCard = React.memo(
 
         {showButtons && isFlipped && (
           <XStack gap="$3" paddingBottom="$4">
-            <Button
-              flex={1}
-              size="$5"
-              backgroundColor="$red2"
-              borderColor="$red7"
-              borderWidth={1.5}
-              onPress={onNotRemembered}
-              pressStyle={{
-                backgroundColor: '$red6',
-                scale: 0.98,
-              }}
-              animation="quick"
-            >
+            <ErrorButton flex={1} size="$5" onPress={onNotRemembered}>
               <XStack gap="$2" alignItems="center">
                 <Ionicons name="close-circle" size={24} color={theme.red10.get()} />
                 <Text fontSize="$5" fontWeight="700" color="$red10">
                   覚えてない
                 </Text>
               </XStack>
-            </Button>
+            </ErrorButton>
 
-            <Button
-              flex={1}
-              size="$5"
-              backgroundColor="$green2"
-              borderColor="$green7"
-              borderWidth={1.5}
-              onPress={onRemembered}
-              pressStyle={{
-                backgroundColor: '$green6',
-                scale: 0.98,
-              }}
-              animation="quick"
-            >
+            <SuccessButton flex={1} size="$5" onPress={onRemembered}>
               <XStack gap="$2" alignItems="center">
                 <Ionicons name="checkmark-circle" size={24} color={theme.green10.get()} />
                 <Text fontSize="$5" fontWeight="700" color="$green10">
                   覚えた
                 </Text>
               </XStack>
-            </Button>
+            </SuccessButton>
           </XStack>
         )}
 

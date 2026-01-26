@@ -59,6 +59,8 @@ const tamaguiConfig = createTamagui({
       btnPrimaryText: '#ffffff',
       btnSecondaryBg: '#f9fafb',
       btnSecondaryText: '#111827',
+      btnCancelBg: '#e5e7eb',
+      btnCancelText: '#374151',
 
       // アクセント
       accentBlue: '#5B8CFF',
@@ -144,6 +146,8 @@ const tamaguiConfig = createTamagui({
       btnPrimaryText: '#ffffff',
       btnSecondaryBg: '#1f2937',
       btnSecondaryText: '#f9fafb',
+      btnCancelBg: '#374151',
+      btnCancelText: '#d1d5db',
 
       // アクセント
       accentBlue: '#5B8CFF',

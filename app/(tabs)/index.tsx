@@ -1,10 +1,11 @@
+import { PrimaryButton } from '@/components/common/PrimaryButton';
 import { useAuth } from '@/contexts/AuthContext';
 import { DiaryService } from '@/services';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { Button, H2, Text, XStack, YStack, useTheme } from 'tamagui';
+import { H2, Text, XStack, YStack, useTheme } from 'tamagui';
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -74,39 +75,27 @@ export default function HomeScreen() {
       </YStack>
 
       <YStack gap="$4" flex={1}>
-        <Button
+        <PrimaryButton
           size="$6"
-          backgroundColor="$btnPrimaryBg"
           onPress={handleWriteDiary}
           borderRadius="$4"
-          color="$btnPrimaryText"
-          pressStyle={{
-            backgroundColor: '$btnPrimaryBg',
-            scale: 0.98,
-          }}
           icon={<Ionicons name="create-outline" size={24} color={theme.btnPrimaryText.get()} />}
         >
           <Text fontSize="$5" fontWeight="600" color="$btnPrimaryText">
             今日の日記を書く
           </Text>
-        </Button>
+        </PrimaryButton>
 
-        <Button
+        <PrimaryButton
           size="$6"
-          backgroundColor="$btnPrimaryBg"
-          color="$btnPrimaryText"
           onPress={handleReview}
           borderRadius="$4"
-          pressStyle={{
-            backgroundColor: '$btnPrimaryBg',
-            scale: 0.98,
-          }}
           icon={<Ionicons name="book-outline" size={24} color={theme.btnPrimaryText.get()} />}
         >
           <Text fontSize="$5" fontWeight="600" color="$btnPrimaryText">
             復習する
           </Text>
-        </Button>
+        </PrimaryButton>
       </YStack>
     </YStack>
   );

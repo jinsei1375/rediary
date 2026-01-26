@@ -72,6 +72,7 @@ export default function SettingsScreen() {
         marginTop="$4"
         pressStyle={{
           opacity: 0.6,
+          scale: 0.98,
         }}
       >
         <Text color="$red10" fontSize="$3">

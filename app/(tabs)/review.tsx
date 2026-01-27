@@ -283,6 +283,7 @@ export default function ReviewScreen() {
           setShowResults(false);
           setExercises([]);
           setResults([]);
+          loadAllExercises(); // 最新データを再取得
         }}
       />
     );
@@ -338,6 +339,7 @@ export default function ReviewScreen() {
           setShowResults(false);
           setExercises([]);
           setResults([]);
+          loadAllExercises(); // 最新データを再取得
         }}
       />
       {content}

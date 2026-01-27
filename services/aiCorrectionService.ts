@@ -124,6 +124,46 @@ export class AiCorrectionService {
     const nativeLangName = languageNames[nativeLanguage] || nativeLanguage;
     const targetLangName = languageNames[targetLanguage] || targetLanguage;
 
+    // ネイティブ言語が空の場合は別のプロンプトを使用
+    if (!nativeContent.trim()) {
+      return `
+Analyze the user's writing in the target language and provide corrections to make it sound more natural, in JSON format.
+
+**User's actual writing (in ${targetLangName}):**
+${userContent}
+
+Please respond in the following JSON format:
+{
+  "corrected_content": "Natural corrected content in ${targetLangName} (as a native speaker would write)",
+  "correction_points": [
+    {
+      "type": "grammar" | "vocabulary" | "style" | "other",
+      "original": "Original expression from user_content",
+      "corrected": "Corrected expression",
+      "explanation": "Explanation in ${nativeLangName} of why this correction is needed and how it improves the text",
+      "position": { "start": 0, "end": 10 } // Optional: position in original text
+    }
+  ],
+  "native_expressions": [
+    {
+      "expression": "Natural ${targetLangName} expression actually used in corrected_content",
+      "meaning": "Meaning of this expression in ${nativeLangName}",
+      "usage_example": "Example sentence in ${targetLangName}",
+      "usage_example_translation": "Translation of the usage_example in ${nativeLangName}",
+      "context": "Explanation in ${nativeLangName} of when and how to use this expression"
+    }
+  ]
+}
+
+**Important:**
+- All explanations (explanation, meaning, context, usage_example_translation) must be in ${nativeLangName}
+- usage_example must be in ${targetLangName}
+- native_expressions must only include expressions that are actually used in corrected_content
+- Limit to maximum 5 correction_points
+- Focus on making the text sound more natural and fluent
+`.trim();
+    }
+
     return `
 Analyze the user's intent in their native language and their writing in the target language, then provide corrections in JSON format.
 
@@ -160,7 +200,7 @@ Please respond in the following JSON format:
 - All explanations (explanation, meaning, context, usage_example_translation) must be in ${nativeLangName}
 - usage_example must be in ${targetLangName}
 - native_expressions must only include expressions that are actually used in corrected_content
-- Limit to maximum 5 correction_points and 5 native_expressions
+- Limit to maximum 5 correction_points
 `.trim();
   }
 

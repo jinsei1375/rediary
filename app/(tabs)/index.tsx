@@ -20,6 +20,7 @@ export default function HomeScreen() {
   const [dailyQuestion, setDailyQuestion] = useState<TranslationExercise | null>(null);
   const [exerciseCount, setExerciseCount] = useState<number>(0);
   const [answeredCount, setAnsweredCount] = useState<number>(0);
+  const [animationReady, setAnimationReady] = useState(false);
 
   const today = new Date().toISOString().split('T')[0];
 
@@ -30,42 +31,49 @@ export default function HomeScreen() {
       const loadData = async () => {
         if (!user?.id) return;
 
-        // 日記カウントを取得
-        const { count, error: countError } = await DiaryService.getTotalCount(user.id);
-        if (countError) {
-          console.error('Error loading diary count:', countError);
-        } else if (!isCancelled) {
-          setDiaryCount(count ?? 0);
+        // 全データを並列で取得
+        const [diaryResult, questionResult, exerciseResult, answeredResult] = await Promise.all([
+          DiaryService.getTotalCount(user.id),
+          TranslationExerciseService.getDailyQuestion(user.id),
+          TranslationExerciseService.getTotalCount(user.id),
+          ExerciseAttemptService.getAnsweredExerciseCount(user.id),
+        ]);
+
+        if (isCancelled) return;
+
+        // 日記カウント
+        if (diaryResult.error) {
+          console.error('Error loading diary count:', diaryResult.error);
+        } else {
+          setDiaryCount(diaryResult.count ?? 0);
         }
 
-        // 今日の1問を取得
-        const { data: question, error: questionError } =
-          await TranslationExerciseService.getDailyQuestion(user.id);
-        if (questionError) {
-          console.error('Error loading daily question:', questionError);
-        } else if (!isCancelled) {
-          setDailyQuestion(question);
+        // 今日の1問
+        if (questionResult.error) {
+          console.error('Error loading daily question:', questionResult.error);
+        } else {
+          setDailyQuestion(questionResult.data);
         }
 
-        // 登録済みネイティブ表現数を取得
-        const { count: exerciseTotal, error: exerciseError } =
-          await TranslationExerciseService.getTotalCount(user.id);
-        if (exerciseError) {
-          console.error('Error loading exercise count:', exerciseError);
-        } else if (!isCancelled) {
-          setExerciseCount(exerciseTotal ?? 0);
+        // 登録済みネイティブ表現数
+        if (exerciseResult.error) {
+          console.error('Error loading exercise count:', exerciseResult.error);
+        } else {
+          setExerciseCount(exerciseResult.count ?? 0);
         }
 
-        // 回答済み問題数を取得
-        const { count: answeredTotal, error: answeredError } =
-          await ExerciseAttemptService.getAnsweredExerciseCount(user.id);
-        if (answeredError) {
-          console.error('Error loading answered count:', answeredError);
-        } else if (!isCancelled) {
-          setAnsweredCount(answeredTotal ?? 0);
+        // 回答済み問題数
+        if (answeredResult.error) {
+          console.error('Error loading answered count:', answeredResult.error);
+        } else {
+          setAnsweredCount(answeredResult.count ?? 0);
         }
+
+        // 全データロード完了後、アニメーション開始
+        setAnimationReady(true);
       };
 
+      setAnimationReady(false);
       loadData();
 
       return () => {
@@ -105,14 +113,27 @@ export default function HomeScreen() {
         showsVerticalScrollIndicator={false}
       >
         <YStack gap="$3">
-          <StatCard label="日記を書いた日数" value={diaryCount} unit="日" color="$accentBlue" />
+          <StatCard
+            label="日記を書いた日数"
+            value={diaryCount}
+            unit="日"
+            color="$accentBlue"
+            animationReady={animationReady}
+          />
           <StatCard
             label="登録済みネイティブ表現"
             value={exerciseCount}
             unit="個"
             color="$accentGreen"
+            animationReady={animationReady}
           />
-          <StatCard label="回答済み問題数" value={answeredCount} unit="問" color="$accentYellow" />
+          <StatCard
+            label="回答済み問題数"
+            value={answeredCount}
+            unit="問"
+            color="$accentYellow"
+            animationReady={animationReady}
+          />
         </YStack>
 
         {dailyQuestion && <DailyQuestion question={dailyQuestion} onPress={handleDailyQuestion} />}

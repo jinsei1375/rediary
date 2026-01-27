@@ -11,7 +11,7 @@ import { TranslationExerciseService } from '@/services/translationExerciseServic
 import type { ExerciseAttempt, ExerciseResult, TranslationExercise } from '@/types/database';
 import { countFilteredExercises, filterExercises } from '@/utils/exerciseFilter';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Alert } from 'react-native';
 import { ScrollView, YStack, useTheme } from 'tamagui';
@@ -131,46 +131,48 @@ export default function ReviewScreen() {
     setResults([]);
   }, [loadExercises]);
 
+  // タブがフォーカスされた時に全問題をロード
   useFocusEffect(
     useCallback(() => {
-      // dailyQuestionIdがある場合は、その問題だけを表示
-      if (dailyQuestionId && user?.id) {
-        const loadDailyQuestion = async () => {
-          setLoading(true);
-          const { data, error } = await TranslationExerciseService.getById(
-            dailyQuestionId,
-            user.id,
-          );
-          if (error || !data) {
-            console.error('Error loading daily question:', error);
-            Alert.alert('エラー', '問題の読み込みに失敗しました');
-            setShowSettings(true);
-            setExercises([]);
-          } else {
-            setExercises([data]);
-            setShowSettings(false);
-            setShowResults(false);
-            setResults([]);
-            setCurrentIndex(0);
-            setIsFlipped(false);
-            setCompletedIds(new Set());
-            setUserAnswer('');
-            setCurrentAttemptId(null);
-          }
-          setLoading(false);
-        };
-        loadDailyQuestion();
-      } else {
-        // タブに戻ったら設定画面を表示し、全問題を取得
-        setShowSettings(true);
-        setExercises([]);
+      if (!dailyQuestionId) {
         loadAllExercises();
       }
-    }, [dailyQuestionId, user?.id, loadAllExercises]),
+    }, [dailyQuestionId, loadAllExercises]),
   );
 
+  // dailyQuestionIdが変わった時の処理
+  useEffect(() => {
+    if (dailyQuestionId && user?.id) {
+      const loadDailyQuestion = async () => {
+        setLoading(true);
+        const { data, error } = await TranslationExerciseService.getById(dailyQuestionId, user.id);
+        if (error || !data) {
+          console.error('Error loading daily question:', error);
+          Alert.alert('エラー', '問題の読み込みに失敗しました');
+          setShowSettings(true);
+          setExercises([]);
+        } else {
+          setExercises([data]);
+          setShowSettings(false);
+          setShowResults(false);
+          setResults([]);
+          setCurrentIndex(0);
+          setIsFlipped(false);
+          setCompletedIds(new Set());
+          setUserAnswer('');
+          setCurrentAttemptId(null);
+        }
+        setLoading(false);
+      };
+      loadDailyQuestion();
+    } else if (!dailyQuestionId) {
+      setShowSettings(true);
+      setExercises([]);
+    }
+  }, [dailyQuestionId, user?.id]);
+
   // Load exercise data when current exercise changes
-  React.useEffect(() => {
+  useEffect(() => {
     const loadCurrentExerciseData = async () => {
       // ユーザー未ログイン時や設定画面表示中は統計を取得しない
       if (!currentExercise || showSettings || !user?.id) return;
@@ -367,6 +369,7 @@ export default function ReviewScreen() {
         title="復習"
         showBackButton={!showSettings}
         onBack={() => {
+          router.setParams({ dailyQuestionId: undefined });
           setShowSettings(true);
           setShowResults(false);
           setExercises([]);

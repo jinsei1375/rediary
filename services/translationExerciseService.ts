@@ -176,4 +176,15 @@ export class TranslationExerciseService {
     const { exercise_attempts, ...exercise } = oldestExercise;
     return { data: exercise, error: null };
   }
+
+  /**
+   * ユーザーの登録済み問題数を取得
+   */
+  static async getTotalCount(userId: string) {
+    const { count, error } = await supabase
+      .from('translation_exercises')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', userId);
+    return { count, error };
+  }
 }

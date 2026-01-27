@@ -148,6 +148,24 @@ export const getNotRememberedExercises = async (userId: string) => {
   return getExercisesByNotRememberedCount(userId, 1);
 };
 
+/**
+ * ユーザーが回答した問題数（ユニークなexercise_id数）を取得
+ */
+export const getAnsweredExerciseCount = async (userId: string) => {
+  const { data, error } = await supabase
+    .from('exercise_attempts')
+    .select('exercise_id')
+    .eq('user_id', userId);
+
+  if (error || !data) {
+    return { count: 0, error };
+  }
+
+  // ユニークなexercise_idの数を数える
+  const uniqueExerciseIds = new Set(data.map((attempt) => attempt.exercise_id));
+  return { count: uniqueExerciseIds.size, error: null };
+};
+
 export const ExerciseAttemptService = {
   createExerciseAttempt,
   updateExerciseAttempt,
@@ -156,4 +174,5 @@ export const ExerciseAttemptService = {
   getExerciseStats,
   getExercisesByNotRememberedCount,
   getNotRememberedExercises,
+  getAnsweredExerciseCount,
 };

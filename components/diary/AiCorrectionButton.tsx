@@ -1,4 +1,5 @@
-import { Button, Spinner } from 'tamagui';
+import { AiButton } from '@/components/common/PrimaryButton';
+import { Spinner } from 'tamagui';
 
 type AiCorrectionButtonProps = {
   onPress: () => void;
@@ -8,23 +9,15 @@ type AiCorrectionButtonProps = {
 
 export function AiCorrectionButton({ onPress, disabled, loading }: AiCorrectionButtonProps) {
   return (
-    <Button
+    <AiButton
       onPress={onPress}
       disabled={disabled || loading}
       icon={loading ? <Spinner color="$background" /> : undefined}
-      backgroundColor="$primary"
       color="$background"
       size="$4"
       opacity={disabled ? 0.5 : 1}
-      pressStyle={{
-        backgroundColor: '$primaryPress',
-        scale: 0.98,
-      }}
-      hoverStyle={{
-        backgroundColor: '$primaryHover',
-      }}
     >
       {loading ? 'AI添削中...' : 'AI添削'}
-    </Button>
+    </AiButton>
   );
 }

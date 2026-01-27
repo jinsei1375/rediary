@@ -9,6 +9,7 @@ const BaseButton = ({ children, pressStyle, animation = 'quick', ...props }: Bas
   return (
     <Button
       animation={animation}
+      fontWeight="bold"
       pressStyle={{
         scale: 0.98,
         ...pressStyle,

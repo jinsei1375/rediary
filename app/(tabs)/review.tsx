@@ -40,7 +40,7 @@ export default function ReviewScreen() {
   const [isRandom, setIsRandom] = useState(false);
   const [notRememberedCount, setNotRememberedCount] = useState(0);
   const [daysSinceLastAttempt, setDaysSinceLastAttempt] = useState(0);
-  const [questionCount, setQuestionCount] = useState(5);
+  const [questionCount, setQuestionCount] = useState(3);
   const [excludeRemembered, setExcludeRemembered] = useState(false);
 
   // 現在の問題の統計情報と過去の回答

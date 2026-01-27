@@ -1,7 +1,7 @@
 import { Header } from '@/components/common/Header';
 import { Loading } from '@/components/common/Loading';
 import { LoadingOverlay } from '@/components/common/LoadingOverlay';
-import { AiButton } from '@/components/common/PrimaryButton';
+import { AiCorrectionButton } from '@/components/diary/AiCorrectionButton';
 import { CorrectionConfirmModal } from '@/components/diary/CorrectionConfirmModal';
 import { CorrectionResultDisplay } from '@/components/diary/CorrectionResultDisplay';
 import { DiaryForm } from '@/components/diary/DiaryForm';
@@ -15,7 +15,7 @@ import { formatDate } from '@/utils/dateUtils';
 import { router, useLocalSearchParams, useNavigation } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { Alert } from 'react-native';
-import { ScrollView, Separator, Spinner, Text, XStack, YStack, useTheme } from 'tamagui';
+import { ScrollView, Separator, YStack, useTheme } from 'tamagui';
 
 export default function DiaryDetailScreen() {
   const { date } = useLocalSearchParams<{ date: string }>();
@@ -270,22 +270,11 @@ export default function DiaryDetailScreen() {
           borderTopWidth={1}
           borderTopColor="$borderColor"
         >
-          <AiButton
+          <AiCorrectionButton
             onPress={handleAiCorrectionClick}
-            disabled={!formData.content.trim() || !formData.content_native.trim() || aiCorrecting}
-            height="$5"
-            borderRadius="$4"
-            opacity={
-              !formData.content.trim() || !formData.content_native.trim() || aiCorrecting ? 0.5 : 1
-            }
-          >
-            <XStack gap="$3" alignItems="center" justifyContent="center">
-              {aiCorrecting && <Spinner color="$background" size="small" />}
-              <Text color="$background" fontSize="$5" fontWeight="bold" letterSpacing={1}>
-                {aiCorrecting ? 'AI添削中...' : 'AI添削'}
-              </Text>
-            </XStack>
-          </AiButton>
+            disabled={!formData.content.trim() || !formData.content_native.trim()}
+            loading={aiCorrecting}
+          />
         </YStack>
       )}
 

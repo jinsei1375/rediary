@@ -101,7 +101,7 @@ export default function HomeScreen() {
           borderRadius="$4"
           icon={<Ionicons name="create-outline" size={24} color={theme.btnPrimaryText.get()} />}
         >
-          <Text fontSize="$5" fontWeight="600" color="$btnPrimaryText">
+          <Text fontSize="$5" fontWeight="bold" color="$btnPrimaryText">
             今日の日記を書く
           </Text>
         </PrimaryButton>
@@ -112,7 +112,7 @@ export default function HomeScreen() {
           borderRadius="$4"
           icon={<Ionicons name="book-outline" size={24} color={theme.btnPrimaryText.get()} />}
         >
-          <Text fontSize="$5" fontWeight="600" color="$btnPrimaryText">
+          <Text fontSize="$5" fontWeight="bold" color="$btnPrimaryText">
             復習する
           </Text>
         </PrimaryButton>

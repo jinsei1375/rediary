@@ -11,6 +11,7 @@ import { TranslationExerciseService } from '@/services/translationExerciseServic
 import type { ExerciseAttempt, ExerciseResult, TranslationExercise } from '@/types/database';
 import { countFilteredExercises, filterExercises } from '@/utils/exerciseFilter';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useLocalSearchParams } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Alert } from 'react-native';
 import { ScrollView, YStack, useTheme } from 'tamagui';
@@ -19,6 +20,8 @@ export default function ReviewScreen() {
   const { user } = useAuth();
   const theme = useTheme();
   const navigation = useNavigation();
+  const params = useLocalSearchParams();
+  const dailyQuestionId = params.dailyQuestionId as string | undefined;
   const [exercises, setExercises] = useState<TranslationExercise[]>([]);
   const [allExercises, setAllExercises] = useState<any[]>([]); // 全問題（attemptsを含む）
   const [loading, setLoading] = useState(false);
@@ -130,11 +133,40 @@ export default function ReviewScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      // タブに戻ったら設定画面を表示し、全問題を取得
-      setShowSettings(true);
-      setExercises([]);
-      loadAllExercises();
-    }, [loadAllExercises]),
+      // dailyQuestionIdがある場合は、その問題だけを表示
+      if (dailyQuestionId && user?.id) {
+        const loadDailyQuestion = async () => {
+          setLoading(true);
+          const { data, error } = await TranslationExerciseService.getById(
+            dailyQuestionId,
+            user.id,
+          );
+          if (error || !data) {
+            console.error('Error loading daily question:', error);
+            Alert.alert('エラー', '問題の読み込みに失敗しました');
+            setShowSettings(true);
+            setExercises([]);
+          } else {
+            setExercises([data]);
+            setShowSettings(false);
+            setShowResults(false);
+            setResults([]);
+            setCurrentIndex(0);
+            setIsFlipped(false);
+            setCompletedIds(new Set());
+            setUserAnswer('');
+            setCurrentAttemptId(null);
+          }
+          setLoading(false);
+        };
+        loadDailyQuestion();
+      } else {
+        // タブに戻ったら設定画面を表示し、全問題を取得
+        setShowSettings(true);
+        setExercises([]);
+        loadAllExercises();
+      }
+    }, [dailyQuestionId, user?.id, loadAllExercises]),
   );
 
   // Load exercise data when current exercise changes

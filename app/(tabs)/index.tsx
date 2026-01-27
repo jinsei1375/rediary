@@ -1,6 +1,9 @@
 import { PrimaryButton } from '@/components/common/PrimaryButton';
+import { DailyQuestion } from '@/components/home/DailyQuestion';
 import { useAuth } from '@/contexts/AuthContext';
 import { DiaryService } from '@/services';
+import { TranslationExerciseService } from '@/services/translationExerciseService';
+import type { TranslationExercise } from '@/types/database';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
@@ -12,6 +15,7 @@ export default function HomeScreen() {
   const { user } = useAuth();
   const theme = useTheme();
   const [diaryCount, setDiaryCount] = useState<number>(0);
+  const [dailyQuestion, setDailyQuestion] = useState<TranslationExercise | null>(null);
 
   const today = new Date().toISOString().split('T')[0];
 
@@ -19,21 +23,28 @@ export default function HomeScreen() {
     useCallback(() => {
       let isCancelled = false;
 
-      const loadDiaryCount = async () => {
+      const loadData = async () => {
         if (!user?.id) return;
 
-        const { count, error } = await DiaryService.getTotalCount(user.id);
-        if (error) {
-          console.error('Error loading diary count:', error);
-          return;
+        // 日記カウントを取得
+        const { count, error: countError } = await DiaryService.getTotalCount(user.id);
+        if (countError) {
+          console.error('Error loading diary count:', countError);
+        } else if (!isCancelled) {
+          setDiaryCount(count ?? 0);
         }
 
-        if (!isCancelled) {
-          setDiaryCount(count ?? 0);
+        // 今日の1問を取得
+        const { data: question, error: questionError } =
+          await TranslationExerciseService.getDailyQuestion(user.id);
+        if (questionError) {
+          console.error('Error loading daily question:', questionError);
+        } else if (!isCancelled) {
+          setDailyQuestion(question);
         }
       };
 
-      loadDiaryCount();
+      loadData();
 
       return () => {
         isCancelled = true;
@@ -52,6 +63,15 @@ export default function HomeScreen() {
     router.push('/(tabs)/review');
   };
 
+  const handleDailyQuestion = () => {
+    if (dailyQuestion) {
+      router.push({
+        pathname: '/(tabs)/review',
+        params: { dailyQuestionId: dailyQuestion.id },
+      } as any);
+    }
+  };
+
   return (
     <YStack flex={1} backgroundColor="$bgPrimary" padding="$6" gap="$6">
       <YStack gap="$3" marginTop="$8">
@@ -60,7 +80,7 @@ export default function HomeScreen() {
         </H2>
       </YStack>
 
-      <YStack backgroundColor="$cardBg" padding="$6" borderRadius="$6" alignItems="center" gap="$3">
+      <YStack backgroundColor="$cardBg" padding="$4" borderRadius="$6" alignItems="center" gap="$2">
         <Text fontSize="$3" color="$textSecondary">
           日記を書いた日数
         </Text>
@@ -74,7 +94,7 @@ export default function HomeScreen() {
         </XStack>
       </YStack>
 
-      <YStack gap="$4" flex={1}>
+      <YStack gap="$4">
         <PrimaryButton
           size="$6"
           onPress={handleWriteDiary}
@@ -97,6 +117,8 @@ export default function HomeScreen() {
           </Text>
         </PrimaryButton>
       </YStack>
+
+      {dailyQuestion && <DailyQuestion question={dailyQuestion} onPress={handleDailyQuestion} />}
     </YStack>
   );
 }

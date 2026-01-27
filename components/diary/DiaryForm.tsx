@@ -1,5 +1,7 @@
 import { SaveButton } from '@/components/common/PrimaryButton';
+import { useSettings } from '@/contexts/SettingsContext';
 import type { DiaryFormData } from '@/types/ui';
+import { getLanguageName } from '@/utils/languageUtils';
 import React, { useCallback } from 'react';
 import { Spinner, Text, YStack } from 'tamagui';
 import { DiaryTextInput } from './DiaryTextInput';
@@ -16,6 +18,7 @@ const MAX_LENGTH_JAPANESE = 1000;
 
 export const DiaryForm = React.memo(
   ({ formData, onFormChange, onSave, saving }: DiaryFormProps) => {
+    const { targetLanguage, nativeLanguage } = useSettings();
     const isContentOverLimit = formData.content.length > MAX_LENGTH_ENGLISH;
     const isContentNativeOverLimit = formData.content_native.length > MAX_LENGTH_JAPANESE;
     const isSaveDisabled = saving || isContentOverLimit || isContentNativeOverLimit;
@@ -45,8 +48,8 @@ export const DiaryForm = React.memo(
         />
 
         <DiaryTextInput
-          label="内容（英語）"
-          subLabel="実際に書く英語の日記"
+          label={`内容（${getLanguageName(targetLanguage)}）`}
+          subLabel={`実際に書く${getLanguageName(targetLanguage)}の日記`}
           value={formData.content}
           onChangeText={handleContentChange}
           placeholder="Today..."
@@ -55,8 +58,8 @@ export const DiaryForm = React.memo(
         />
 
         <DiaryTextInput
-          label="内容（日本語）"
-          subLabel="本来英語として書きたかった内容"
+          label={`内容（${getLanguageName(nativeLanguage)}）※任意`}
+          subLabel={`本来${getLanguageName(targetLanguage)}として書きたかった内容`}
           value={formData.content_native}
           onChangeText={handleContentNativeChange}
           placeholder="今日は..."

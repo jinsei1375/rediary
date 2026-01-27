@@ -6,12 +6,13 @@ import { CorrectionConfirmModal } from '@/components/diary/CorrectionConfirmModa
 import { CorrectionResultDisplay } from '@/components/diary/CorrectionResultDisplay';
 import { DiaryForm } from '@/components/diary/DiaryForm';
 import { useAuth } from '@/contexts/AuthContext';
+import { useSettings } from '@/contexts/SettingsContext';
 import { AiCorrectionService } from '@/services/aiCorrectionService';
 import { DiaryService } from '@/services/diaryService';
 import type { AiCorrection, DiaryEntryInsert } from '@/types/database';
-import { Language } from '@/types/database';
 import type { DiaryFormData } from '@/types/ui';
 import { formatDate } from '@/utils/dateUtils';
+import { getLanguageName } from '@/utils/languageUtils';
 import { router, useLocalSearchParams, useNavigation } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { Alert } from 'react-native';
@@ -20,6 +21,7 @@ import { ScrollView, Separator, YStack, useTheme } from 'tamagui';
 export default function DiaryDetailScreen() {
   const { date } = useLocalSearchParams<{ date: string }>();
   const { user } = useAuth();
+  const { targetLanguage, nativeLanguage } = useSettings();
   const navigation = useNavigation();
   const theme = useTheme();
   const [saving, setSaving] = useState(false);
@@ -112,8 +114,8 @@ export default function DiaryDetailScreen() {
       return;
     }
 
-    if (!formData.content.trim() || !formData.content_native.trim()) {
-      Alert.alert('エラー', '英語と日本語の内容を両方入力してください');
+    if (!formData.content.trim()) {
+      Alert.alert('エラー', `${getLanguageName(targetLanguage)}の内容を入力してください`);
       return;
     }
 
@@ -164,12 +166,12 @@ export default function DiaryDetailScreen() {
 
   // AI添削ボタンクリック
   const handleAiCorrectionClick = useCallback(() => {
-    if (!formData.content.trim() || !formData.content_native.trim()) {
-      Alert.alert('エラー', '英語と日本語の内容を両方入力してください');
+    if (!formData.content.trim()) {
+      Alert.alert('エラー', `${getLanguageName(targetLanguage)}の内容を入力してください`);
       return;
     }
     setShowConfirmModal(true);
-  }, [formData.content, formData.content_native]);
+  }, [formData.content, targetLanguage]);
 
   // AI添削実行
   const handleConfirmCorrection = useCallback(async () => {
@@ -209,8 +211,8 @@ export default function DiaryDetailScreen() {
         diaryId as string,
         formData.content_native.trim(),
         formData.content.trim(),
-        Language.JA, // ネイティブ言語（日本語）
-        Language.EN, // ターゲット言語（英語）
+        nativeLanguage, // ネイティブ言語（設定から）
+        targetLanguage, // ターゲット言語（設定から）
       );
 
       if (error) throw error;
@@ -224,7 +226,7 @@ export default function DiaryDetailScreen() {
     } finally {
       setAiCorrecting(false);
     }
-  }, [user?.id, existingEntryId, formData]);
+  }, [user?.id, existingEntryId, formData, nativeLanguage, targetLanguage]);
 
   if (!date) {
     return null;
@@ -272,7 +274,7 @@ export default function DiaryDetailScreen() {
         >
           <AiCorrectionButton
             onPress={handleAiCorrectionClick}
-            disabled={!formData.content.trim() || !formData.content_native.trim()}
+            disabled={!formData.content.trim()}
             loading={aiCorrecting}
           />
         </YStack>
@@ -285,6 +287,7 @@ export default function DiaryDetailScreen() {
         onCancel={() => setShowConfirmModal(false)}
         nativeContent={formData.content_native}
         userContent={formData.content}
+        hasNativeContent={!!formData.content_native.trim()}
       />
 
       <LoadingOverlay

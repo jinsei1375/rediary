@@ -1,14 +1,16 @@
 import { PrimaryButton } from '@/components/common/PrimaryButton';
 import { DailyQuestion } from '@/components/home/DailyQuestion';
+import { StatCard } from '@/components/home/StatCard';
 import { useAuth } from '@/contexts/AuthContext';
 import { DiaryService } from '@/services';
+import { ExerciseAttemptService } from '@/services/exerciseAttemptService';
 import { TranslationExerciseService } from '@/services/translationExerciseService';
 import type { TranslationExercise } from '@/types/database';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { H2, Text, XStack, YStack, useTheme } from 'tamagui';
+import { ScrollView, Text, YStack, useTheme } from 'tamagui';
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -16,6 +18,8 @@ export default function HomeScreen() {
   const theme = useTheme();
   const [diaryCount, setDiaryCount] = useState<number>(0);
   const [dailyQuestion, setDailyQuestion] = useState<TranslationExercise | null>(null);
+  const [exerciseCount, setExerciseCount] = useState<number>(0);
+  const [answeredCount, setAnsweredCount] = useState<number>(0);
 
   const today = new Date().toISOString().split('T')[0];
 
@@ -41,6 +45,24 @@ export default function HomeScreen() {
           console.error('Error loading daily question:', questionError);
         } else if (!isCancelled) {
           setDailyQuestion(question);
+        }
+
+        // 登録済みネイティブ表現数を取得
+        const { count: exerciseTotal, error: exerciseError } =
+          await TranslationExerciseService.getTotalCount(user.id);
+        if (exerciseError) {
+          console.error('Error loading exercise count:', exerciseError);
+        } else if (!isCancelled) {
+          setExerciseCount(exerciseTotal ?? 0);
+        }
+
+        // 回答済み問題数を取得
+        const { count: answeredTotal, error: answeredError } =
+          await ExerciseAttemptService.getAnsweredExerciseCount(user.id);
+        if (answeredError) {
+          console.error('Error loading answered count:', answeredError);
+        } else if (!isCancelled) {
+          setAnsweredCount(answeredTotal ?? 0);
         }
       };
 
@@ -73,52 +95,52 @@ export default function HomeScreen() {
   };
 
   return (
-    <YStack flex={1} backgroundColor="$bgPrimary" padding="$6" gap="$6">
-      <YStack gap="$3" marginTop="$8">
-        <H2 fontSize="$9" fontWeight="bold" color="$textPrimary">
-          ようこそ
-        </H2>
-      </YStack>
+    <YStack flex={1} backgroundColor="$bgPrimary">
+      <ScrollView
+        flex={1}
+        contentContainerStyle={{
+          padding: 24,
+          gap: 24,
+        }}
+        showsVerticalScrollIndicator={false}
+      >
+        <YStack gap="$3">
+          <StatCard label="日記を書いた日数" value={diaryCount} unit="日" color="$accentBlue" />
+          <StatCard
+            label="登録済みネイティブ表現"
+            value={exerciseCount}
+            unit="個"
+            color="$accentGreen"
+          />
+          <StatCard label="回答済み問題数" value={answeredCount} unit="問" color="$accentYellow" />
+        </YStack>
 
-      <YStack backgroundColor="$cardBg" padding="$4" borderRadius="$6" alignItems="center" gap="$2">
-        <Text fontSize="$3" color="$textSecondary">
-          日記を書いた日数
-        </Text>
-        <XStack alignItems="baseline" gap="$2">
-          <Text fontSize="$10" fontWeight="bold" color="$accentBlue">
-            {diaryCount}
-          </Text>
-          <Text fontSize="$6" color="$textSecondary">
-            日
-          </Text>
-        </XStack>
-      </YStack>
+        {dailyQuestion && <DailyQuestion question={dailyQuestion} onPress={handleDailyQuestion} />}
 
-      <YStack gap="$4">
-        <PrimaryButton
-          size="$6"
-          onPress={handleWriteDiary}
-          borderRadius="$4"
-          icon={<Ionicons name="create-outline" size={24} color={theme.btnPrimaryText.get()} />}
-        >
-          <Text fontSize="$5" fontWeight="bold" color="$btnPrimaryText">
-            今日の日記を書く
-          </Text>
-        </PrimaryButton>
+        <YStack gap="$4">
+          <PrimaryButton
+            size="$6"
+            onPress={handleWriteDiary}
+            borderRadius="$4"
+            icon={<Ionicons name="create-outline" size={24} color={theme.btnPrimaryText.get()} />}
+          >
+            <Text fontSize="$5" fontWeight="bold" color="$btnPrimaryText">
+              今日の日記を書く
+            </Text>
+          </PrimaryButton>
 
-        <PrimaryButton
-          size="$6"
-          onPress={handleReview}
-          borderRadius="$4"
-          icon={<Ionicons name="book-outline" size={24} color={theme.btnPrimaryText.get()} />}
-        >
-          <Text fontSize="$5" fontWeight="bold" color="$btnPrimaryText">
-            復習する
-          </Text>
-        </PrimaryButton>
-      </YStack>
-
-      {dailyQuestion && <DailyQuestion question={dailyQuestion} onPress={handleDailyQuestion} />}
+          <PrimaryButton
+            size="$6"
+            onPress={handleReview}
+            borderRadius="$4"
+            icon={<Ionicons name="book-outline" size={24} color={theme.btnPrimaryText.get()} />}
+          >
+            <Text fontSize="$5" fontWeight="bold" color="$btnPrimaryText">
+              復習する
+            </Text>
+          </PrimaryButton>
+        </YStack>
+      </ScrollView>
     </YStack>
   );
 }

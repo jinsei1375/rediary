@@ -79,7 +79,11 @@ export class SubscriptionService {
    * RevenueCatのentitlementからプラン種別を判定 (MVP: proのみ)
    */
   private static getPlanFromEntitlements(customerInfo: CustomerInfo): SubscriptionPlan {
-    if (customerInfo.entitlements.active['pro']) {
+    // RevenueCatで設定したEntitlement識別子を確認
+    if (
+      customerInfo.entitlements.active['ReDiary Pro'] ||
+      customerInfo.entitlements.active['pro']
+    ) {
       return SubscriptionPlan.PRO;
     }
     return SubscriptionPlan.FREE;
@@ -95,7 +99,10 @@ export class SubscriptionService {
     try {
       const customerInfo = await Purchases.getCustomerInfo();
       const plan = this.getPlanFromEntitlements(customerInfo);
-      const expiresAt = customerInfo.entitlements.active['pro']?.expirationDate || null;
+      const expiresAt =
+        customerInfo.entitlements.active['ReDiary Pro']?.expirationDate ||
+        customerInfo.entitlements.active['pro']?.expirationDate ||
+        null;
 
       return { plan, expiresAt };
     } catch (error) {
@@ -109,7 +116,10 @@ export class SubscriptionService {
    */
   private static async syncWithSupabase(customerInfo: CustomerInfo): Promise<void> {
     const plan = this.getPlanFromEntitlements(customerInfo);
-    const expiresAt = customerInfo.entitlements.active['pro']?.expirationDate || null;
+    const expiresAt =
+      customerInfo.entitlements.active['ReDiary Pro']?.expirationDate ||
+      customerInfo.entitlements.active['pro']?.expirationDate ||
+      null;
 
     const { error } = await supabase
       .from('user_settings')

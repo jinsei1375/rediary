@@ -1,10 +1,12 @@
 import { useAuth } from '@/contexts/AuthContext';
+import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { Alert } from 'react-native';
-import { Button, ListItem, Text, YStack } from 'tamagui';
+import { Button, ListItem, Text, YStack, useTheme } from 'tamagui';
 
 export default function SettingsScreen() {
   const { signOut, user } = useAuth();
+  const theme = useTheme();
 
   const handleSignOut = async () => {
     Alert.alert('ログアウト', '本当にログアウトしますか？', [
@@ -37,30 +39,50 @@ export default function SettingsScreen() {
           backgroundColor="$cardBg"
           borderRadius="$4"
           onPress={() => router.push('/(tabs)/profile/settings')}
+          icon={<Ionicons name="settings-outline" size={24} color={theme.textPrimary.get()} />}
+        />
+        <ListItem
+          title="プレミアムプラン"
+          backgroundColor="$cardBg"
+          borderRadius="$4"
+          onPress={() => router.push('/(tabs)/profile/subscription')}
+          icon={<Ionicons name="star" size={24} color={theme.textPrimary.get()} />}
         />
         <ListItem
           title="利用ガイド"
           backgroundColor="$cardBg"
           borderRadius="$4"
           onPress={() => router.push('/(tabs)/profile/guide')}
+          icon={<Ionicons name="help-circle-outline" size={24} color={theme.textPrimary.get()} />}
         />
         <ListItem
           title="プライバシーポリシー"
           backgroundColor="$cardBg"
           borderRadius="$4"
           onPress={() => router.push('/(tabs)/profile/privacy')}
+          icon={
+            <Ionicons name="shield-checkmark-outline" size={24} color={theme.textPrimary.get()} />
+          }
         />
         <ListItem
           title="利用規約"
           backgroundColor="$cardBg"
           borderRadius="$4"
           onPress={() => router.push('/(tabs)/profile/terms')}
+          icon={<Ionicons name="document-text-outline" size={24} color={theme.textPrimary.get()} />}
         />
         <ListItem
           title="よくある質問"
           backgroundColor="$cardBg"
           borderRadius="$4"
           onPress={() => router.push('/(tabs)/profile/faq')}
+          icon={
+            <Ionicons
+              name="chatbubble-ellipses-outline"
+              size={24}
+              color={theme.textPrimary.get()}
+            />
+          }
         />
       </YStack>
 

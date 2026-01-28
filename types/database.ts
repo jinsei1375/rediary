@@ -10,6 +10,13 @@ export enum Language {
   JA = 'ja',
 }
 
+export enum SubscriptionPlan {
+  FREE = 'free',
+  PRO = 'pro',
+  PREMIUM = 'premium',
+  ENTERPRISE = 'enterprise',
+}
+
 export type Database = {
   public: {
     Tables: {
@@ -103,8 +110,15 @@ export type UserSettings = {
   theme: 'light' | 'dark' | 'system';
   native_language: Language;
   target_language: Language;
+  subscription_plan: 'free' | 'pro' | 'premium' | 'enterprise';
+  premium_expires_at: string | null;
   created_at: string;
   updated_at: string;
+};
+
+export type UserSubscription = {
+  plan: SubscriptionPlan;
+  expiresAt: string | null;
 };
 
 export type ExerciseAttempt = {

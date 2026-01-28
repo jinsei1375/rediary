@@ -107,7 +107,7 @@ export default function SubscriptionScreen() {
             <PricingCard
               title="月額プラン"
               price={monthlyPackage.product.priceString}
-              features={['AI添削無制限', '復習問題無制限', '高度な統計機能', 'PDF出力機能']}
+              features={['AI添削無制限', '復習問題無制限', '高度な統計機能']}
               onPress={() => subscribe(monthlyPackage)}
               loading={loading}
             />

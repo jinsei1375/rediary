@@ -42,7 +42,7 @@ export class AiCorrectionService {
   }
 
   /**
-   * OpenAI APIを使用してAI添削をリクエスト
+   * Supabase Edge Function経由でAI添削をリクエスト
    * @param nativeContent ユーザーが書きたかった内容（ネイティブ言語）
    * @param userContent ユーザーが実際に書いた内容（ターゲット言語）
    * @param nativeLanguage ネイティブ言語
@@ -55,153 +55,28 @@ export class AiCorrectionService {
     targetLanguage: Language,
   ): Promise<{ data: OpenAIResponse | null; error: Error | null }> {
     try {
-      const apiKey = process.env.EXPO_PUBLIC_OPENAI_API_KEY;
-      if (!apiKey) {
-        throw new Error('OpenAI APIキーが設定されていません');
-      }
-
-      const prompt = this.buildPrompt(nativeContent, userContent, nativeLanguage, targetLanguage);
-
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${apiKey}`,
+      const { data, error } = await supabase.functions.invoke('ai-correction', {
+        body: {
+          nativeContent,
+          userContent,
+          nativeLanguage,
+          targetLanguage,
         },
-        body: JSON.stringify({
-          model: 'gpt-4o-mini',
-          messages: [
-            {
-              role: 'system',
-              content:
-                "You are a language learning assistant. Analyze the user's intent in their native language and their writing in the target language, then provide corrections and learning points.",
-            },
-            {
-              role: 'user',
-              content: prompt,
-            },
-          ],
-          response_format: { type: 'json_object' },
-          temperature: 0.7,
-        }),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(`OpenAI API Error: ${errorData.error?.message || response.statusText}`);
+      if (error) {
+        throw error;
       }
 
-      const result = await response.json();
-      const content = result.choices[0]?.message?.content;
-
-      if (!content) {
-        throw new Error('OpenAI APIからのレスポンスが空です');
+      if (!data) {
+        throw new Error('Edge Functionからのレスポンスが空です');
       }
 
-      const parsed: OpenAIResponse = JSON.parse(content);
-
-      return { data: parsed, error: null };
+      return { data: data as OpenAIResponse, error: null };
     } catch (error) {
       console.error('AI correction request failed:', error);
       return { data: null, error: error as Error };
     }
-  }
-
-  /**
-   * OpenAI APIへ送信するプロンプトを構築
-   */
-  private static buildPrompt(
-    nativeContent: string,
-    userContent: string,
-    nativeLanguage: Language,
-    targetLanguage: Language,
-  ): string {
-    const languageNames = {
-      [Language.EN]: 'English',
-      [Language.JA]: 'Japanese',
-    };
-
-    const nativeLangName = languageNames[nativeLanguage] || nativeLanguage;
-    const targetLangName = languageNames[targetLanguage] || targetLanguage;
-
-    // ネイティブ言語が空の場合は別のプロンプトを使用
-    if (!nativeContent.trim()) {
-      return `
-Analyze the user's writing in the target language and provide corrections to make it sound more natural, in JSON format.
-
-**User's actual writing (in ${targetLangName}):**
-${userContent}
-
-Please respond in the following JSON format:
-{
-  "corrected_content": "Natural corrected content in ${targetLangName} (as a native speaker would write)",
-  "correction_points": [
-    {
-      "type": "grammar" | "vocabulary" | "style" | "other",
-      "original": "Original expression from user_content",
-      "corrected": "Corrected expression",
-      "explanation": "Explanation in ${nativeLangName} of why this correction is needed and how it improves the text",
-      "position": { "start": 0, "end": 10 } // Optional: position in original text
-    }
-  ],
-  "native_expressions": [
-    {
-      "expression": "Natural ${targetLangName} expression actually used in corrected_content",
-      "meaning": "Meaning of this expression in ${nativeLangName}",
-      "usage_example": "Example sentence in ${targetLangName}",
-      "usage_example_translation": "Translation of the usage_example in ${nativeLangName}",
-      "context": "Explanation in ${nativeLangName} of when and how to use this expression"
-    }
-  ]
-}
-
-**Important:**
-- All explanations (explanation, meaning, context, usage_example_translation) must be in ${nativeLangName}
-- usage_example must be in ${targetLangName}
-- native_expressions must only include expressions that are actually used in corrected_content
-- Limit to maximum 5 correction_points
-- Focus on making the text sound more natural and fluent
-`.trim();
-    }
-
-    return `
-Analyze the user's intent in their native language and their writing in the target language, then provide corrections in JSON format.
-
-**User's intended content (in ${nativeLangName}):**
-${nativeContent}
-
-**User's actual writing (in ${targetLangName}):**
-${userContent}
-
-Please respond in the following JSON format:
-{
-  "corrected_content": "Natural corrected content in ${targetLangName} (as a native speaker would write)",
-  "correction_points": [
-    {
-      "type": "grammar" | "vocabulary" | "style" | "other",
-      "original": "Original expression from user_content",
-      "corrected": "Corrected expression",
-      "explanation": "Explanation in ${nativeLangName} of why this correction is needed and how it improves the text",
-      "position": { "start": 0, "end": 10 } // Optional: position in original text
-    }
-  ],
-  "native_expressions": [
-    {
-      "expression": "Natural ${targetLangName} expression actually used in corrected_content",
-      "meaning": "Meaning of this expression in ${nativeLangName}",
-      "usage_example": "Example sentence in ${targetLangName}",
-      "usage_example_translation": "Translation of the usage_example in ${nativeLangName}",
-      "context": "Explanation in ${nativeLangName} of when and how to use this expression"
-    }
-  ]
-}
-
-**Important:**
-- All explanations (explanation, meaning, context, usage_example_translation) must be in ${nativeLangName}
-- usage_example must be in ${targetLangName}
-- native_expressions must only include expressions that are actually used in corrected_content
-- Limit to maximum 5 correction_points
-`.trim();
   }
 
   /**

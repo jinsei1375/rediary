@@ -75,12 +75,6 @@ export default function SubscriptionScreen() {
                   高度な統計機能
                 </Text>
               </XStack>
-              <XStack alignItems="center" gap="$2">
-                <Ionicons name="cloud-download" size={20} color="#10B981" />
-                <Text fontSize="$4" color="$textPrimary">
-                  PDF出力機能
-                </Text>
-              </XStack>
             </YStack>
           </YStack>
         </ScrollView>

@@ -1,5 +1,4 @@
 import { SubscriptionPlan } from '@/types/database';
-import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 import Purchases, {
   CustomerInfo,
@@ -9,16 +8,9 @@ import Purchases, {
 } from 'react-native-purchases';
 import { supabase } from './supabase';
 
-// Expo Go環境判定
-const isExpoGo = Constants.appOwnership === 'expo';
-
 const REVENUECAT_API_KEY = {
-  ios: isExpoGo
-    ? process.env.EXPO_PUBLIC_REVENUECAT_API_KEY_TEST || 'test_AlNyLRHPMaJVPCAxrLPNyrmsdDk'
-    : process.env.EXPO_PUBLIC_REVENUECAT_API_KEY_IOS || '',
-  android: isExpoGo
-    ? process.env.EXPO_PUBLIC_REVENUECAT_API_KEY_TEST || 'test_AlNyLRHPMaJVPCAxrLPNyrmsdDk'
-    : process.env.EXPO_PUBLIC_REVENUECAT_API_KEY_ANDROID || '',
+  ios: process.env.EXPO_PUBLIC_REVENUECAT_API_KEY_IOS,
+  android: process.env.EXPO_PUBLIC_REVENUECAT_API_KEY_ANDROID,
 };
 
 export class SubscriptionService {

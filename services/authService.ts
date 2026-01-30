@@ -1,4 +1,7 @@
+import * as AppleAuthentication from 'expo-apple-authentication';
+import * as Crypto from 'expo-crypto';
 import * as WebBrowser from 'expo-web-browser';
+import { Platform } from 'react-native';
 import { supabase } from './supabase';
 
 // WebBrowserを認証セッションに使用する準備（iOSで必要）
@@ -28,6 +31,55 @@ export class AuthService {
       password,
     });
     return { data, error };
+  }
+
+  // Appleでサインイン（iOS 13以降のみ）
+  static async signInWithApple() {
+    try {
+      // iOS以外では使用不可
+      if (Platform.OS !== 'ios') {
+        throw new Error('Apple認証はiOSでのみ利用可能です');
+      }
+
+      // Apple認証が利用可能かチェック
+      const isAvailable = await AppleAuthentication.isAvailableAsync();
+      if (!isAvailable) {
+        throw new Error('このデバイスではApple認証が利用できません');
+      }
+
+      // ノンス（一度だけ使用されるランダムな文字列）を生成
+      const nonce = Math.random().toString(36).substring(2, 10);
+      const hashedNonce = await Crypto.digestStringAsync(
+        Crypto.CryptoDigestAlgorithm.SHA256,
+        nonce
+      );
+
+      // Apple認証フローを開始
+      const credential = await AppleAuthentication.signInAsync({
+        requestedScopes: [
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+          AppleAuthentication.AppleAuthenticationScope.EMAIL,
+        ],
+        nonce: hashedNonce,
+      });
+
+      // Supabaseに認証情報を送信
+      const { data, error } = await supabase.auth.signInWithIdToken({
+        provider: 'apple',
+        token: credential.identityToken!,
+        nonce,
+      });
+
+      if (error) throw error;
+
+      return { data, error: null };
+    } catch (error: any) {
+      if (error.code === 'ERR_REQUEST_CANCELED') {
+        return { data: null, error: new Error('認証がキャンセルされました') };
+      }
+      console.error('Apple sign-in error:', error);
+      return { data: null, error };
+    }
   }
 
   // Googleでサインイン

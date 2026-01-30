@@ -9,6 +9,7 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signUp: (email: string, password: string) => Promise<{ error: any }>;
   signInWithGoogle: () => Promise<{ error: any }>;
+  signInWithApple: () => Promise<{ error: any }>;
   signOut: () => Promise<void>;
 }
 
@@ -60,6 +61,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return AuthService.signInWithGoogle();
   };
 
+  const signInWithApple = async () => {
+    return AuthService.signInWithApple();
+  };
+
   const signOut = async () => {
     // ローカル状態を先にクリア（UIがすぐに反応する）
     setSession(null);
@@ -71,7 +76,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ session, user, loading, signIn, signUp, signInWithGoogle, signOut }}
+      value={{ session, user, loading, signIn, signUp, signInWithGoogle, signInWithApple, signOut }}
     >
       {children}
     </AuthContext.Provider>

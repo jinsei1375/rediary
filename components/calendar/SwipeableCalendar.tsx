@@ -158,6 +158,28 @@ export const SwipeableCalendar = memo(
           marginLeft: 0,
         },
       },
+      'stylesheet.calendar.header': {
+        dayHeader: {
+          marginTop: 2,
+          marginBottom: 7,
+          width: 32,
+          textAlign: 'center',
+          fontSize: 12,
+          fontWeight: '400',
+          color: theme.color.get(),
+        },
+        // 週の開始が日曜日の場合: index 0 = Sun, 6 = Sat
+        // 週の開始が月曜日の場合: index 0 = Mon, 6 = Sun
+        ...(weekStart === 'sun'
+          ? {
+              dayTextAtIndex0: { color: theme.red10.get() }, // Sun
+              dayTextAtIndex6: { color: theme.blue10.get() }, // Sat
+            }
+          : {
+              dayTextAtIndex5: { color: theme.blue10.get() }, // Sat
+              dayTextAtIndex6: { color: theme.red10.get() }, // Sun
+            }),
+      },
       todayTextColor: theme.primary.get(),
       arrowColor: theme.color.get(),
       monthTextColor: theme.color.get(),

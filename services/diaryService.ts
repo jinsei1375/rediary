@@ -81,7 +81,7 @@ export class DiaryService {
   }
 
   /**
-   * カレンダー表示用：指定月の前後1ヶ月を含む3ヶ月分のタイトルと日付を取得
+   * カレンダー表示用：指定月の前後1ヶ月を含む3ヶ月分のタイトルと日付、AI添削の有無を取得
    */
   static async getTitlesForMonth(userId: string, year: number, month: number) {
     // 前月の1日
@@ -94,7 +94,13 @@ export class DiaryService {
 
     const { data, error } = await supabase
       .from('diary_entries')
-      .select('entry_date, title')
+      .select(
+        `
+        entry_date, 
+        title,
+        ai_corrections(id)
+      `,
+      )
       .eq('user_id', userId)
       .gte('entry_date', startDateStr)
       .lte('entry_date', endDateStr);
@@ -112,5 +118,32 @@ export class DiaryService {
       .eq('user_id', userId);
 
     return { count: count ?? 0, error };
+  }
+
+  /**
+   * AI添削未実施の日記一覧を取得（最新順、デフォルト5件）
+   */
+  static async getUncorrectedDiaries(userId: string, limit: number = 5) {
+    const { data, error } = await supabase
+      .from('diary_entries')
+      .select(
+        `
+        id,
+        title,
+        entry_date,
+        created_at,
+        ai_corrections(id)
+      `,
+      )
+      .eq('user_id', userId)
+      .order('entry_date', { ascending: false })
+      .limit(limit);
+
+    // ai_correctionsが存在しないエントリのみフィルタリング
+    const uncorrectedData = data?.filter((entry: any) => {
+      return !entry.ai_corrections || entry.ai_corrections.length === 0;
+    });
+
+    return { data: uncorrectedData ?? [], error };
   }
 }

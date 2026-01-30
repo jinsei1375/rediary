@@ -34,9 +34,10 @@ export default function CalendarScreen() {
     if (error || !data) return;
 
     const diaryMap: CalendarDiaryData = {};
-    data.forEach((entry) => {
+    data.forEach((entry: any) => {
       diaryMap[entry.entry_date] = {
         title: entry.title,
+        hasAiCorrection: entry.ai_corrections && entry.ai_corrections.length > 0,
       };
     });
     setDiaryData(diaryMap);

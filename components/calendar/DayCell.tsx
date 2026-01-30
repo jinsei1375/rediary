@@ -1,4 +1,5 @@
 import type { CalendarDiaryData } from '@/types/ui';
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { Pressable } from 'react-native';
 import type { DateData } from 'react-native-calendars';
@@ -28,6 +29,13 @@ export const DayCell = React.memo(
     const isWeekEnd = weekStart === 'sun' ? dayOfWeek === 6 : dayOfWeek === 0;
     const dayName = DAY_NAMES_EN[dayOfWeek];
 
+    // 曜日による日付色
+    const getDayColor = () => {
+      if (dayOfWeek === 0) return '$red10'; // 日曜日
+      if (dayOfWeek === 6) return '$blue10'; // 土曜日
+      return '$color';
+    };
+
     // 週表示の場合
     if (isWeekView) {
       return (
@@ -47,13 +55,31 @@ export const DayCell = React.memo(
           >
             {/* 日付と曜日 */}
             <YStack alignItems="center" minWidth={60}>
-              <Text fontSize="$7" fontWeight="bold" color={isToday ? '$primary' : '$color'}>
-                {day.day}
-              </Text>
+              <YStack
+                width={36}
+                height={36}
+                alignItems="center"
+                justifyContent="center"
+                borderRadius="$12"
+                backgroundColor={isToday ? '$primary' : 'transparent'}
+              >
+                <Text
+                  fontSize="$7"
+                  fontWeight="bold"
+                  color={isToday ? '$background' : getDayColor()}
+                >
+                  {day.day}
+                </Text>
+              </YStack>
               <Text fontSize="$3" color="$gray10">
                 {dayName}
               </Text>
             </YStack>
+
+            {/* AI添削アイコン */}
+            {hasDiary && diaryData[dateStr].hasAiCorrection && (
+              <Ionicons name="checkmark-circle-outline" size={20} color={theme.warning.get()} />
+            )}
 
             {/* タイトル（横並び） */}
             {hasDiary && (
@@ -90,9 +116,23 @@ export const DayCell = React.memo(
           borderColor="$borderColor"
           padding="$1"
         >
-          <Text fontSize="$3" color={isToday ? '$primary' : '$color'}>
-            {day.day}
-          </Text>
+          <XStack justifyContent="space-between" alignItems="flex-start" width="100%">
+            <YStack
+              width={20}
+              height={20}
+              alignItems="center"
+              justifyContent="center"
+              borderRadius="$12"
+              backgroundColor={isToday ? '$primary' : 'transparent'}
+            >
+              <Text fontSize="$3" color={isToday ? '$background' : getDayColor()}>
+                {day.day}
+              </Text>
+            </YStack>
+            {hasDiary && diaryData[dateStr].hasAiCorrection && (
+              <Ionicons name="checkmark-circle-outline" size={10} color={theme.warning.get()} />
+            )}
+          </XStack>
           {hasDiary && (
             <YStack
               backgroundColor="$primary"

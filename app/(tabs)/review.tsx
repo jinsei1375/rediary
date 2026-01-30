@@ -307,7 +307,7 @@ export default function ReviewScreen() {
   let content: React.ReactNode;
 
   if (loading) {
-    content = <Loading message="復習問題を読み込み中..." />;
+    content = <Loading />;
   } else if (showResults) {
     content = (
       <ResultScreen

@@ -64,10 +64,9 @@ export function filterExercises(
 
     // 最終解答日フィルター
     if (daysSinceLastAttempt > 0) {
-      // 一度も解いていない問題は常に含める
+      // 一度も解いていない問題は除外（「全て」を選択した場合のみ含まれる）
       if (attempts.length === 0) {
-        // ただし「覚えてない」回数フィルターが設定されている場合は除外
-        return notRememberedCount === 0;
+        return false;
       }
 
       const sortedAttempts = [...attempts].sort(
@@ -134,7 +133,7 @@ export function countFilteredExercises(
     // 最終解答日フィルター
     if (daysSinceLastAttempt > 0) {
       if (attempts.length === 0) {
-        return notRememberedCount === 0;
+        return false;
       }
 
       const sortedAttempts = [...attempts].sort(

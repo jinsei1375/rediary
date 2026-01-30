@@ -77,12 +77,14 @@ export const SwipeableCalendar = memo(
 
     const getPreviousMonth = (date: Date) => {
       const prevMonth = new Date(date);
+      prevMonth.setDate(1); // 日付を1日にしてから月を変更
       prevMonth.setMonth(prevMonth.getMonth() - 1);
       return prevMonth;
     };
 
     const getNextMonth = (date: Date) => {
       const nextMonth = new Date(date);
+      nextMonth.setDate(1); // 日付を1日にしてから月を変更
       nextMonth.setMonth(nextMonth.getMonth() + 1);
       return nextMonth;
     };

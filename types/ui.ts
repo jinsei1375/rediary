@@ -37,6 +37,7 @@ export type CalendarDiary = {
 export type CalendarDiaryData = {
   [date: string]: {
     title: string;
+    hasAiCorrection: boolean;
   };
 };
 

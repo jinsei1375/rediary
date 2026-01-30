@@ -1,6 +1,7 @@
 import { PrimaryButton } from '@/components/common/PrimaryButton';
 import { DailyQuestion } from '@/components/home/DailyQuestion';
 import { StatCard } from '@/components/home/StatCard';
+import { UncorrectedDiaryList } from '@/components/home/UncorrectedDiaryList';
 import { useAuth } from '@/contexts/AuthContext';
 import { DiaryService } from '@/services';
 import { ExerciseAttemptService } from '@/services/exerciseAttemptService';
@@ -21,6 +22,7 @@ export default function HomeScreen() {
   const [exerciseCount, setExerciseCount] = useState<number>(0);
   const [answeredCount, setAnsweredCount] = useState<number>(0);
   const [animationReady, setAnimationReady] = useState(false);
+  const [uncorrectedDiaries, setUncorrectedDiaries] = useState<any[]>([]);
 
   const today = new Date().toISOString().split('T')[0];
 
@@ -32,12 +34,14 @@ export default function HomeScreen() {
         if (!user?.id) return;
 
         // 全データを並列で取得
-        const [diaryResult, questionResult, exerciseResult, answeredResult] = await Promise.all([
-          DiaryService.getTotalCount(user.id),
-          TranslationExerciseService.getDailyQuestion(user.id),
-          TranslationExerciseService.getTotalCount(user.id),
-          ExerciseAttemptService.getAnsweredExerciseCount(user.id),
-        ]);
+        const [diaryResult, questionResult, exerciseResult, answeredResult, uncorrectedResult] =
+          await Promise.all([
+            DiaryService.getTotalCount(user.id),
+            TranslationExerciseService.getDailyQuestion(user.id),
+            TranslationExerciseService.getTotalCount(user.id),
+            ExerciseAttemptService.getAnsweredExerciseCount(user.id),
+            DiaryService.getUncorrectedDiaries(user.id, 5),
+          ]);
 
         if (isCancelled) return;
 
@@ -67,6 +71,13 @@ export default function HomeScreen() {
           console.error('Error loading answered count:', answeredResult.error);
         } else {
           setAnsweredCount(answeredResult.count ?? 0);
+        }
+
+        // AI添削未実施日記
+        if (uncorrectedResult.error) {
+          console.error('Error loading uncorrected diaries:', uncorrectedResult.error);
+        } else {
+          setUncorrectedDiaries(uncorrectedResult.data ?? []);
         }
 
         // 全データロード完了後、アニメーション開始
@@ -136,8 +147,6 @@ export default function HomeScreen() {
           />
         </YStack>
 
-        {dailyQuestion && <DailyQuestion question={dailyQuestion} onPress={handleDailyQuestion} />}
-
         <YStack gap="$4">
           <PrimaryButton
             size="$6"
@@ -154,13 +163,16 @@ export default function HomeScreen() {
             size="$6"
             onPress={handleReview}
             borderRadius="$4"
-            icon={<Ionicons name="book-outline" size={24} color={theme.btnPrimaryText.get()} />}
+            icon={<Ionicons name="school-outline" size={24} color={theme.btnPrimaryText.get()} />}
           >
             <Text fontSize="$5" fontWeight="bold" color="$btnPrimaryText">
               復習する
             </Text>
           </PrimaryButton>
         </YStack>
+
+        {dailyQuestion && <DailyQuestion question={dailyQuestion} onPress={handleDailyQuestion} />}
+        {uncorrectedDiaries.length > 0 && <UncorrectedDiaryList diaries={uncorrectedDiaries} />}
       </ScrollView>
     </YStack>
   );

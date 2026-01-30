@@ -1,7 +1,8 @@
+import { getContactMailtoLink } from '@/constants/contact';
 import { useAuth } from '@/contexts/AuthContext';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { Alert } from 'react-native';
+import { Alert, Linking } from 'react-native';
 import { Button, ListItem, Text, YStack, useTheme } from 'tamagui';
 
 export default function SettingsScreen() {
@@ -28,7 +29,7 @@ export default function SettingsScreen() {
         プロフィール
       </Text>
       {user && (
-        <Text fontSize="$3" color="$placeholderColor" marginBottom="$4">
+        <Text fontSize="$3" color="$placeholderColor" marginBottom="$8">
           {user.email}
         </Text>
       )}
@@ -83,6 +84,13 @@ export default function SettingsScreen() {
               color={theme.textPrimary.get()}
             />
           }
+        />
+        <ListItem
+          title="お問い合わせ"
+          backgroundColor="$cardBg"
+          borderRadius="$4"
+          onPress={() => Linking.openURL(getContactMailtoLink())}
+          icon={<Ionicons name="mail-outline" size={24} color={theme.textPrimary.get()} />}
         />
       </YStack>
 

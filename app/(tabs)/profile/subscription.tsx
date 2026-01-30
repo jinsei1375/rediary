@@ -19,7 +19,7 @@ export default function SubscriptionScreen() {
   if (loading && !offerings) {
     return (
       <YStack flex={1} backgroundColor="$bgPrimary">
-        <Header title="プレミアムプラン" onBack={() => router.back()} />
+        <Header title="プレミアムプラン" onBack={() => router.push('/(tabs)/profile')} />
         <YStack flex={1} justifyContent="center" alignItems="center">
           <Spinner size="large" color="$primary" />
         </YStack>

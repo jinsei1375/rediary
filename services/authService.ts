@@ -176,4 +176,34 @@ export class AuthService {
       callback(session);
     });
   }
+
+  // アカウント削除
+  // 注意: Supabase の RLS（Row Level Security）とカスケード削除により、
+  // 関連する全てのデータ（diary_entries, ai_corrections, translation_exercises等）が自動削除されます
+  static async deleteAccount() {
+    try {
+      // 現在のユーザーを取得
+      const { data: userData, error: userError } = await supabase.auth.getUser();
+      if (userError || !userData?.user) {
+        throw new Error('ユーザー情報の取得に失敗しました');
+      }
+
+      // Supabase Admin APIを使用してユーザーを削除
+      // 注意: この操作は取り消せません
+      const { error } = await supabase.rpc('delete_user');
+
+      if (error) {
+        console.error('Delete account error:', error);
+        throw error;
+      }
+
+      // ローカルセッションをクリア
+      await supabase.auth.signOut();
+
+      return { error: null };
+    } catch (error) {
+      console.error('Account deletion failed:', error);
+      return { error };
+    }
+  }
 }

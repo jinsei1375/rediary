@@ -1,6 +1,8 @@
 import { Header } from '@/components/common/Header';
 import { SaveButton } from '@/components/common/PrimaryButton';
+import { useAuth } from '@/contexts/AuthContext';
 import { useSettings } from '@/contexts/SettingsContext';
+import { AuthService } from '@/services/authService';
 import { Language } from '@/types/database';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
@@ -9,12 +11,14 @@ import { Button, Text, XStack, YStack } from 'tamagui';
 
 export default function ProfileSettingsScreen() {
   const { settings, loading, updateSettings } = useSettings();
+  const { signOut } = useAuth();
   const [weekStart, setWeekStart] = useState<'sun' | 'mon'>('sun');
   const [viewMode, setViewMode] = useState<'month' | 'week'>('month');
   const [theme, setTheme] = useState<'light' | 'dark' | 'system'>('system');
   const [nativeLanguage, setNativeLanguage] = useState<Language>(Language.JA);
   const [targetLanguage, setTargetLanguage] = useState<Language>(Language.EN);
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     if (settings) {
@@ -43,6 +47,53 @@ export default function ProfileSettingsScreen() {
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      'アカウント削除',
+      'アカウントを削除すると、全ての日記、AI添削、翻訳問題などのデータが完全に削除されます。この操作は取り消せません。\n\n本当に削除しますか？',
+      [
+        {
+          text: 'キャンセル',
+          style: 'cancel',
+        },
+        {
+          text: '削除する',
+          style: 'destructive',
+          onPress: () => {
+            // 2段階確認
+            Alert.alert('最終確認', '本当にアカウントを削除してもよろしいですか？', [
+              {
+                text: 'キャンセル',
+                style: 'cancel',
+              },
+              {
+                text: '削除',
+                style: 'destructive',
+                onPress: async () => {
+                  try {
+                    setDeleting(true);
+                    const { error } = await AuthService.deleteAccount();
+                    if (error) {
+                      throw error;
+                    }
+                    // サインアウトして初期画面へ
+                    await signOut();
+                    router.replace('/login');
+                  } catch (e) {
+                    console.error('Delete account error:', e);
+                    Alert.alert('エラー', 'アカウントの削除に失敗しました');
+                  } finally {
+                    setDeleting(false);
+                  }
+                },
+              },
+            ]);
+          },
+        },
+      ],
+    );
   };
 
   if (loading) {
@@ -155,14 +206,26 @@ export default function ProfileSettingsScreen() {
 
           {/* 保存ボタン */}
           <SaveButton size="$5" disabled={saving} marginTop="$4" onPress={handleSave}>
-            {saving ? (
-              <ActivityIndicator color="white" />
-            ) : (
-              <Text color="$background" fontWeight="600">
-                保存
-              </Text>
-            )}
+            {saving ? <ActivityIndicator color="white" /> : <Text color="$background">保存</Text>}
           </SaveButton>
+
+          {/* アカウント削除 */}
+          <YStack alignItems="center" marginTop="$12" marginBottom="$6" paddingTop="$8">
+            <Button
+              chromeless
+              disabled={deleting}
+              onPress={handleDeleteAccount}
+              paddingVertical="$2"
+            >
+              {deleting ? (
+                <ActivityIndicator size="small" />
+              ) : (
+                <Text fontSize="$2" color="$gray9" textDecorationLine="underline">
+                  アカウントを削除
+                </Text>
+              )}
+            </Button>
+          </YStack>
         </YStack>
       </ScrollView>
     </YStack>

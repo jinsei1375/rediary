@@ -3,7 +3,7 @@ import { useSettings } from '@/contexts/SettingsContext';
 import type { DiaryFormData } from '@/types/ui';
 import { getLanguageName } from '@/utils/languageUtils';
 import React, { useCallback } from 'react';
-import { Spinner, Text, YStack } from 'tamagui';
+import { YStack } from 'tamagui';
 import { DiaryTextInput } from './DiaryTextInput';
 
 type DiaryFormProps = {
@@ -67,23 +67,7 @@ export const DiaryForm = React.memo(
           maxLength={MAX_LENGTH_JAPANESE}
         />
 
-        <SaveButton
-          disabled={isSaveDisabled}
-          marginTop="$4"
-          height="$5"
-          borderRadius="$3"
-          onPress={onSave}
-          alignItems="center"
-          justifyContent="center"
-        >
-          {saving ? (
-            <Spinner color="$background" />
-          ) : (
-            <Text color="$background" fontSize="$5" fontWeight="bold">
-              保存
-            </Text>
-          )}
-        </SaveButton>
+        <SaveButton loading={saving} onPress={onSave} marginTop="$4" />
       </YStack>
     );
   },

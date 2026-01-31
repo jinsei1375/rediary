@@ -205,9 +205,7 @@ export default function ProfileSettingsScreen() {
           </YStack>
 
           {/* 保存ボタン */}
-          <SaveButton size="$5" disabled={saving} marginTop="$4" onPress={handleSave}>
-            {saving ? <ActivityIndicator color="white" /> : <Text color="$background">保存</Text>}
-          </SaveButton>
+          <SaveButton loading={saving} onPress={handleSave} marginTop="$4" />
 
           {/* アカウント削除 */}
           <YStack alignItems="center" marginTop="$12" marginBottom="$6" paddingTop="$8">

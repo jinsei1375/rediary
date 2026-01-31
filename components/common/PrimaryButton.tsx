@@ -1,5 +1,6 @@
 import type { ButtonProps } from 'tamagui';
-import { Button } from 'tamagui';
+import { Button, Text, YStack } from 'tamagui';
+import { ButtonLoadingOverlay } from './ButtonLoadingOverlay';
 
 type BaseButtonProps = Omit<ButtonProps, 'children'> & {
   children: React.ReactNode;
@@ -99,19 +100,31 @@ export const ModalButton = ({
 };
 
 // 保存ボタン（状態によって色が変わる）
-export const SaveButton = ({ children, disabled, pressStyle, ...props }: BaseButtonProps) => {
+type SaveButtonProps = Omit<BaseButtonProps, 'children' | 'disabled'> & {
+  loading?: boolean;
+  onPress: () => void;
+};
+
+export const SaveButton = ({ loading = false, pressStyle, ...props }: SaveButtonProps) => {
   return (
-    <BaseButton
-      backgroundColor={disabled ? '$gray8' : '$primary'}
-      disabled={disabled}
-      pressStyle={{
-        backgroundColor: disabled ? '$gray8' : '$primaryPress',
-        ...pressStyle,
-      }}
-      {...props}
-    >
-      {children}
-    </BaseButton>
+    <YStack position="relative" height="$5" {...props}>
+      <BaseButton
+        size="$5"
+        borderRadius="$3"
+        backgroundColor="$primary"
+        disabled={loading}
+        pressStyle={{
+          backgroundColor: '$primaryPress',
+          ...pressStyle,
+        }}
+        onPress={props.onPress}
+      >
+        <Text color="$background" fontWeight="bold">
+          保存
+        </Text>
+      </BaseButton>
+      <ButtonLoadingOverlay visible={loading} />
+    </YStack>
   );
 };
 

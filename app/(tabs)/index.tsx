@@ -7,6 +7,7 @@ import { DiaryService } from '@/services';
 import { ExerciseAttemptService } from '@/services/exerciseAttemptService';
 import { TranslationExerciseService } from '@/services/translationExerciseService';
 import type { TranslationExercise } from '@/types/database';
+import { getTodayString } from '@/utils/dateUtils';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
@@ -24,7 +25,7 @@ export default function HomeScreen() {
   const [animationReady, setAnimationReady] = useState(false);
   const [uncorrectedDiaries, setUncorrectedDiaries] = useState<any[]>([]);
 
-  const today = new Date().toISOString().split('T')[0];
+  const today = getTodayString();
 
   useFocusEffect(
     useCallback(() => {

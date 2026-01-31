@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useSettings } from '@/contexts/SettingsContext';
 import { DiaryService } from '@/services/diaryService';
 import type { CalendarDiaryData } from '@/types/ui';
+import { getTodayString } from '@/utils/dateUtils';
 import { useFocusEffect } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useState } from 'react';
@@ -22,7 +23,7 @@ export default function CalendarScreen() {
   const { user } = useAuth();
   const { weekStart, viewMode, loading: settingsLoading } = useSettings();
 
-  const today = new Date().toISOString().split('T')[0];
+  const today = getTodayString();
 
   const loadDiaryDates = useCallback(async () => {
     if (!user?.id) return;

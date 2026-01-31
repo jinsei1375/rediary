@@ -1,6 +1,27 @@
 // 日付関連のユーティリティ関数
 
 /**
+ * ローカルタイムゾーンで今日の日付を YYYY-MM-DD 形式で取得
+ * @returns YYYY-MM-DD形式の日付文字列
+ */
+export const getTodayString = (): string => {
+  const today = new Date();
+  return formatDateToString(today);
+};
+
+/**
+ * Date オブジェクトを YYYY-MM-DD 形式の文字列に変換（ローカルタイムゾーン）
+ * @param date Date オブジェクト
+ * @returns YYYY-MM-DD形式の日付文字列
+ */
+export const formatDateToString = (date: Date): string => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
+/**
  * 日付文字列をフォーマットする（先頭の0を削除）
  * @param dateString YYYY-MM-DD形式の日付文字列
  * @param separator 区切り文字（デフォルト: '/'）

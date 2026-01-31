@@ -1,4 +1,5 @@
 import type { DiaryEntryInsert, DiaryEntryUpdate } from '@/types/database';
+import { formatDateToString } from '@/utils/dateUtils';
 import { supabase } from './supabase';
 
 export class DiaryService {
@@ -66,8 +67,8 @@ export class DiaryService {
     const firstDay = new Date(year, month - 1, 1);
     const lastDay = new Date(year, month, 0);
 
-    const startDate = firstDay.toISOString().split('T')[0];
-    const endDate = lastDay.toISOString().split('T')[0];
+    const startDate = formatDateToString(firstDay);
+    const endDate = formatDateToString(lastDay);
 
     const { data, error } = await supabase
       .from('diary_entries')
@@ -89,8 +90,8 @@ export class DiaryService {
     // 次月の最終日
     const endDate = new Date(year, month + 1, 0);
 
-    const startDateStr = startDate.toISOString().split('T')[0];
-    const endDateStr = endDate.toISOString().split('T')[0];
+    const startDateStr = formatDateToString(startDate);
+    const endDateStr = formatDateToString(endDate);
 
     const { data, error } = await supabase
       .from('diary_entries')

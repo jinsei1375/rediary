@@ -1,4 +1,5 @@
 import type { TranslationExerciseInsert, TranslationExerciseUpdate } from '@/types/database';
+import { getTodayString } from '@/utils/dateUtils';
 import { supabase } from './supabase';
 
 export class TranslationExerciseService {
@@ -72,7 +73,7 @@ export class TranslationExerciseService {
    * スケジュール日付で翻訳問題を取得（復習対象）
    */
   static async getScheduled(userId: string, upToDate?: string) {
-    const targetDate = upToDate || new Date().toISOString().split('T')[0];
+    const targetDate = upToDate || getTodayString();
     const { data, error } = await supabase
       .from('translation_exercises')
       .select('*')

@@ -1,5 +1,6 @@
 import type { AiCorrectionInsert, NativeExpression, OpenAIResponse } from '@/types/database';
 import { Language } from '@/types/database';
+import { getTodayString } from '@/utils/dateUtils';
 import { supabase } from './supabase';
 import { TranslationExerciseService } from './translationExerciseService';
 
@@ -147,7 +148,7 @@ export class AiCorrectionService {
       native_language: nativeLanguage,
       target_language: targetLanguage,
       target_text: expr.usage_example, // target_languageの文章（英語の使用例）
-      scheduled_date: new Date().toISOString().split('T')[0], // 今日の日付
+      scheduled_date: getTodayString(), // 今日の日付
     }));
 
     const { error } = await TranslationExerciseService.createMany(exercises);

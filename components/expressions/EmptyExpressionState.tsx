@@ -1,4 +1,5 @@
 import { PrimaryButton } from '@/components/common/PrimaryButton';
+import { getTodayString } from '@/utils/dateUtils';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React from 'react';
@@ -9,7 +10,7 @@ export const EmptyExpressionState = React.memo(() => {
   const router = useRouter();
 
   const handleWriteDiary = () => {
-    const today = new Date().toISOString().split('T')[0];
+    const today = getTodayString();
     router.push({
       pathname: '/(tabs)/diary/[date]',
       params: { date: today },

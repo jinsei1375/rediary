@@ -1,3 +1,4 @@
+import { FreePlanNotice } from '@/components/common/FreePlanNotice';
 import React from 'react';
 import { H4, ScrollView, YStack, useTheme } from 'tamagui';
 import { ExerciseCountDisplay } from './ExerciseCountDisplay';
@@ -12,6 +13,12 @@ type FilterSettingsProps = {
   questionCount: number;
   excludeRemembered: boolean;
   exerciseCount: number;
+  reviewLimitStatus: {
+    isAllowed: boolean;
+    isPremium: boolean;
+    todayCount: number;
+    limit: number;
+  } | null;
   onIsRandomChange: (value: boolean) => void;
   onNotRememberedCountChange: (value: number) => void;
   onDaysSinceLastAttemptChange: (value: number) => void;
@@ -53,6 +60,7 @@ export const FilterSettings = React.memo(
     questionCount,
     excludeRemembered,
     exerciseCount,
+    reviewLimitStatus,
     onIsRandomChange,
     onNotRememberedCountChange,
     onDaysSinceLastAttemptChange,
@@ -83,6 +91,15 @@ export const FilterSettings = React.memo(
               表示設定
             </H4>
           </YStack>
+
+          {reviewLimitStatus && !reviewLimitStatus.isPremium && (
+            <FreePlanNotice
+              title={`本日の復習回数: ${reviewLimitStatus.todayCount}/${reviewLimitStatus.limit}回`}
+              message="無料プランでは復習問題は1日1回までです。"
+              upgradeText="有料プランで無制限に復習可能に →"
+              showWarningIcon={!reviewLimitStatus.isAllowed}
+            />
+          )}
 
           <FilterSelect
             label="問題数"
@@ -120,7 +137,12 @@ export const FilterSettings = React.memo(
 
           <ExerciseCountDisplay count={exerciseCount} />
 
-          <StartReviewButton onPress={onStartReview} disabled={exerciseCount === 0} />
+          <StartReviewButton
+            onPress={onStartReview}
+            disabled={
+              exerciseCount === 0 || (reviewLimitStatus !== null && !reviewLimitStatus.isAllowed)
+            }
+          />
         </YStack>
       </ScrollView>
     );

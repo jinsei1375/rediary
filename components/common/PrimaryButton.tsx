@@ -100,19 +100,25 @@ export const ModalButton = ({
 };
 
 // 保存ボタン（状態によって色が変わる）
-type SaveButtonProps = Omit<BaseButtonProps, 'children' | 'disabled'> & {
+type SaveButtonProps = Omit<BaseButtonProps, 'children'> & {
   loading?: boolean;
   onPress: () => void;
 };
 
-export const SaveButton = ({ loading = false, pressStyle, ...props }: SaveButtonProps) => {
+export const SaveButton = ({
+  loading = false,
+  disabled = false,
+  pressStyle,
+  ...props
+}: SaveButtonProps) => {
   return (
     <YStack position="relative" height="$5" {...props}>
       <BaseButton
         size="$5"
         borderRadius="$3"
         backgroundColor="$primary"
-        disabled={loading}
+        disabled={loading || disabled}
+        opacity={disabled ? 0.5 : 1}
         pressStyle={{
           backgroundColor: '$primaryPress',
           ...pressStyle,

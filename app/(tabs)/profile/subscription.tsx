@@ -1,83 +1,33 @@
 import { Header } from '@/components/common/Header';
 import { SecondaryButton } from '@/components/common/PrimaryButton';
 import { PricingCard } from '@/components/subscription/PricingCard';
-import { useSubscription } from '@/hooks/useSubscription';
+import { useSubscriptionStore } from '@/stores/subscriptionStore';
 import { SubscriptionPlan } from '@/types/database';
-import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import React from 'react';
-import { ScrollView, Spinner, Text, XStack, YStack } from 'tamagui';
+import { ScrollView, Spinner, Text, YStack } from 'tamagui';
 
 export default function SubscriptionScreen() {
-  const { plan, isPremium, offerings, subscribe, restore, loading, expiresAt } = useSubscription();
+  const plan = useSubscriptionStore((state) => state.plan);
+  const isPremium = useSubscriptionStore((state) => state.isPremium());
+  const offerings = useSubscriptionStore((state) => state.offerings);
+  const expiresAt = useSubscriptionStore((state) => state.expiresAt);
+  const loading = useSubscriptionStore((state) => state.loading);
+  const subscribe = useSubscriptionStore((state) => state.subscribe);
+  const restore = useSubscriptionStore((state) => state.restore);
 
   // プラン名の表示用ヘルパー (MVP: ProとFreeのみ)
   const getPlanDisplayName = () => {
-    return plan === SubscriptionPlan.PRO ? 'プロ会員' : '無料会員';
+    return plan === SubscriptionPlan.PRO ? 'Proプラン' : '無料プラン';
   };
 
   if (loading && !offerings) {
     return (
       <YStack flex={1} backgroundColor="$bgPrimary">
-        <Header title="プレミアムプラン" onBack={() => router.push('/(tabs)/profile')} />
+        <Header title="利用プラン" onBack={() => router.push('/(tabs)/profile')} />
         <YStack flex={1} justifyContent="center" alignItems="center">
           <Spinner size="large" color="$primary" />
         </YStack>
-      </YStack>
-    );
-  }
-
-  if (isPremium) {
-    return (
-      <YStack flex={1} backgroundColor="$bgPrimary">
-        <Header title="プレミアムプラン" onBack={() => router.push('/(tabs)/profile')} />
-        <ScrollView flex={1}>
-          <YStack padding="$6" gap="$4" alignItems="center" paddingTop="$8">
-            <Ionicons name="checkmark-circle" size={80} color="#10B981" />
-            <Text fontSize="$8" fontWeight="bold" color="$textPrimary">
-              {getPlanDisplayName()}
-            </Text>
-            <Text fontSize="$4" color="$textSecondary" textAlign="center">
-              すべての機能をご利用いただけます
-            </Text>
-            {expiresAt && (
-              <Text fontSize="$3" color="$textTertiary" textAlign="center">
-                次回更新日: {new Date(expiresAt).toLocaleDateString('ja-JP')}
-              </Text>
-            )}
-
-            <YStack
-              marginTop="$6"
-              backgroundColor="$cardBg"
-              borderRadius="$4"
-              padding="$4"
-              gap="$3"
-              width="100%"
-            >
-              <Text fontSize="$5" fontWeight="600" color="$textPrimary">
-                プレミアム特典
-              </Text>
-              <XStack alignItems="center" gap="$2">
-                <Ionicons name="sparkles" size={20} color="#10B981" />
-                <Text fontSize="$4" color="$textPrimary">
-                  AI添削無制限
-                </Text>
-              </XStack>
-              <XStack alignItems="center" gap="$2">
-                <Ionicons name="book" size={20} color="#10B981" />
-                <Text fontSize="$4" color="$textPrimary">
-                  復習問題無制限
-                </Text>
-              </XStack>
-              <XStack alignItems="center" gap="$2">
-                <Ionicons name="stats-chart" size={20} color="#10B981" />
-                <Text fontSize="$4" color="$textPrimary">
-                  高度な統計機能
-                </Text>
-              </XStack>
-            </YStack>
-          </YStack>
-        </ScrollView>
       </YStack>
     );
   }
@@ -88,30 +38,78 @@ export default function SubscriptionScreen() {
 
   return (
     <YStack flex={1} backgroundColor="$bgPrimary">
-      <Header title="プレミアムプラン" onBack={() => router.back()} />
+      <Header title="利用プラン" onBack={() => router.push('/(tabs)/profile')} />
       <ScrollView flex={1}>
         <YStack padding="$6" gap="$6">
-          <YStack gap="$3" alignItems="center">
+          {/* 利用中のプラン */}
+          <YStack gap="$3">
             <Text fontSize="$4" color="$textSecondary" textAlign="center">
-              より充実した学習体験を
+              利用中のプラン
             </Text>
+            <YStack backgroundColor="$cardBg" borderRadius="$4" padding="$4" gap="$2">
+              {isPremium ? (
+                <YStack gap="$2">
+                  <Text fontSize="$4" color="$textPrimary" fontWeight="500">
+                    {getPlanDisplayName()}
+                  </Text>
+                  {expiresAt && (
+                    <Text fontSize="$3" color="$textSecondary">
+                      次回更新日: {new Date(expiresAt).toLocaleDateString('ja-JP')}
+                    </Text>
+                  )}
+                  {monthlyPackage && (
+                    <Text fontSize="$3" color="$textSecondary">
+                      請求額: {monthlyPackage.product.priceString}/月
+                    </Text>
+                  )}
+                </YStack>
+              ) : (
+                <Text fontSize="$4" color="$textSecondary">
+                  {getPlanDisplayName()}
+                </Text>
+              )}
+            </YStack>
           </YStack>
 
-          {monthlyPackage ? (
+          {/* プラン一覧 */}
+          <YStack gap="$3">
+            <Text fontSize="$4" color="$textSecondary" textAlign="center">
+              プラン一覧
+            </Text>
+
+            {/* 月額プラン */}
+            {monthlyPackage ? (
+              <PricingCard
+                title="Proプラン(月額)"
+                price={monthlyPackage.product.priceString}
+                features={[
+                  '過去の日記も自由に編集',
+                  '復習問題が無制限（1日何回でも）',
+                  'AI添削機能が使える',
+                ]}
+                onPress={() => subscribe(monthlyPackage)}
+                loading={loading}
+                isCurrentPlan={isPremium}
+              />
+            ) : (
+              <YStack backgroundColor="$cardBg" borderRadius="$4" padding="$6" alignItems="center">
+                <Text fontSize="$4" color="$textSecondary">
+                  プランの読み込みに失敗しました
+                </Text>
+              </YStack>
+            )}
+            {/* 無料プラン */}
             <PricingCard
-              title="月額プラン"
-              price={monthlyPackage.product.priceString}
-              features={['AI添削無制限', '復習問題無制限', '高度な統計機能']}
-              onPress={() => subscribe(monthlyPackage)}
-              loading={loading}
+              title="無料プラン"
+              price="¥0"
+              features={['Rediaryの基本的な機能を利用できます']}
+              onPress={() => {}}
+              loading={false}
+              disabled={true}
+              isCurrentPlan={!isPremium}
+              hideButton={isPremium}
             />
-          ) : (
-            <YStack backgroundColor="$cardBg" borderRadius="$4" padding="$6" alignItems="center">
-              <Text fontSize="$4" color="$textSecondary">
-                プランの読み込みに失敗しました
-              </Text>
-            </YStack>
-          )}
+          </YStack>
 
           <SecondaryButton onPress={restore} marginTop="$4" disabled={loading}>
             <Text color="$textPrimary">{loading ? '処理中...' : '購入を復元'}</Text>

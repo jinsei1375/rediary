@@ -104,6 +104,9 @@ export class SubscriptionService {
         customerInfo.entitlements.active['pro']?.expirationDate ||
         null;
 
+      // Supabaseと同期
+      await this.syncWithSupabase(customerInfo);
+
       return { plan, expiresAt };
     } catch (error) {
       console.error('Error checking subscription status:', error);

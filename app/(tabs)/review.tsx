@@ -7,7 +7,9 @@ import { ReviewCard } from '@/components/review/ReviewCard';
 import { ReviewProgress } from '@/components/review/ReviewProgress';
 import { useAuth } from '@/contexts/AuthContext';
 import { ExerciseAttemptService } from '@/services/exerciseAttemptService';
+import { FeatureLimitError, FeatureLimitService } from '@/services/featureLimitService';
 import { TranslationExerciseService } from '@/services/translationExerciseService';
+import { useSubscriptionStore } from '@/stores/subscriptionStore';
 import type { ExerciseAttempt, ExerciseResult, TranslationExercise } from '@/types/database';
 import { countFilteredExercises, filterExercises } from '@/utils/exerciseFilter';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
@@ -18,8 +20,16 @@ import { ScrollView, YStack, useTheme } from 'tamagui';
 
 export default function ReviewScreen() {
   const { user } = useAuth();
+  const isPremium = useSubscriptionStore((state) => state.isPremium());
+  const plan = useSubscriptionStore((state) => state.plan);
   const theme = useTheme();
   const navigation = useNavigation();
+  const [reviewLimitStatus, setReviewLimitStatus] = useState<{
+    isAllowed: boolean;
+    isPremium: boolean;
+    todayCount: number;
+    limit: number;
+  } | null>(null);
   const params = useLocalSearchParams();
   const dailyQuestionId = params.dailyQuestionId as string | undefined;
   const [exercises, setExercises] = useState<TranslationExercise[]>([]);
@@ -131,20 +141,72 @@ export default function ReviewScreen() {
     setResults([]);
   }, [loadExercises]);
 
-  // タブがフォーカスされた時に全問題をロード
+  // タブがフォーカスされた時に制限チェック→問題をロード
   useFocusEffect(
     useCallback(() => {
-      if (!dailyQuestionId) {
-        loadAllExercises();
-      }
-    }, [dailyQuestionId, loadAllExercises]),
+      const loadData = async () => {
+        if (dailyQuestionId || !user?.id) {
+          return;
+        }
+
+        // まず制限ステータスをチェック
+        const status = await FeatureLimitService.checkReviewAttemptStatus(user.id, plan);
+        setReviewLimitStatus(status);
+
+        // 無料プランで制限に達している場合はデータ取得をスキップ
+        if (!status.isAllowed && !status.isPremium) {
+          console.log('Review limit reached, skipping exercise load');
+          return;
+        }
+
+        // 制限OKなら全問題を取得
+        await loadAllExercises();
+      };
+
+      loadData();
+    }, [dailyQuestionId, user?.id, plan, loadAllExercises]),
   );
+
+  // 設定画面表示時に復習制限ステータスをチェック（データ取得後）
+  useEffect(() => {
+    const checkReviewLimit = async () => {
+      if (showSettings && user?.id && allExercises.length > 0) {
+        const status = await FeatureLimitService.checkReviewAttemptStatus(user.id, plan);
+        setReviewLimitStatus(status);
+      }
+    };
+    checkReviewLimit();
+  }, [showSettings, user?.id, allExercises.length, plan]);
 
   // dailyQuestionIdが変わった時の処理
   useEffect(() => {
     if (dailyQuestionId && user?.id) {
       const loadDailyQuestion = async () => {
         setLoading(true);
+
+        // まず制限ステータスをチェック
+        const status = await FeatureLimitService.checkReviewAttemptStatus(user.id, plan);
+        setReviewLimitStatus(status);
+
+        // 無料プランで制限に達している場合は問題を読み込まず警告表示
+        if (!status.isAllowed && !status.isPremium) {
+          Alert.alert(
+            '復習制限',
+            '無料プランでは復習問題は1日1回までです。\n有料プランで無制限に復習できます。',
+            [
+              {
+                text: 'プランを見る',
+                onPress: () => router.push('/(tabs)/profile/subscription'),
+              },
+              { text: 'OK', style: 'cancel' },
+            ],
+          );
+          setShowSettings(true);
+          setExercises([]);
+          setLoading(false);
+          return;
+        }
+
         const { data, error } = await TranslationExerciseService.getById(dailyQuestionId, user.id);
         if (error || !data) {
           console.error('Error loading daily question:', error);
@@ -215,24 +277,35 @@ export default function ReviewScreen() {
   const handleCheckAnswer = async () => {
     if (!user?.id || !currentExercise || isFlipped) return;
 
-    // レコードを作成（rememberedはnull）
-    const { data, error } = await ExerciseAttemptService.createExerciseAttempt(
-      user.id,
-      currentExercise.id,
-      userAnswer,
-      null, // まだ覚えたかどうかは未定
-    );
+    try {
+      // レコードを作成（rememberedはnull）
+      const { data, error } = await ExerciseAttemptService.createExerciseAttempt(
+        user.id,
+        currentExercise.id,
+        userAnswer,
+        plan,
+        null, // まだ覚えたかどうかは未定
+      );
 
-    if (error || !data) {
+      if (error || !data) {
+        console.error('Error creating attempt:', error);
+        Alert.alert('エラー', '回答の保存に失敗しました');
+        return;
+      }
+
+      // 作成したIDを保存
+      setCurrentAttemptId(data.id);
+      // カードを裏返す
+      setIsFlipped(true);
+    } catch (error) {
+      if (error instanceof FeatureLimitError) {
+        Alert.alert('ご案内', error.message);
+        return;
+      }
+
       console.error('Error creating attempt:', error);
       Alert.alert('エラー', '回答の保存に失敗しました');
-      return;
     }
-
-    // 作成したIDを保存
-    setCurrentAttemptId(data.id);
-    // カードを裏返す
-    setIsFlipped(true);
   };
 
   const handleResponse = async (remembered: boolean) => {
@@ -330,6 +403,7 @@ export default function ReviewScreen() {
         questionCount={questionCount}
         excludeRemembered={excludeRemembered}
         exerciseCount={exerciseCount}
+        reviewLimitStatus={reviewLimitStatus}
         onIsRandomChange={setIsRandom}
         onNotRememberedCountChange={setNotRememberedCount}
         onDaysSinceLastAttemptChange={setDaysSinceLastAttempt}

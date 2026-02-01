@@ -4,6 +4,8 @@ export * from './aiCorrectionService';
 export * from './authService';
 export * from './diaryService';
 export * from './exerciseAttemptService';
+export * from './featureLimitService';
 export * from './supabase';
 export * from './translationExerciseService';
 export * from './userSettingsService';
+

@@ -1,4 +1,5 @@
 import { AuthService } from '@/services/authService';
+import { useSubscriptionStore } from '@/stores/subscriptionStore';
 import { Session, User } from '@supabase/supabase-js';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
@@ -20,18 +21,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Zustand store for subscription management
+  const initializeSubscription = useSubscriptionStore((state) => state.initialize);
+  const resetSubscription = useSubscriptionStore((state) => state.reset);
+
   useEffect(() => {
     // 初期セッションを取得
     AuthService.getSession().then(({ data, error }) => {
       if (error) {
-        // セッション検証エラー（ユーザーが削除された等）
-        console.error('Session validation error:', error);
-        setSession(null);
-        setUser(null);
-      } else {
-        setSession(data.session);
-        setUser(data.session?.user ?? null);
+        console.error('Error getting session:', error);
       }
+      setSession(data.session);
+      setUser(data.session?.user ?? null);
       setLoading(false);
     });
 
@@ -48,6 +49,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       subscription?.unsubscribe();
     };
   }, []);
+
+  // ユーザーログイン時にサブスクリプションを初期化
+  useEffect(() => {
+    if (user?.id) {
+      initializeSubscription(user.id);
+    }
+  }, [user?.id, initializeSubscription]);
 
   const signIn = async (email: string, password: string) => {
     return AuthService.signInWithEmail(email, password);
@@ -70,13 +78,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setSession(null);
     setUser(null);
 
+    // Zustandストアもリセット
+    resetSubscription();
+
     // バックグラウンドでSupabaseのセッションをクリア
     await AuthService.signOut();
   };
 
   return (
     <AuthContext.Provider
-      value={{ session, user, loading, signIn, signUp, signInWithGoogle, signInWithApple, signOut }}
+      value={{
+        session,
+        user,
+        loading,
+        signIn,
+        signUp,
+        signInWithGoogle,
+        signInWithApple,
+        signOut,
+      }}
     >
       {children}
     </AuthContext.Provider>

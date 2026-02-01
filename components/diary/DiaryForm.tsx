@@ -1,3 +1,4 @@
+import { FreePlanNotice } from '@/components/common/FreePlanNotice';
 import { SaveButton } from '@/components/common/PrimaryButton';
 import { useSettings } from '@/contexts/SettingsContext';
 import type { DiaryFormData } from '@/types/ui';
@@ -11,17 +12,19 @@ type DiaryFormProps = {
   onFormChange: (field: keyof DiaryFormData, value: string) => void;
   onSave: () => void;
   saving: boolean;
+  showFreePlanNotice?: boolean;
 };
 
 const MAX_LENGTH_ENGLISH = 1500;
 const MAX_LENGTH_JAPANESE = 1000;
 
 export const DiaryForm = React.memo(
-  ({ formData, onFormChange, onSave, saving }: DiaryFormProps) => {
+  ({ formData, onFormChange, onSave, saving, showFreePlanNotice }: DiaryFormProps) => {
     const { targetLanguage, nativeLanguage } = useSettings();
     const isContentOverLimit = formData.content.length > MAX_LENGTH_ENGLISH;
     const isContentNativeOverLimit = formData.content_native.length > MAX_LENGTH_JAPANESE;
-    const isSaveDisabled = saving || isContentOverLimit || isContentNativeOverLimit;
+    const isSaveDisabled =
+      saving || isContentOverLimit || isContentNativeOverLimit || showFreePlanNotice;
 
     const handleTitleChange = useCallback(
       (text: string) => onFormChange('title', text),
@@ -40,6 +43,14 @@ export const DiaryForm = React.memo(
 
     return (
       <YStack padding="$4" gap="$3">
+        {showFreePlanNotice && (
+          <FreePlanNotice
+            title="無料プランの制限"
+            message="無料プランでは当日分の日記しか保存できません。"
+            upgradeText="有料プランで過去の日記も編集可能に →"
+          />
+        )}
+
         <DiaryTextInput
           label="タイトル"
           value={formData.title}
@@ -67,7 +78,7 @@ export const DiaryForm = React.memo(
           maxLength={MAX_LENGTH_JAPANESE}
         />
 
-        <SaveButton loading={saving} onPress={onSave} marginTop="$4" />
+        <SaveButton loading={saving} onPress={onSave} marginTop="$4" disabled={isSaveDisabled} />
       </YStack>
     );
   },

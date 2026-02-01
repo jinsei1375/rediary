@@ -1,9 +1,13 @@
 import type { DiaryEntryInsert, DiaryEntryUpdate } from '@/types/database';
+import { SubscriptionPlan } from '@/types/database';
 import { formatDateToString } from '@/utils/dateUtils';
+import { FeatureLimitService } from './featureLimitService';
 import { supabase } from './supabase';
 
 export class DiaryService {
-  static async create(entry: DiaryEntryInsert) {
+  static async create(entry: DiaryEntryInsert, plan: SubscriptionPlan) {
+    await FeatureLimitService.ensureDiarySaveAllowed(plan, entry.entry_date);
+
     const { data, error } = await supabase.from('diary_entries').insert(entry).select().single();
     return { data, error };
   }
@@ -43,7 +47,27 @@ export class DiaryService {
     return { data, error };
   }
 
-  static async update(id: string, updates: DiaryEntryUpdate, userId: string) {
+  static async update(
+    id: string,
+    updates: DiaryEntryUpdate,
+    userId: string,
+    plan: SubscriptionPlan,
+    entryDate?: string,
+  ) {
+    let targetEntryDate: string;
+
+    if (entryDate) {
+      targetEntryDate = entryDate;
+    } else {
+      const { data: existingEntry, error: fetchError } = await this.getById(id, userId);
+      if (fetchError || !existingEntry) {
+        return { data: null, error: fetchError };
+      }
+      targetEntryDate = existingEntry.entry_date;
+    }
+
+    await FeatureLimitService.ensureDiarySaveAllowed(plan, targetEntryDate);
+
     const { data, error } = await supabase
       .from('diary_entries')
       .update(updates)

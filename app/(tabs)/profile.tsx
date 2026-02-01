@@ -43,7 +43,7 @@ export default function SettingsScreen() {
           icon={<Ionicons name="settings-outline" size={24} color={theme.textPrimary.get()} />}
         />
         <ListItem
-          title="プレミアムプラン"
+          title="利用プラン"
           backgroundColor="$cardBg"
           borderRadius="$4"
           onPress={() => router.push('/(tabs)/profile/subscription')}

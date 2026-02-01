@@ -1,4 +1,5 @@
-import type { ExerciseAttemptInsert } from '@/types/database';
+import type { ExerciseAttemptInsert, SubscriptionPlan } from '@/types/database';
+import { FeatureLimitService } from './featureLimitService';
 import { supabase } from './supabase';
 
 /**
@@ -8,8 +9,11 @@ export const createExerciseAttempt = async (
   userId: string,
   exerciseId: string,
   userAnswer: string,
+  plan: SubscriptionPlan,
   remembered: boolean | null = null,
 ) => {
+  await FeatureLimitService.ensureReviewAttemptAllowed(userId, plan);
+
   const attempt: ExerciseAttemptInsert = {
     user_id: userId,
     exercise_id: exerciseId,

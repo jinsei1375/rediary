@@ -9,9 +9,11 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useSettings } from '@/contexts/SettingsContext';
 import { AiCorrectionService } from '@/services/aiCorrectionService';
 import { DiaryService } from '@/services/diaryService';
+import { FeatureLimitError } from '@/services/featureLimitService';
+import { useSubscriptionStore } from '@/stores/subscriptionStore';
 import type { AiCorrection, DiaryEntryInsert } from '@/types/database';
 import type { DiaryFormData } from '@/types/ui';
-import { formatDate } from '@/utils/dateUtils';
+import { formatDate, getTodayString } from '@/utils/dateUtils';
 import { getLanguageName } from '@/utils/languageUtils';
 import { showErrorToast, showSuccessToast } from '@/utils/toast';
 import { router, useLocalSearchParams, useNavigation } from 'expo-router';
@@ -22,6 +24,8 @@ export default function DiaryDetailScreen() {
   const { date } = useLocalSearchParams<{ date: string }>();
   const { user } = useAuth();
   const { targetLanguage, nativeLanguage } = useSettings();
+  const isPremium = useSubscriptionStore((state) => state.isPremium());
+  const plan = useSubscriptionStore((state) => state.plan);
   const navigation = useNavigation();
   const theme = useTheme();
   const [saving, setSaving] = useState(false);
@@ -114,6 +118,11 @@ export default function DiaryDetailScreen() {
       return;
     }
 
+    // 無料プランで当日以外の日記の場合は早期リターン
+    if (!isPremium && date !== getTodayString()) {
+      return;
+    }
+
     if (!formData.content.trim()) {
       showErrorToast(`${getLanguageName(targetLanguage)}の内容を入力してください`);
       return;
@@ -132,6 +141,8 @@ export default function DiaryDetailScreen() {
             content_native: formData.content_native.trim(),
           },
           user.id,
+          plan,
+          formData.entry_date,
         );
 
         if (error) throw error;
@@ -145,7 +156,7 @@ export default function DiaryDetailScreen() {
           entry_date: formData.entry_date,
         };
 
-        const { data, error } = await DiaryService.create(diaryEntry);
+        const { data, error } = await DiaryService.create(diaryEntry, plan);
 
         if (error) throw error;
         if (data) setExistingEntryId(data.id);
@@ -153,12 +164,16 @@ export default function DiaryDetailScreen() {
 
       showSuccessToast('日記を保存しました');
     } catch (error) {
+      let message = '日記の保存に失敗しました';
+      if (error instanceof FeatureLimitError) {
+        message = error.message;
+      }
       console.error('Error saving diary:', error);
-      showErrorToast('日記の保存に失敗しました');
+      showErrorToast(message);
     } finally {
       setSaving(false);
     }
-  }, [user?.id, formData, existingEntryId]);
+  }, [user?.id, formData, existingEntryId, isPremium, plan, date, targetLanguage]);
 
   const onFormChange = useCallback((field: keyof DiaryFormData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -196,7 +211,7 @@ export default function DiaryDetailScreen() {
           entry_date: formData.entry_date,
         };
 
-        const { data: savedDiary, error: saveError } = await DiaryService.create(diaryEntry);
+        const { data: savedDiary, error: saveError } = await DiaryService.create(diaryEntry, plan);
         if (saveError || !savedDiary) {
           throw new Error('日記の保存に失敗しました');
         }
@@ -222,7 +237,11 @@ export default function DiaryDetailScreen() {
       }
     } catch (error) {
       console.error('AI correction error:', error);
-      showErrorToast('AI添削に失敗しました。もう一度お試しください。');
+      const message =
+        error instanceof FeatureLimitError
+          ? error.message
+          : 'AI添削に失敗しました。もう一度お試しください。';
+      showErrorToast(message);
     } finally {
       setAiCorrecting(false);
     }
@@ -235,6 +254,9 @@ export default function DiaryDetailScreen() {
   if (loading) {
     return <Loading />;
   }
+
+  const isToday = date === getTodayString();
+  const showFreePlanNotice = !isPremium && !isToday;
 
   return (
     <YStack flex={1} backgroundColor="$bgPrimary">
@@ -252,6 +274,7 @@ export default function DiaryDetailScreen() {
           onFormChange={onFormChange}
           onSave={handleSave}
           saving={saving}
+          showFreePlanNotice={showFreePlanNotice}
         />
 
         {/* AI添削結果表示 */}

@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useSettings } from '@/contexts/SettingsContext';
 import { AuthService } from '@/services/authService';
 import { Language } from '@/types/database';
+import { showErrorToast, showSuccessToast } from '@/utils/toast';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, ScrollView } from 'react-native';
@@ -40,10 +41,10 @@ export default function ProfileSettingsScreen() {
         native_language: nativeLanguage,
         target_language: targetLanguage,
       });
-      Alert.alert('成功', '設定を保存しました');
+      showSuccessToast('設定を保存しました');
     } catch (e) {
       console.error('Save settings error', e);
-      Alert.alert('エラー', '設定の保存に失敗しました');
+      showErrorToast('設定の保存に失敗しました');
     } finally {
       setSaving(false);
     }
@@ -83,7 +84,7 @@ export default function ProfileSettingsScreen() {
                     router.replace('/login');
                   } catch (e) {
                     console.error('Delete account error:', e);
-                    Alert.alert('エラー', 'アカウントの削除に失敗しました');
+                    showErrorToast('アカウントの削除に失敗しました');
                   } finally {
                     setDeleting(false);
                   }

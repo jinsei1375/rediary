@@ -1,8 +1,8 @@
 import type { AiCorrection, CorrectionPoint, NativeExpression } from '@/types/database';
+import { showErrorToast, showSuccessToast } from '@/utils/toast';
 import { Ionicons } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';
 import { useState } from 'react';
-import { Alert } from 'react-native';
 import { Button, H5, Separator, Text, useTheme, XStack, YStack } from 'tamagui';
 
 type CorrectionResultDisplayProps = {
@@ -19,10 +19,11 @@ export function CorrectionResultDisplay({ correction }: CorrectionResultDisplayP
     try {
       await Clipboard.setStringAsync(correction.corrected_content);
       setCopied(true);
+      showSuccessToast('コピーしました');
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
       console.error('Copy error:', error);
-      Alert.alert('エラー', 'コピーに失敗しました');
+      showErrorToast('コピーに失敗しました');
     }
   };
 

@@ -13,9 +13,9 @@ import type { AiCorrection, DiaryEntryInsert } from '@/types/database';
 import type { DiaryFormData } from '@/types/ui';
 import { formatDate } from '@/utils/dateUtils';
 import { getLanguageName } from '@/utils/languageUtils';
+import { showErrorToast, showSuccessToast } from '@/utils/toast';
 import { router, useLocalSearchParams, useNavigation } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
-import { Alert } from 'react-native';
 import { ScrollView, Separator, YStack, useTheme } from 'tamagui';
 
 export default function DiaryDetailScreen() {
@@ -110,12 +110,12 @@ export default function DiaryDetailScreen() {
 
   const handleSave = useCallback(async () => {
     if (!user?.id) {
-      Alert.alert('エラー', 'ログインが必要です');
+      showErrorToast('ログインが必要です');
       return;
     }
 
     if (!formData.content.trim()) {
-      Alert.alert('エラー', `${getLanguageName(targetLanguage)}の内容を入力してください`);
+      showErrorToast(`${getLanguageName(targetLanguage)}の内容を入力してください`);
       return;
     }
 
@@ -151,10 +151,10 @@ export default function DiaryDetailScreen() {
         if (data) setExistingEntryId(data.id);
       }
 
-      Alert.alert('成功', '日記を保存しました');
+      showSuccessToast('日記を保存しました');
     } catch (error) {
       console.error('Error saving diary:', error);
-      Alert.alert('エラー', '日記の保存に失敗しました');
+      showErrorToast('日記の保存に失敗しました');
     } finally {
       setSaving(false);
     }
@@ -167,7 +167,7 @@ export default function DiaryDetailScreen() {
   // AI添削ボタンクリック
   const handleAiCorrectionClick = useCallback(() => {
     if (!formData.content.trim()) {
-      Alert.alert('エラー', `${getLanguageName(targetLanguage)}の内容を入力してください`);
+      showErrorToast(`${getLanguageName(targetLanguage)}の内容を入力してください`);
       return;
     }
     setShowConfirmModal(true);
@@ -176,7 +176,7 @@ export default function DiaryDetailScreen() {
   // AI添削実行
   const handleConfirmCorrection = useCallback(async () => {
     if (!user?.id) {
-      Alert.alert('エラー', 'ログインが必要です');
+      showErrorToast('ログインが必要です');
       return;
     }
 
@@ -218,11 +218,11 @@ export default function DiaryDetailScreen() {
       if (error) throw error;
       if (data) {
         setAiCorrection(data);
-        Alert.alert('成功', 'AI添削が完了しました');
+        showSuccessToast('AI添削が完了しました');
       }
     } catch (error) {
       console.error('AI correction error:', error);
-      Alert.alert('エラー', 'AI添削に失敗しました。もう一度お試しください。');
+      showErrorToast('AI添削に失敗しました。もう一度お試しください。');
     } finally {
       setAiCorrecting(false);
     }

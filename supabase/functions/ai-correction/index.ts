@@ -69,14 +69,11 @@ Deno.serve(async (req: Request) => {
     } = await supabaseClient.auth.getUser();
 
     if (authError || !user) {
-      console.error('Auth error:', authError);
       return new Response(JSON.stringify({ error: 'Unauthorized' }), {
         status: 401,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
-
-    console.log('Authenticated user:', user.id);
 
     const { nativeContent, userContent, nativeLanguage, targetLanguage }: CorrectionRequest =
       await req.json();
@@ -91,7 +88,6 @@ Deno.serve(async (req: Request) => {
 
     const openaiApiKey = Deno.env.get('OPENAI_API_KEY');
     if (!openaiApiKey) {
-      console.error('OPENAI_API_KEY is not set');
       return new Response(JSON.stringify({ error: 'Server configuration error' }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -127,7 +123,6 @@ Deno.serve(async (req: Request) => {
 
     if (!response.ok) {
       const errorData = await response.json();
-      console.error('OpenAI API Error:', errorData);
       return new Response(
         JSON.stringify({
           error: `OpenAI API Error: ${errorData.error?.message || response.statusText}`,
@@ -155,7 +150,7 @@ Deno.serve(async (req: Request) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    console.error('AI correction failed:', error);
+    console.error('Error in ai-correction function:', error);
     return new Response(
       JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }),
       {

@@ -52,7 +52,7 @@ export default function CalendarScreen() {
 
   const handleDayPress = (day: DateData) => {
     router.push({
-      pathname: '/(tabs)/diary/[date]',
+      pathname: '/diary/[date]',
       params: { date: day.dateString },
     } as any);
   };

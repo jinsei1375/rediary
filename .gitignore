@@ -47,5 +47,6 @@ mcp.json
 
 supabase/migrations/
 supabase/.temp/
+supabase/config.toml
 
 temp/

@@ -146,7 +146,7 @@ export class DiaryService {
   }
 
   /**
-   * AI添削未実施の日記一覧を取得（最新順、デフォルト5件）
+   * AI添削未実施の日記一覧を取得(最新順、デフォルト5件)
    */
   static async getUncorrectedDiaries(userId: string, limit: number = 5) {
     const { data, error } = await supabase
@@ -170,5 +170,20 @@ export class DiaryService {
     });
 
     return { data: uncorrectedData ?? [], error };
+  }
+
+  /**
+   * 日付範囲で日記を取得
+   */
+  static async getByDateRange(userId: string, startDate: string, endDate: string) {
+    const { data, error } = await supabase
+      .from('diary_entries')
+      .select('*')
+      .eq('user_id', userId)
+      .gte('entry_date', startDate)
+      .lte('entry_date', endDate)
+      .order('entry_date', { ascending: true });
+
+    return { data, error };
   }
 }

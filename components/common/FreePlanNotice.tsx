@@ -36,7 +36,7 @@ export const FreePlanNotice: React.FC<FreePlanNoticeProps> = ({
         color="$blue10"
         fontWeight="600"
         textDecorationLine="underline"
-        onPress={() => router.push('/(tabs)/profile/subscription')}
+        onPress={() => router.push('/profile/subscription')}
       >
         {upgradeText}
       </Text>

@@ -155,7 +155,6 @@ export default function ReviewScreen() {
 
         // 無料プランで制限に達している場合はデータ取得をスキップ
         if (!status.isAllowed && !status.isPremium) {
-          console.log('Review limit reached, skipping exercise load');
           return;
         }
 
@@ -196,7 +195,7 @@ export default function ReviewScreen() {
             [
               {
                 text: 'プランを見る',
-                onPress: () => router.push('/(tabs)/profile/subscription'),
+                onPress: () => router.push('/profile/subscription'),
               },
               { text: 'OK', style: 'cancel' },
             ],

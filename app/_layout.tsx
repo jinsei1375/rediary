@@ -21,13 +21,17 @@ function NavigationContent() {
   useEffect(() => {
     if (loading) return;
 
-    const inAuthGroup = segments[0] === '(tabs)';
+    // 公開ルート（認証不要）
+    const firstSegment = segments[0];
+    const inPublicRoute = !firstSegment || firstSegment === 'login' || firstSegment === 'auth';
 
-    if (!session && inAuthGroup) {
-      // ログインしていない場合はログイン画面へ
+    // 未ログインで保護されたルートに入ろうとした時
+    if (!session && !inPublicRoute) {
       router.replace('/login');
-    } else if (session && !inAuthGroup) {
-      // ログインしている場合はタブ画面へ
+    }
+
+    // ログイン済みで login に来た時だけ
+    if (session && firstSegment === 'login') {
       router.replace('/(tabs)');
     }
   }, [session, loading, segments]);
@@ -50,6 +54,8 @@ function NavigationContent() {
             gestureEnabled: true,
           }}
         />
+        <Stack.Screen name="diary" />
+        <Stack.Screen name="profile" />
       </Stack>
       <StatusBar />
       <Toast />

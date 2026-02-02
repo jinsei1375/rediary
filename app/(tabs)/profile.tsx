@@ -36,31 +36,38 @@ export default function SettingsScreen() {
 
       <YStack flex={1} gap="$2">
         <ListItem
+          title="AI学習分析"
+          backgroundColor="$cardBg"
+          borderRadius="$4"
+          onPress={() => router.push('/profile/analysis')}
+          icon={<Ionicons name="analytics-outline" size={24} color={theme.textPrimary.get()} />}
+        />
+        <ListItem
           title="個人設定"
           backgroundColor="$cardBg"
           borderRadius="$4"
-          onPress={() => router.push('/(tabs)/profile/settings')}
+          onPress={() => router.push('/profile/settings')}
           icon={<Ionicons name="settings-outline" size={24} color={theme.textPrimary.get()} />}
         />
         <ListItem
           title="利用プラン"
           backgroundColor="$cardBg"
           borderRadius="$4"
-          onPress={() => router.push('/(tabs)/profile/subscription')}
+          onPress={() => router.push('/profile/subscription')}
           icon={<Ionicons name="star" size={24} color={theme.textPrimary.get()} />}
         />
         <ListItem
           title="利用ガイド"
           backgroundColor="$cardBg"
           borderRadius="$4"
-          onPress={() => router.push('/(tabs)/profile/guide')}
+          onPress={() => router.push('/profile/guide')}
           icon={<Ionicons name="help-circle-outline" size={24} color={theme.textPrimary.get()} />}
         />
         <ListItem
           title="プライバシーポリシー"
           backgroundColor="$cardBg"
           borderRadius="$4"
-          onPress={() => router.push('/(tabs)/profile/privacy')}
+          onPress={() => router.push('/profile/privacy')}
           icon={
             <Ionicons name="shield-checkmark-outline" size={24} color={theme.textPrimary.get()} />
           }
@@ -69,14 +76,14 @@ export default function SettingsScreen() {
           title="利用規約"
           backgroundColor="$cardBg"
           borderRadius="$4"
-          onPress={() => router.push('/(tabs)/profile/terms')}
+          onPress={() => router.push('/profile/terms')}
           icon={<Ionicons name="document-text-outline" size={24} color={theme.textPrimary.get()} />}
         />
         <ListItem
           title="よくある質問"
           backgroundColor="$cardBg"
           borderRadius="$4"
-          onPress={() => router.push('/(tabs)/profile/faq')}
+          onPress={() => router.push('/profile/faq')}
           icon={
             <Ionicons
               name="chatbubble-ellipses-outline"

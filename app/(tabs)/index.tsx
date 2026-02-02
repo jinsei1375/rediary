@@ -96,19 +96,19 @@ export default function HomeScreen() {
 
   const handleWriteDiary = () => {
     router.push({
-      pathname: '/(tabs)/diary/[date]',
+      pathname: '/diary/[date]',
       params: { date: today },
     } as any);
   };
 
   const handleReview = () => {
-    router.push('/(tabs)/review');
+    router.push('/review');
   };
 
   const handleDailyQuestion = () => {
     if (dailyQuestion) {
       router.push({
-        pathname: '/(tabs)/review',
+        pathname: '/review',
         params: { dailyQuestionId: dailyQuestion.id },
       } as any);
     }

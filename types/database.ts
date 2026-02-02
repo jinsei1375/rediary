@@ -17,6 +17,11 @@ export enum SubscriptionPlan {
   ENTERPRISE = 'enterprise',
 }
 
+export enum AiAnalysisType {
+  WEEKLY = 'weekly',
+  MONTHLY = 'monthly',
+}
+
 export type Database = {
   public: {
     Tables: {
@@ -49,6 +54,11 @@ export type Database = {
         Row: ExerciseAttempt;
         Insert: ExerciseAttemptInsert;
         Update: ExerciseAttemptUpdate;
+      };
+      ai_analyses: {
+        Row: AiAnalysis;
+        Insert: AiAnalysisInsert;
+        Update: AiAnalysisUpdate;
       };
     };
   };
@@ -131,6 +141,19 @@ export type ExerciseAttempt = {
   created_at: string;
 };
 
+export type AiAnalysis = {
+  id: string;
+  user_id: string;
+  analysis_type: AiAnalysisType;
+  period_start: string;
+  period_end: string;
+  frequent_expressions: FrequentExpression[];
+  common_mistakes: CommonMistake[];
+  growth_summary: GrowthSummary;
+  created_at: string;
+  updated_at: string;
+};
+
 // ============================================
 // Insert Types
 // ============================================
@@ -172,6 +195,8 @@ export type ExerciseAttemptInsert = Omit<ExerciseAttempt, 'id' | 'created_at' | 
   created_at?: string;
 };
 
+export type AiAnalysisInsert = Omit<AiAnalysis, 'id' | 'created_at' | 'updated_at'>;
+
 // ============================================
 // Update Types
 // ============================================
@@ -179,6 +204,10 @@ export type ExerciseAttemptInsert = Omit<ExerciseAttempt, 'id' | 'created_at' | 
 export type ProfileUpdate = Partial<Omit<Profile, 'id' | 'created_at'>>;
 
 export type DiaryEntryUpdate = Partial<Omit<DiaryEntry, 'id' | 'user_id' | 'created_at'>>;
+
+export type AiAnalysisUpdate = Partial<
+  Omit<AiAnalysis, 'id' | 'user_id' | 'created_at'>
+>;
 
 export type AiCorrectionUpdate = Partial<Omit<AiCorrection, 'id' | 'user_id' | 'created_at'>>;
 
@@ -211,6 +240,27 @@ export type NativeExpression = {
   usage_example: string;
   usage_example_translation: string;
   context?: string;
+};
+
+// Monthly Analysis Types
+export type FrequentExpression = {
+  expression: string;
+  count: number;
+  alternative_suggestions: string[];
+  usage_note: string;
+};
+
+export type CommonMistake = {
+  category: string;
+  count: number;
+  examples: { wrong: string; correct: string }[];
+  how_to_improve: string;
+};
+
+export type GrowthSummary = {
+  improvements: string[];
+  ongoing_challenges: string[];
+  overall_assessment: string;
 };
 
 // OpenAI API Response型

@@ -19,7 +19,7 @@ export const UncorrectedDiaryList = ({ diaries }: UncorrectedDiaryListProps) => 
 
   const handleDiaryPress = (date: string) => {
     router.push({
-      pathname: '/(tabs)/diary/[date]',
+      pathname: '/diary/[date]',
       params: { date },
     } as any);
   };

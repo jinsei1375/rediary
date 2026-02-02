@@ -24,6 +24,10 @@ export function CorrectionConfirmModal({
           ※ AI添削にはOpenAI APIを使用します
         </Text>
 
+        <Text fontSize="$2" color="$orange10" fontWeight="600">
+          ⚠️ AI添削は1つの日記に対して1回のみ実行できます
+        </Text>
+
         {!hasNativeContent && (
           <Text fontSize="$2" color="$red10" fontWeight="600">
             ⚠️ ネイティブ言語が入力されていません。

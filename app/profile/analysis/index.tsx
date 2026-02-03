@@ -129,7 +129,7 @@ export default function AiAnalysisScreen() {
   if (!isPremium) {
     return (
       <YStack f={1} bg="$background">
-        <Header title="AI学習分析" onBack={() => router.push('/(tabs)/profile')} />
+        <Header title="AI学習分析" />
         <ScrollView>
           <YStack f={1} p="$4" gap="$4">
             <Card p="$4" bg="$blue2" borderWidth={1} borderColor="$blue8">
@@ -152,7 +152,7 @@ export default function AiAnalysisScreen() {
 
   return (
     <YStack f={1} bg="$background">
-      <Header title="AI学習分析" onBack={() => router.push('/(tabs)/profile')} />
+      <Header title="AI学習分析" />
       <ScrollView>
         <YStack f={1} p="$4" gap="$4">
           {/* 説明カード */}

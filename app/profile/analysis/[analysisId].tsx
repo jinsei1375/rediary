@@ -5,7 +5,7 @@ import { Header } from '@/components/common/Header';
 import { Loading } from '@/components/common/Loading';
 import { AiAnalysisService } from '@/services/aiAnalysisService';
 import { AiAnalysis, AiAnalysisType } from '@/types/database';
-import { router, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { ScrollView } from 'react-native';
 import { Card, H3, Paragraph, Text, XStack, YStack } from 'tamagui';
@@ -57,7 +57,7 @@ export default function AiAnalysisDetailScreen() {
   if (!analysis) {
     return (
       <YStack f={1} bg="$background">
-        <Header title="分析結果" onBack={() => router.back()} />
+        <Header title="分析結果" />
         <YStack f={1} ai="center" jc="center" p="$4">
           <Paragraph>分析データが見つかりませんでした</Paragraph>
         </YStack>
@@ -67,7 +67,7 @@ export default function AiAnalysisDetailScreen() {
 
   return (
     <YStack f={1} bg="$background">
-      <Header title="分析結果" onBack={() => router.back()} />
+      <Header title="分析結果" />
       <ScrollView>
         <YStack f={1} p="$4" gap="$4">
           {/* 分析情報カード */}

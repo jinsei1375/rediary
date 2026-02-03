@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { Button, Text, XStack, YStack } from 'tamagui';
@@ -36,9 +37,7 @@ export const Header = React.memo(({ title, showBackButton = true, onBack }: Head
             onPress={handleBack}
             pressStyle={{ opacity: 0.7 }}
           >
-            <Text color="$accentBlue" fontSize="$4">
-              ← 戻る
-            </Text>
+            <Ionicons name="chevron-back" size={28} color="#5B8CFF" />
           </Button>
         )}
         <Text fontSize="$6" fontWeight="bold" color="$textPrimary">

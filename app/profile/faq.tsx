@@ -1,6 +1,5 @@
 import { Header } from '@/components/common/Header';
 import { ChevronDown, ChevronUp } from '@tamagui/lucide-icons';
-import { router } from 'expo-router';
 import { useState } from 'react';
 import { ScrollView } from 'react-native';
 import { Text, XStack, YStack } from 'tamagui';
@@ -136,12 +135,7 @@ function FAQItemComponent({ item }: { item: FAQItem }) {
 export default function FAQScreen() {
   return (
     <YStack flex={1} backgroundColor="$background">
-      <Header
-        title="よくある質問"
-        onBack={() => {
-          router.push('/(tabs)/profile');
-        }}
-      />
+      <Header title="よくある質問" />
       <ScrollView>
         <YStack padding="$4" gap="$3">
           {faqData.map((item, index) => (

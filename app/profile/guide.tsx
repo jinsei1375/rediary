@@ -1,6 +1,5 @@
 import { Header } from '@/components/common/Header';
 import { BookOpen, Calendar, Edit3, PenTool, Sparkles, TrendingUp } from '@tamagui/lucide-icons';
-import { router } from 'expo-router';
 import { ScrollView } from 'react-native';
 import { Text, XStack, YStack } from 'tamagui';
 
@@ -78,12 +77,7 @@ function FeatureCard({ item, index }: FeatureCardProps) {
 export default function UserGuideScreen() {
   return (
     <YStack flex={1} backgroundColor="$background">
-      <Header
-        title="利用ガイド"
-        onBack={() => {
-          router.push('/(tabs)/profile');
-        }}
-      />
+      <Header title="利用ガイド" />
       <ScrollView>
         <YStack padding="$4" gap="$4">
           {/* Welcome Section */}

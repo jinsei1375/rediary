@@ -3,7 +3,6 @@ import { SecondaryButton } from '@/components/common/PrimaryButton';
 import { PricingCard } from '@/components/subscription/PricingCard';
 import { useSubscriptionStore } from '@/stores/subscriptionStore';
 import { SubscriptionPlan } from '@/types/database';
-import { router } from 'expo-router';
 import React from 'react';
 import { ScrollView, Spinner, Text, YStack } from 'tamagui';
 
@@ -24,7 +23,7 @@ export default function SubscriptionScreen() {
   if (loading && !offerings) {
     return (
       <YStack flex={1} backgroundColor="$bgPrimary">
-        <Header title="利用プラン" onBack={() => router.push('/(tabs)/profile')} />
+        <Header title="利用プラン" />
         <YStack flex={1} justifyContent="center" alignItems="center">
           <Spinner size="large" color="$primary" />
         </YStack>
@@ -38,7 +37,7 @@ export default function SubscriptionScreen() {
 
   return (
     <YStack flex={1} backgroundColor="$bgPrimary">
-      <Header title="利用プラン" onBack={() => router.push('/(tabs)/profile')} />
+      <Header title="利用プラン" />
       <ScrollView flex={1}>
         <YStack padding="$6" gap="$6">
           {/* 利用中のプラン */}

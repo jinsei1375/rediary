@@ -107,7 +107,7 @@ export default function ProfileSettingsScreen() {
 
   return (
     <YStack flex={1} backgroundColor="$background">
-      <Header title="個人設定" onBack={() => router.push('/(tabs)/profile')} />
+      <Header title="個人設定" />
 
       <ScrollView>
         <YStack padding="$4" gap="$4">

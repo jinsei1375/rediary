@@ -34,7 +34,7 @@ export default function ReviewScreen() {
   const dailyQuestionId = params.dailyQuestionId as string | undefined;
   const [exercises, setExercises] = useState<TranslationExercise[]>([]);
   const [allExercises, setAllExercises] = useState<any[]>([]); // 全問題（attemptsを含む）
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [completedIds, setCompletedIds] = useState<Set<string>>(new Set());
@@ -149,12 +149,15 @@ export default function ReviewScreen() {
           return;
         }
 
+        setLoading(true);
+
         // まず制限ステータスをチェック
         const status = await FeatureLimitService.checkReviewAttemptStatus(user.id, plan);
         setReviewLimitStatus(status);
 
         // 無料プランで制限に達している場合はデータ取得をスキップ
         if (!status.isAllowed && !status.isPremium) {
+          setLoading(false);
           return;
         }
 
@@ -375,6 +378,15 @@ export default function ReviewScreen() {
     }
   };
 
+  const handleBackPress = () => {
+    router.setParams({ dailyQuestionId: undefined });
+    setShowSettings(true);
+    setShowResults(false);
+    setExercises([]);
+    setResults([]);
+    loadAllExercises(); // 最新データを再取得
+  };
+
   // コンテンツを決定
   let content: React.ReactNode;
 
@@ -438,18 +450,7 @@ export default function ReviewScreen() {
 
   return (
     <YStack flex={1} backgroundColor="$bgPrimary">
-      <Header
-        title="復習"
-        showBackButton={!showSettings}
-        onBack={() => {
-          router.setParams({ dailyQuestionId: undefined });
-          setShowSettings(true);
-          setShowResults(false);
-          setExercises([]);
-          setResults([]);
-          loadAllExercises(); // 最新データを再取得
-        }}
-      />
+      <Header title="復習" showBackButton={!showSettings} onBack={handleBackPress} />
       {content}
     </YStack>
   );

@@ -6,46 +6,60 @@ import { Button, Text, XStack, YStack } from 'tamagui';
 type HeaderProps = {
   title: string;
   showBackButton?: boolean;
+  showProfileButton?: boolean;
   onBack?: () => void;
 };
 
-export const Header = React.memo(({ title, showBackButton = true, onBack }: HeaderProps) => {
-  const router = useRouter();
+export const Header = React.memo(
+  ({ title, showBackButton = true, showProfileButton = true, onBack }: HeaderProps) => {
+    const router = useRouter();
 
-  const handleBack = () => {
-    if (onBack) {
-      onBack();
-    } else {
-      router.back();
-    }
-  };
+    const handleBack = () => {
+      if (onBack) {
+        onBack();
+      } else {
+        router.back();
+      }
+    };
 
-  return (
-    <YStack
-      backgroundColor="$bgPrimary"
-      borderBottomWidth={1}
-      borderBottomColor="$borderColor"
-      paddingVertical="$3"
-      paddingHorizontal="$4"
-    >
-      <XStack alignItems="center" justifyContent="center" position="relative">
-        {showBackButton && (
-          <Button
-            unstyled
-            position="absolute"
-            left={0}
-            onPress={handleBack}
-            pressStyle={{ opacity: 0.7 }}
-          >
-            <Ionicons name="chevron-back" size={28} color="#5B8CFF" />
-          </Button>
-        )}
-        <Text fontSize="$6" fontWeight="bold" color="$textPrimary">
-          {title}
-        </Text>
-      </XStack>
-    </YStack>
-  );
-});
+    return (
+      <YStack
+        backgroundColor="$bgPrimary"
+        borderBottomWidth={1}
+        borderBottomColor="$borderColor"
+        paddingVertical="$3"
+        paddingHorizontal="$4"
+      >
+        <XStack alignItems="center" justifyContent="center" position="relative">
+          {showBackButton && (
+            <Button
+              unstyled
+              position="absolute"
+              left={0}
+              onPress={handleBack}
+              pressStyle={{ opacity: 0.7 }}
+            >
+              <Ionicons name="chevron-back" size={28} color="#5B8CFF" />
+            </Button>
+          )}
+          <Text fontSize="$6" fontWeight="bold" color="$textPrimary">
+            {title}
+          </Text>
+          {showProfileButton && (
+            <Button
+              unstyled
+              position="absolute"
+              right={0}
+              onPress={() => router.push('/profile')}
+              pressStyle={{ opacity: 0.7 }}
+            >
+              <Ionicons name="person-circle-outline" size={28} color="#5B8CFF" />
+            </Button>
+          )}
+        </XStack>
+      </YStack>
+    );
+  },
+);
 
 Header.displayName = 'Header';

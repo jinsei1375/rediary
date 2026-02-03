@@ -35,13 +35,13 @@ export default function SettingsScreen() {
       )}
 
       <YStack flex={1} gap="$2">
-        <ListItem
+        {/* <ListItem
           title="AI学習分析"
           backgroundColor="$cardBg"
           borderRadius="$4"
           onPress={() => router.push('/profile/analysis')}
           icon={<Ionicons name="analytics-outline" size={24} color={theme.textPrimary.get()} />}
-        />
+        /> */}
         <ListItem
           title="個人設定"
           backgroundColor="$cardBg"

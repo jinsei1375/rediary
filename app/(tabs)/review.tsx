@@ -129,7 +129,7 @@ export default function ReviewScreen() {
   useEffect(() => {
     navigation.setOptions({
       tabBarStyle: showSettings
-        ? { paddingTop: 10, height: 40, backgroundColor: theme.background.val }
+        ? { paddingTop: 8, paddingBottom: 2, height: 62, backgroundColor: theme.background.val }
         : { display: 'none' },
     });
   }, [showSettings, navigation, theme.background]);
@@ -450,7 +450,12 @@ export default function ReviewScreen() {
 
   return (
     <YStack flex={1} backgroundColor="$bgPrimary">
-      <Header title="復習" showBackButton={!showSettings} onBack={handleBackPress} />
+      <Header
+        title="復習"
+        showBackButton={!showSettings}
+        showProfileButton={showSettings}
+        onBack={handleBackPress}
+      />
       {content}
     </YStack>
   );

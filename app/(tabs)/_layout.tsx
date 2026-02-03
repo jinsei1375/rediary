@@ -12,16 +12,21 @@ export default function TabLayout() {
         tabBarActiveTintColor: '#5B8CFF',
         tabBarInactiveTintColor: theme.color.val,
         tabBarStyle: {
-          paddingTop: 10,
-          height: 48,
+          paddingTop: 8,
+          paddingBottom: 2,
+          height: 62,
           backgroundColor: theme.background.val,
+        },
+        tabBarLabelStyle: {
+          fontSize: 11,
+          marginTop: 2,
         },
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
-          title: '',
+          title: 'ホーム',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="home-outline" size={size} color={color} />
           ),
@@ -30,7 +35,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="calendar"
         options={{
-          title: '',
+          title: 'カレンダー',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="calendar-outline" size={size} color={color} />
           ),
@@ -39,7 +44,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="expressions"
         options={{
-          title: '',
+          title: '表現集',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="list-outline" size={size} color={color} />
           ),
@@ -48,21 +53,39 @@ export default function TabLayout() {
       <Tabs.Screen
         name="review"
         options={{
-          title: '',
+          title: '復習',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="school-outline" size={size} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="profile"
+        name="analysis/index"
         options={{
-          title: '',
+          title: 'AI分析',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person-outline" size={size} color={color} />
+            <Ionicons name="analytics-outline" size={size} color={color} />
           ),
         }}
       />
+      <Tabs.Screen
+        name="analysis/[analysisId]"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="profile/index"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen name="profile/settings" options={{ href: null }} />
+      <Tabs.Screen name="profile/subscription" options={{ href: null }} />
+      <Tabs.Screen name="profile/faq" options={{ href: null }} />
+      <Tabs.Screen name="profile/guide" options={{ href: null }} />
+      <Tabs.Screen name="profile/privacy" options={{ href: null }} />
+      <Tabs.Screen name="profile/terms" options={{ href: null }} />
     </Tabs>
   );
 }

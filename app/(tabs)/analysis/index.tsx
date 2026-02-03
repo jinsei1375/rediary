@@ -29,6 +29,7 @@ export default function AiAnalysisScreen() {
   const [canAnalyzeMonthly, setCanAnalyzeMonthly] = useState(false);
   const [nextWeeklyDate, setNextWeeklyDate] = useState<Date | null>(null);
   const [nextMonthlyDate, setNextMonthlyDate] = useState<Date | null>(null);
+  const [shouldReload, setShouldReload] = useState(false);
 
   // 確認ダイアログ用の状態
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
@@ -63,11 +64,14 @@ export default function AiAnalysisScreen() {
     }
   }, [user?.id]);
 
-  // 画面にフォーカスが当たるたびにデータを再読み込み
+  // 初回または分析実行後の戻り時のみデータを再読み込み
   useFocusEffect(
     useCallback(() => {
-      loadAnalysisData();
-    }, [loadAnalysisData]),
+      if (shouldReload || analyses.length === 0) {
+        loadAnalysisData();
+        setShouldReload(false);
+      }
+    }, [loadAnalysisData, shouldReload, analyses.length]),
   );
 
   const handleAnalyzePress = async (analysisType: AiAnalysisType) => {
@@ -107,9 +111,10 @@ export default function AiAnalysisScreen() {
 
       showSuccessToast('分析が完了しました');
 
-      // 分析詳細ページに遷移
+      // 分析詳細ページに遷移（戻ってきた時に再読み込みするフラグを立てる）
       if (data?.id) {
-        router.push(`/profile/analysis/${data.id}`);
+        setShouldReload(true);
+        router.push(`/(tabs)/analysis/${data.id}`);
       } else {
         await loadAnalysisData();
       }
@@ -152,7 +157,7 @@ export default function AiAnalysisScreen() {
 
   return (
     <YStack f={1} bg="$background">
-      <Header title="AI学習分析" />
+      <Header title="AI学習分析" showBackButton={false} />
       <ScrollView>
         <YStack f={1} p="$4" gap="$4">
           {/* 説明カード */}
@@ -282,7 +287,7 @@ export default function AiAnalysisScreen() {
                       borderRadius="$4"
                       borderWidth={1}
                       borderColor="$borderColor"
-                      onPress={() => router.push(`/profile/analysis/${analysis.id}`)}
+                      onPress={() => router.push(`/(tabs)/analysis/${analysis.id}`)}
                       iconAfter={
                         <YStack
                           px="$2"

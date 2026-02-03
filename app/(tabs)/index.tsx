@@ -1,3 +1,4 @@
+import { Header } from '@/components/common/Header';
 import { PrimaryButton } from '@/components/common/PrimaryButton';
 import { DailyQuestion } from '@/components/home/DailyQuestion';
 import { StatCard } from '@/components/home/StatCard';
@@ -116,6 +117,7 @@ export default function HomeScreen() {
 
   return (
     <YStack flex={1} backgroundColor="$bgPrimary">
+      <Header title="ホーム" showBackButton={false} />
       <ScrollView
         flex={1}
         contentContainerStyle={{

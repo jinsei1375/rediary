@@ -1,3 +1,4 @@
+import { Header } from '@/components/common/Header';
 import { getContactMailtoLink } from '@/constants/contact';
 import { useAuth } from '@/contexts/AuthContext';
 import { Ionicons } from '@expo/vector-icons';
@@ -24,24 +25,10 @@ export default function SettingsScreen() {
   };
 
   return (
-    <YStack flex={1} padding="$4" backgroundColor="$bgPrimary">
-      <Text fontSize="$8" fontWeight="bold" marginBottom="$2">
-        プロフィール
-      </Text>
-      {user && (
-        <Text fontSize="$3" color="$placeholderColor" marginBottom="$8">
-          {user.email}
-        </Text>
-      )}
+    <YStack flex={1} backgroundColor="$bgPrimary">
+      <Header title="プロフィール" showBackButton={false} />
 
-      <YStack flex={1} gap="$2">
-        {/* <ListItem
-          title="AI学習分析"
-          backgroundColor="$cardBg"
-          borderRadius="$4"
-          onPress={() => router.push('/profile/analysis')}
-          icon={<Ionicons name="analytics-outline" size={24} color={theme.textPrimary.get()} />}
-        /> */}
+      <YStack flex={1} gap="$2" padding="$3">
         <ListItem
           title="個人設定"
           backgroundColor="$cardBg"

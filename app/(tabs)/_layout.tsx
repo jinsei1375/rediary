@@ -60,7 +60,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="analysis/index"
+        name="analysis"
         options={{
           title: 'AI分析',
           tabBarIcon: ({ color, size }) => (
@@ -69,23 +69,11 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="analysis/[analysisId]"
+        name="profile"
         options={{
           href: null,
         }}
       />
-      <Tabs.Screen
-        name="profile/index"
-        options={{
-          href: null,
-        }}
-      />
-      <Tabs.Screen name="profile/settings" options={{ href: null }} />
-      <Tabs.Screen name="profile/subscription" options={{ href: null }} />
-      <Tabs.Screen name="profile/faq" options={{ href: null }} />
-      <Tabs.Screen name="profile/guide" options={{ href: null }} />
-      <Tabs.Screen name="profile/privacy" options={{ href: null }} />
-      <Tabs.Screen name="profile/terms" options={{ href: null }} />
     </Tabs>
   );
 }

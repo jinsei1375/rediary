@@ -54,8 +54,6 @@ function NavigationContent() {
             gestureEnabled: true,
           }}
         />
-        <Stack.Screen name="diary" />
-        <Stack.Screen name="profile" />
       </Stack>
       <StatusBar />
       <Toast />

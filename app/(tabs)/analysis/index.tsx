@@ -134,13 +134,13 @@ export default function AiAnalysisScreen() {
   if (!isPremium) {
     return (
       <YStack f={1} bg="$background">
-        <Header title="AI学習分析" />
+        <Header title="AI分析" showBackButton={false} />
         <ScrollView>
           <YStack f={1} p="$4" gap="$4">
             <Card p="$4" bg="$blue2" borderWidth={1} borderColor="$blue8">
               <YStack gap="$3">
                 <H3 color="$blue11">有料プラン限定機能</H3>
-                <Paragraph color="$blue11">AI学習分析はProプラン以上の機能です。</Paragraph>
+                <Paragraph color="$blue11">AI分析はProプラン以上の機能です。</Paragraph>
                 <Paragraph color="$blue11">
                   1ヶ月分の日記と添削結果を分析し、あなたの学習傾向や改善ポイントを提供します。
                 </Paragraph>
@@ -157,15 +157,15 @@ export default function AiAnalysisScreen() {
 
   return (
     <YStack f={1} bg="$background">
-      <Header title="AI学習分析" showBackButton={false} />
+      <Header title="AI分析" showBackButton={false} />
       <ScrollView>
         <YStack f={1} p="$4" gap="$4">
           {/* 説明カード */}
           <Card p="$4" bg="$blue2" borderWidth={1} borderColor="$blue8" elevation={2}>
             <YStack gap="$3">
-              <H3 color="$blue11">AI学習分析とは？</H3>
+              {/* <H3 color="$blue11">AI分析とは？</H3> */}
               <Paragraph color="$blue11" fontSize="$3" lineHeight="$1">
-                日記とAI添削結果を分析し、以下の情報を提供します：
+                日記とAI添削結果を分析し以下の情報を提供します：
               </Paragraph>
               <YStack gap="$2">
                 <XStack ai="center" gap="$2">

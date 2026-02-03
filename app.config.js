@@ -4,7 +4,7 @@ module.exports = ({ config }) => {
     expo: {
       name: 'rediary',
       slug: 'rediary',
-      version: '0.1.8',
+      version: '0.1.9',
       orientation: 'portrait',
       icon: './assets/images/icon.png',
       scheme: 'rediary',

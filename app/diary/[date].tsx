@@ -275,6 +275,7 @@ export default function DiaryDetailScreen() {
           onSave={handleSave}
           saving={saving}
           showFreePlanNotice={showFreePlanNotice}
+          returnToPath={`/diary/${date}`}
         />
 
         {/* AI添削結果表示 */}

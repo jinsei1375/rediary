@@ -7,6 +7,7 @@ type FreePlanNoticeProps = {
   message: string;
   upgradeText: string;
   showWarningIcon?: boolean;
+  returnTo?: string;
 };
 
 export const FreePlanNotice: React.FC<FreePlanNoticeProps> = ({
@@ -14,6 +15,7 @@ export const FreePlanNotice: React.FC<FreePlanNoticeProps> = ({
   message,
   upgradeText,
   showWarningIcon = true,
+  returnTo,
 }) => {
   return (
     <YStack
@@ -36,7 +38,16 @@ export const FreePlanNotice: React.FC<FreePlanNoticeProps> = ({
         color="$blue10"
         fontWeight="600"
         textDecorationLine="underline"
-        onPress={() => router.push('/profile/subscription')}
+        onPress={() => {
+          if (returnTo) {
+            router.push({
+              pathname: '/(tabs)/profile/subscription',
+              params: { returnTo },
+            });
+          } else {
+            router.push('/profile/subscription');
+          }
+        }}
       >
         {upgradeText}
       </Text>

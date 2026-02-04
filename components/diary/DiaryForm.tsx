@@ -13,13 +13,21 @@ type DiaryFormProps = {
   onSave: () => void;
   saving: boolean;
   showFreePlanNotice?: boolean;
+  returnToPath?: string;
 };
 
 const MAX_LENGTH_ENGLISH = 1500;
 const MAX_LENGTH_JAPANESE = 1000;
 
 export const DiaryForm = React.memo(
-  ({ formData, onFormChange, onSave, saving, showFreePlanNotice }: DiaryFormProps) => {
+  ({
+    formData,
+    onFormChange,
+    onSave,
+    saving,
+    showFreePlanNotice,
+    returnToPath,
+  }: DiaryFormProps) => {
     const { targetLanguage, nativeLanguage } = useSettings();
     const isContentOverLimit = formData.content.length > MAX_LENGTH_ENGLISH;
     const isContentNativeOverLimit = formData.content_native.length > MAX_LENGTH_JAPANESE;
@@ -48,6 +56,7 @@ export const DiaryForm = React.memo(
             title="無料プランの制限"
             message="無料プランでは当日分の日記しか保存できません。"
             upgradeText="有料プランで過去の日記も編集可能に →"
+            returnTo={returnToPath}
           />
         )}
 

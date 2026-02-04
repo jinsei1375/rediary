@@ -3,6 +3,7 @@ import { FrequentExpressionsCard } from '@/components/ai-analysis/FrequentExpres
 import { GrowthSummaryCard } from '@/components/ai-analysis/GrowthSummaryCard';
 import { Header } from '@/components/common/Header';
 import { Loading } from '@/components/common/Loading';
+import { SAMPLE_MONTHLY_ANALYSIS, SAMPLE_WEEKLY_ANALYSIS } from '@/constants/sampleAnalysis';
 import { AiAnalysisService } from '@/services/aiAnalysisService';
 import { AiAnalysis, AiAnalysisType } from '@/types/database';
 import { useLocalSearchParams } from 'expo-router';
@@ -21,6 +22,18 @@ export default function AiAnalysisDetailScreen() {
 
   const loadAnalysisDetail = async () => {
     if (!params.analysisId) return;
+
+    // サンプルデータの場合
+    if (params.analysisId === 'sample-weekly') {
+      setAnalysis(SAMPLE_WEEKLY_ANALYSIS as any);
+      setLoading(false);
+      return;
+    }
+    if (params.analysisId === 'sample-monthly') {
+      setAnalysis(SAMPLE_MONTHLY_ANALYSIS as any);
+      setLoading(false);
+      return;
+    }
 
     setLoading(true);
     try {

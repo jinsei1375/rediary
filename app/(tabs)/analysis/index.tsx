@@ -3,6 +3,7 @@ import { Header } from '@/components/common/Header';
 import { Loading } from '@/components/common/Loading';
 import { LoadingOverlay } from '@/components/common/LoadingOverlay';
 import { AiButton, ModalButton, PrimaryButton } from '@/components/common/PrimaryButton';
+import { SAMPLE_MONTHLY_ANALYSIS, SAMPLE_WEEKLY_ANALYSIS } from '@/constants/sampleAnalysis';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSettings } from '@/contexts/SettingsContext';
 import { AiAnalysisService } from '@/services/aiAnalysisService';
@@ -14,7 +15,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { router } from 'expo-router';
 import React, { useCallback, useState } from 'react';
 import { Alert, ScrollView } from 'react-native';
-import { Card, H3, H4, ListItem, Paragraph, Text, XStack, YStack, useTheme } from 'tamagui';
+import { Card, H4, ListItem, Paragraph, Text, XStack, YStack, useTheme } from 'tamagui';
 
 export default function AiAnalysisScreen() {
   const { user } = useAuth();
@@ -67,11 +68,17 @@ export default function AiAnalysisScreen() {
   // 初回または分析実行後の戻り時のみデータを再読み込み
   useFocusEffect(
     useCallback(() => {
+      // 無料ユーザーはデータ読み込み不要
+      if (!isPremium) {
+        setLoading(false);
+        return;
+      }
+
       if (shouldReload || analyses.length === 0) {
         loadAnalysisData();
         setShouldReload(false);
       }
-    }, [loadAnalysisData, shouldReload, analyses.length]),
+    }, [loadAnalysisData, shouldReload, analyses.length, isPremium]),
   );
 
   const handleAnalyzePress = async (analysisType: AiAnalysisType) => {
@@ -132,23 +139,111 @@ export default function AiAnalysisScreen() {
 
   // 無料プランの場合
   if (!isPremium) {
+    const sampleAnalyses = [SAMPLE_MONTHLY_ANALYSIS, SAMPLE_WEEKLY_ANALYSIS];
+
     return (
       <YStack f={1} bg="$background">
         <Header title="AI分析" showBackButton={false} />
         <ScrollView>
           <YStack f={1} p="$4" gap="$4">
-            <Card p="$4" bg="$blue2" borderWidth={1} borderColor="$blue8">
+            {/* AI分析の説明 */}
+            <Card p="$4" bg="$blue2" borderWidth={1} borderColor="$blue8" elevation={2}>
               <YStack gap="$3">
-                <H3 color="$blue11">有料プラン限定機能</H3>
-                <Paragraph color="$blue11">AI分析はProプラン以上の機能です。</Paragraph>
-                <Paragraph color="$blue11">
-                  1ヶ月分の日記と添削結果を分析し、あなたの学習傾向や改善ポイントを提供します。
+                <H4 color="$blue11">AI分析でわかること</H4>
+                <YStack gap="$2">
+                  <XStack ai="center" gap="$2">
+                    <YStack w={4} h={4} bg="$blue9" borderRadius="$10" />
+                    <Text color="$blue11" fontSize="$3">
+                      よく使う表現・単語の傾向
+                    </Text>
+                  </XStack>
+                  <XStack ai="center" gap="$2">
+                    <YStack w={4} h={4} bg="$blue9" borderRadius="$10" />
+                    <Text color="$blue11" fontSize="$3">
+                      よく指摘される文法ミス
+                    </Text>
+                  </XStack>
+                  <XStack ai="center" gap="$2">
+                    <YStack w={4} h={4} bg="$blue9" borderRadius="$10" />
+                    <Text color="$blue11" fontSize="$3">
+                      期間内の成長サマリー
+                    </Text>
+                  </XStack>
+                </YStack>
+                <Paragraph color="$blue11" fontSize="$2" mt="$2">
+                  ※ 週間分析は週1回、月間分析は月1回まで実行できます
                 </Paragraph>
-                <PrimaryButton onPress={() => router.push('/profile/subscription')} mt="$2">
-                  プランを見る
+                <PrimaryButton
+                  onPress={() => {
+                    router.push({
+                      pathname: '/(tabs)/profile/subscription',
+                      params: { returnTo: '/(tabs)/analysis' },
+                    });
+                  }}
+                  mt="$3"
+                >
+                  Proプランを見る
                 </PrimaryButton>
               </YStack>
             </Card>
+
+            {/* サンプル分析履歴 */}
+            <YStack gap="$3">
+              <H4>サンプル分析結果</H4>
+              <YStack gap="$2">
+                {sampleAnalyses.map((analysis) => {
+                  const getPeriodText = (analysisType: AiAnalysisType): string => {
+                    const endDate = new Date();
+                    const startDate = new Date(endDate);
+
+                    if (analysisType === AiAnalysisType.WEEKLY) {
+                      startDate.setDate(startDate.getDate() - 6);
+                    } else {
+                      startDate.setDate(startDate.getDate() - 29);
+                    }
+
+                    return `${startDate.toLocaleDateString('ja-JP', { month: 'short', day: 'numeric' })} 〜 ${endDate.toLocaleDateString('ja-JP', { month: 'short', day: 'numeric' })}`;
+                  };
+
+                  const getAnalysisTypeLabel = (type: AiAnalysisType): string => {
+                    return type === AiAnalysisType.WEEKLY ? '週間' : '月間';
+                  };
+
+                  const isWeekly = analysis.analysis_type === AiAnalysisType.WEEKLY;
+
+                  return (
+                    <ListItem
+                      key={analysis.id}
+                      title={`${getAnalysisTypeLabel(analysis.analysis_type)}分析サンプル`}
+                      subTitle={`サンプル期間: ${getPeriodText(analysis.analysis_type)}`}
+                      backgroundColor="$cardBg"
+                      borderRadius="$4"
+                      borderWidth={1}
+                      borderColor="$borderColor"
+                      onPress={() => router.push(`/(tabs)/analysis/${analysis.id}`)}
+                      iconAfter={
+                        <YStack
+                          px="$2"
+                          py="$1"
+                          bg={isWeekly ? '$orange2' : '$blue2'}
+                          borderRadius="$2"
+                          borderWidth={1}
+                          borderColor={isWeekly ? '$orange8' : '$blue8'}
+                        >
+                          <Text
+                            color={isWeekly ? '$orange11' : '$blue11'}
+                            fontSize="$2"
+                            fontWeight="500"
+                          >
+                            {getAnalysisTypeLabel(analysis.analysis_type)}
+                          </Text>
+                        </YStack>
+                      }
+                    />
+                  );
+                })}
+              </YStack>
+            </YStack>
           </YStack>
         </ScrollView>
       </YStack>

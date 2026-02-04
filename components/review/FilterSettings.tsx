@@ -98,6 +98,7 @@ export const FilterSettings = React.memo(
               message="無料プランでは復習問題は1日1回までです。"
               upgradeText="有料プランで無制限に復習可能に →"
               showWarningIcon={!reviewLimitStatus.isAllowed}
+              returnTo="/(tabs)/review"
             />
           )}
 

@@ -122,7 +122,7 @@ Deno.serve(async (req: Request) => {
       throw diariesError;
     }
 
-    const minDiaries = analysisType === 'weekly' ? 3 : 5;
+    const minDiaries = analysisType === 'weekly' ? 4 : 10;
     if (!diaries || diaries.length < minDiaries) {
       const message = `分析には最低${minDiaries}日分の日記が必要です`;
       return new Response(JSON.stringify({ error: message }), {

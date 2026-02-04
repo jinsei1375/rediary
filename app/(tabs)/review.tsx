@@ -198,7 +198,11 @@ export default function ReviewScreen() {
             [
               {
                 text: 'プランを見る',
-                onPress: () => router.push('/profile/subscription'),
+                onPress: () =>
+                  router.push({
+                    pathname: '/(tabs)/profile/subscription',
+                    params: { returnTo: '/(tabs)/review' },
+                  }),
               },
               { text: 'OK', style: 'cancel' },
             ],

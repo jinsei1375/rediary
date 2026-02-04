@@ -3,10 +3,13 @@ import { SecondaryButton } from '@/components/common/PrimaryButton';
 import { PricingCard } from '@/components/subscription/PricingCard';
 import { useSubscriptionStore } from '@/stores/subscriptionStore';
 import { SubscriptionPlan } from '@/types/database';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
 import { ScrollView, Spinner, Text, YStack } from 'tamagui';
 
 export default function SubscriptionScreen() {
+  const router = useRouter();
+  const params = useLocalSearchParams<{ returnTo?: string }>();
   const plan = useSubscriptionStore((state) => state.plan);
   const isPremium = useSubscriptionStore((state) => state.isPremium());
   const offerings = useSubscriptionStore((state) => state.offerings);
@@ -14,6 +17,14 @@ export default function SubscriptionScreen() {
   const loading = useSubscriptionStore((state) => state.loading);
   const subscribe = useSubscriptionStore((state) => state.subscribe);
   const restore = useSubscriptionStore((state) => state.restore);
+
+  const handleBack = () => {
+    if (params.returnTo) {
+      router.push(params.returnTo as any);
+    } else {
+      router.back();
+    }
+  };
 
   // プラン名の表示用ヘルパー (MVP: ProとFreeのみ)
   const getPlanDisplayName = () => {
@@ -23,7 +34,7 @@ export default function SubscriptionScreen() {
   if (loading && !offerings) {
     return (
       <YStack flex={1} backgroundColor="$bgPrimary">
-        <Header title="利用プラン" />
+        <Header title="利用プラン" onBack={handleBack} />
         <YStack flex={1} justifyContent="center" alignItems="center">
           <Spinner size="large" color="$primary" />
         </YStack>
@@ -37,7 +48,7 @@ export default function SubscriptionScreen() {
 
   return (
     <YStack flex={1} backgroundColor="$bgPrimary">
-      <Header title="利用プラン" />
+      <Header title="利用プラン" onBack={handleBack} />
       <ScrollView flex={1}>
         <YStack padding="$6" gap="$6">
           {/* 利用中のプラン */}
@@ -82,9 +93,9 @@ export default function SubscriptionScreen() {
                 title="Proプラン(月額)"
                 price={monthlyPackage.product.priceString}
                 features={[
-                  '過去の日記も自由に編集',
-                  '復習問題が無制限（1日何回でも）',
-                  'AI添削機能が使える',
+                  '過去の日記も自由に編集可能',
+                  '復習問題が回数無制限で実施可能',
+                  'AI分析機能が利用可能',
                 ]}
                 onPress={() => subscribe(monthlyPackage)}
                 loading={loading}

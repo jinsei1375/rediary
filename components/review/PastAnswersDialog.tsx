@@ -11,25 +11,12 @@ type PastAnswersDialogProps = {
   pastAttempts: ExerciseAttempt[];
 };
 
-const getDialogHeight = (itemCount: number) => {
-  if (itemCount === 0) return '30%';
-  if (itemCount === 1) return '35%';
-  if (itemCount === 2) return '45%';
-  if (itemCount === 3) return '50%';
-  return '60%';
-};
-
 export const PastAnswersDialog = React.memo(
   ({ visible, onClose, pastAttempts }: PastAnswersDialogProps) => {
     const theme = useTheme();
 
     return (
-      <Dialog
-        visible={visible}
-        onClose={onClose}
-        title="過去の解答"
-        height={getDialogHeight(pastAttempts.length)}
-      >
+      <Dialog visible={visible} onClose={onClose} title="過去の解答" height="60%">
         <YStack flex={1} overflow="hidden">
           <ScrollView
             flex={1}

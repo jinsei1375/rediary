@@ -5,20 +5,23 @@ import { AiCorrectionButton } from '@/components/diary/AiCorrectionButton';
 import { CorrectionConfirmModal } from '@/components/diary/CorrectionConfirmModal';
 import { CorrectionResultDisplay } from '@/components/diary/CorrectionResultDisplay';
 import { DiaryForm } from '@/components/diary/DiaryForm';
+import { ExpressionsDialog } from '@/components/diary/ExpressionsDialog';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSettings } from '@/contexts/SettingsContext';
 import { AiCorrectionService } from '@/services/aiCorrectionService';
 import { DiaryService } from '@/services/diaryService';
 import { FeatureLimitError } from '@/services/featureLimitService';
+import { TranslationExerciseService } from '@/services/translationExerciseService';
 import { useSubscriptionStore } from '@/stores/subscriptionStore';
-import type { AiCorrection, DiaryEntryInsert } from '@/types/database';
+import type { AiCorrection, DiaryEntryInsert, TranslationExercise } from '@/types/database';
 import type { DiaryFormData } from '@/types/ui';
 import { formatDate, getTodayString } from '@/utils/dateUtils';
 import { getLanguageName } from '@/utils/languageUtils';
 import { showErrorToast, showSuccessToast } from '@/utils/toast';
+import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams, useNavigation } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
-import { ScrollView, Separator, YStack, useTheme } from 'tamagui';
+import { Button, ScrollView, Separator, YStack, useTheme } from 'tamagui';
 
 export default function DiaryDetailScreen() {
   const { date } = useLocalSearchParams<{ date: string }>();
@@ -36,6 +39,10 @@ export default function DiaryDetailScreen() {
   const [aiCorrecting, setAiCorrecting] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [aiCorrection, setAiCorrection] = useState<AiCorrection | null>(null);
+
+  // 表現集ダイアログの状態
+  const [showExpressionsDialog, setShowExpressionsDialog] = useState(false);
+  const [allExpressions, setAllExpressions] = useState<TranslationExercise[]>([]);
 
   const [formData, setFormData] = useState<DiaryFormData>({
     title: formatDate(date || ''),
@@ -111,6 +118,20 @@ export default function DiaryDetailScreen() {
 
     loadDiaryEntry();
   }, [date, user?.id]);
+
+  // すべてのネイティブ表現を読み込む
+  useEffect(() => {
+    const loadAllExpressions = async () => {
+      if (!user?.id) return;
+
+      const { data } = await TranslationExerciseService.getByUser(user.id);
+      if (data) {
+        setAllExpressions(data);
+      }
+    };
+
+    loadAllExpressions();
+  }, [user?.id]);
 
   const handleSave = useCallback(async () => {
     if (!user?.id) {
@@ -234,6 +255,12 @@ export default function DiaryDetailScreen() {
       if (data) {
         setAiCorrection(data);
         showSuccessToast('AI添削が完了しました');
+
+        // 表現集を再読み込み
+        const { data: expressionsData } = await TranslationExerciseService.getByUser(user.id);
+        if (expressionsData) {
+          setAllExpressions(expressionsData);
+        }
       }
     } catch (error) {
       console.error('AI correction error:', error);
@@ -260,7 +287,22 @@ export default function DiaryDetailScreen() {
 
   return (
     <YStack flex={1} backgroundColor="$bgPrimary">
-      <Header title={formatDate(date)} onBack={() => router.push('/(tabs)/calendar')} />
+      <Header
+        title={formatDate(date)}
+        showProfileButton={false}
+        onBack={() => router.push('/(tabs)/calendar')}
+        rightButton={
+          allExpressions.length > 0 ? (
+            <Button
+              unstyled
+              onPress={() => setShowExpressionsDialog(true)}
+              pressStyle={{ opacity: 0.7 }}
+            >
+              <Ionicons name="book-outline" size={28} color="#5B8CFF" />
+            </Button>
+          ) : undefined
+        }
+      />
 
       <ScrollView
         flex={1}
@@ -312,6 +354,13 @@ export default function DiaryDetailScreen() {
         nativeContent={formData.content_native}
         userContent={formData.content}
         hasNativeContent={!!formData.content_native.trim()}
+      />
+
+      {/* 表現集ダイアログ */}
+      <ExpressionsDialog
+        visible={showExpressionsDialog}
+        onClose={() => setShowExpressionsDialog(false)}
+        expressions={allExpressions}
       />
 
       <LoadingOverlay

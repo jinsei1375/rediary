@@ -8,10 +8,17 @@ type HeaderProps = {
   showBackButton?: boolean;
   showProfileButton?: boolean;
   onBack?: () => void;
+  rightButton?: React.ReactNode;
 };
 
 export const Header = React.memo(
-  ({ title, showBackButton = true, showProfileButton = true, onBack }: HeaderProps) => {
+  ({
+    title,
+    showBackButton = true,
+    showProfileButton = true,
+    onBack,
+    rightButton,
+  }: HeaderProps) => {
     const router = useRouter();
 
     const handleBack = () => {
@@ -45,7 +52,11 @@ export const Header = React.memo(
           <Text fontSize="$6" fontWeight="bold" color="$textPrimary">
             {title}
           </Text>
-          {showProfileButton && (
+          {rightButton ? (
+            <YStack position="absolute" right={0}>
+              {rightButton}
+            </YStack>
+          ) : showProfileButton ? (
             <Button
               unstyled
               position="absolute"
@@ -55,7 +66,7 @@ export const Header = React.memo(
             >
               <Ionicons name="person-circle-outline" size={28} color="#5B8CFF" />
             </Button>
-          )}
+          ) : null}
         </XStack>
       </YStack>
     );

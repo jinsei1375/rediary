@@ -5,7 +5,7 @@ export const CONTACT = {
   /** お問い合わせメールアドレス */
   EMAIL: 'jinsei.edit@gmail.com',
   /** お問い合わせ件名（デフォルト） */
-  EMAIL_SUBJECT: 'Rediaryお問い合わせ',
+  EMAIL_SUBJECT: 'ReDiaryお問い合わせ',
 } as const;
 
 /**

@@ -49,7 +49,7 @@ export default function LoginScreen() {
   return (
     <YStack flex={1} justifyContent="center" paddingHorizontal="$6" backgroundColor="$background">
       <Text fontSize="$10" fontWeight="bold" textAlign="center" marginBottom="$2" color="$primary">
-        Rediary
+        ReDiary
       </Text>
       <Text fontSize="$5" textAlign="center" color="$placeholderColor" marginBottom="$10">
         日記で学ぶ言語学習アプリ

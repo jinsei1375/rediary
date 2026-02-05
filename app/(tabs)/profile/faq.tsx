@@ -11,9 +11,9 @@ interface FAQItem {
 
 const faqData: FAQItem[] = [
   {
-    question: 'Rediaryとは何ですか？',
+    question: 'ReDiaryとは何ですか？',
     answer:
-      'Rediaryは、言語学習を支援する日記アプリです。日記を書くことで言語表現を学び、AI技術を活用した添削機能により効果的に語学力を向上させることができます。',
+      'ReDiaryは、言語学習を支援する日記アプリです。日記を書くことで言語表現を学び、AI技術を活用した添削機能により効果的に語学力を向上させることができます。',
   },
   {
     question: 'どのような機能がありますか？',

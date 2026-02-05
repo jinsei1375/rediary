@@ -112,7 +112,7 @@ export default function SubscriptionScreen() {
             <PricingCard
               title="無料プラン"
               price="¥0"
-              features={['Rediaryの基本的な機能を利用できます']}
+              features={['ReDiaryの基本的な機能を利用できます']}
               onPress={() => {}}
               loading={false}
               disabled={true}

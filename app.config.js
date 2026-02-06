@@ -4,7 +4,7 @@ module.exports = ({ config }) => {
     expo: {
       name: 'rediary',
       slug: 'rediary',
-      version: '0.1.11',
+      version: '0.1.12',
       orientation: 'portrait',
       icon: './assets/images/icon.png',
       scheme: 'rediary',
@@ -40,9 +40,9 @@ module.exports = ({ config }) => {
           'expo-splash-screen',
           {
             image: './assets/images/splash-icon.png',
-            // imageWidth: 200,
+            imageWidth: 200,
             resizeMode: 'cover',
-            backgroundColor: '#5B8CFF',
+            backgroundColor: '#fff',
           },
         ],
       ],

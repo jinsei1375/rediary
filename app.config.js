@@ -41,7 +41,7 @@ module.exports = ({ config }) => {
           {
             image: './assets/images/splash-icon.png',
             imageWidth: 200,
-            resizeMode: 'cover',
+            resizeMode: 'contain',
             backgroundColor: '#fff',
           },
         ],

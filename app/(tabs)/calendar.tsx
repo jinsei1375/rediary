@@ -1,6 +1,7 @@
 import { MonthYearPicker } from '@/components/calendar/MonthYearPicker';
 import { SwipeableCalendar } from '@/components/calendar/SwipeableCalendar';
 import { WeekCalendar } from '@/components/calendar/WeekCalendar';
+import { Header } from '@/components/common/Header';
 import { Loading } from '@/components/common/Loading';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSettings } from '@/contexts/SettingsContext';
@@ -81,6 +82,7 @@ export default function CalendarScreen() {
 
   return (
     <YStack flex={1} backgroundColor="$background">
+      <Header title="カレンダー" showBackButton={false} />
       {viewMode === 'week' ? (
         <WeekCalendar
           currentMonth={currentMonth}

@@ -109,7 +109,7 @@ Deno.serve(async (req: Request) => {
           {
             role: 'system',
             content:
-              "You are a language learning assistant. Analyze the user's intent in their native language and their writing in the target language, then provide corrections and learning points.",
+              "あなたは言語学習アシスタントです。ユーザーのネイティブ言語での意図と、ターゲット言語での執筆内容を分析し、添削と学習ポイントを提供してください。",
           },
           {
             role: 'user',
@@ -178,79 +178,89 @@ function buildPrompt(
   // ネイティブ言語が空の場合は別のプロンプトを使用
   if (!nativeContent?.trim()) {
     return `
-Analyze the user's writing in the target language and provide corrections to make it sound more natural, in JSON format.
+ユーザーが${targetLangName}で書いた文章を分析し、より自然な表現に添削してください。
 
-**User's actual writing (in ${targetLangName}):**
+**ユーザーが実際に書いた文章（${targetLangName}）:**
 ${userContent}
 
-Please respond in the following JSON format:
+以下のJSON形式で回答してください：
 {
-  "corrected_content": "Natural corrected content in ${targetLangName} (as a native speaker would write)",
+  "corrected_content": "${targetLangName}でネイティブが書くような自然な文章",
   "correction_points": [
     {
       "type": "grammar" | "vocabulary" | "style" | "other",
-      "original": "Original expression from user_content",
-      "corrected": "Corrected expression",
-      "explanation": "Explanation in ${nativeLangName} of why this correction is needed and how it improves the text",
-      "position": { "start": 0, "end": 10 } // Optional: position in original text
+      "original": "元の文章から抽出した表現",
+      "corrected": "添削後の表現",
+      "explanation": "${nativeLangName}でなぜこの表現の方が良いか、どう改善されるかの説明",
+      "position": { "start": 0, "end": 10 } // オプション：元の文章内の位置
     }
   ],
   "native_expressions": [
     {
-      "expression": "Natural ${targetLangName} expression actually used in corrected_content",
-      "meaning": "Meaning of this expression in ${nativeLangName}",
-      "usage_example": "Example sentence in ${targetLangName}",
-      "usage_example_translation": "Translation of the usage_example in ${nativeLangName}",
-      "context": "Explanation in ${nativeLangName} of when and how to use this expression"
+      "expression": "corrected_contentで実際に使用されているネイティブな${targetLangName}の表現パターン（例：try ~ing、look forward to ~ingなど汎用的な形で）",
+      "meaning": "この表現が表す意味を${nativeLangName}で簡潔に。OK例：「〜してみる」「〜を楽しみにする」。NG例：「〜という意味」「〜という意味です」「〜を意味する」",
+      "usage_example": "${targetLangName}での使用例文",
+      "usage_example_translation": "${nativeLangName}での使用例文の翻訳",
+      "context": "${nativeLangName}でいつ、どのようにこの表現を使うかの説明"
     }
   ]
 }
 
-**Important:**
-- All explanations (explanation, meaning, context, usage_example_translation) must be in ${nativeLangName}
-- usage_example must be in ${targetLangName}
-- native_expressions must only include expressions that are actually used in corrected_content
-- Limit to maximum 5 correction_points
-- Focus on making the text sound more natural and fluent
+**重要事項：**
+- すべての説明（explanation、meaning、context、usage_example_translation）は${nativeLangName}で記述
+- usage_exampleは${targetLangName}で記述
+- expressionは汎用的なパターン形式で（例："try ~ing"、"look forward to ~ing"など）
+- meaningの書き方：OK例「〜してみる」「〜を楽しみにする」。NG例「〜という意味」「〜という意味です」「〜を意味する」
+- native_expressionsはcorrected_contentで実際に使用されている表現を、できるだけ多く（最大10個）含める
+- correction_pointsは最大10個まで提供
+- ネイティブ表現は学習に役立つものを積極的に選び、豊富に提供してください
 `.trim();
   }
 
   return `
-Analyze the user's intent in their native language and their writing in the target language, then provide corrections in JSON format.
+ユーザーが${nativeLangName}で伝えたかった内容と、${targetLangName}で実際に書いた文章を分析し、添削を提供してください。
 
-**User's intended content (in ${nativeLangName}):**
+**大切なこと**
+- ${nativeLangName}で書かれた内容から、ユーザーが本当に伝えたかったニュアンスや感情、文脈を丁寧に読み取ってください
+- 文法の正しさだけでなく、伝えたいことが${targetLangName}で自然に表現できているかを見てください
+- ${nativeLangName}から読み取れる感情や強調したいポイントが、${targetLangName}でも伝わるようにしてください
+
+**ユーザーが伝えたかった内容（${nativeLangName}）:**
 ${nativeContent}
 
-**User's actual writing (in ${targetLangName}):**
+**ユーザーが実際に書いた文章（${targetLangName}）:**
 ${userContent}
 
-Please respond in the following JSON format:
+以下のJSON形式で回答してください：
 {
-  "corrected_content": "Natural corrected content in ${targetLangName} (as a native speaker would write)",
+  "corrected_content": "${targetLangName}でネイティブが書くような自然な文章",
   "correction_points": [
     {
       "type": "grammar" | "vocabulary" | "style" | "other",
-      "original": "Original expression from user_content",
-      "corrected": "Corrected expression",
-      "explanation": "Explanation in ${nativeLangName} of why this correction is needed and how it improves the text",
-      "position": { "start": 0, "end": 10 } // Optional: position in original text
+      "original": "元の文章から抽出した表現",
+      "corrected": "添削後の表現",
+      "explanation": "${nativeLangName}でなぜこの表現の方が良いか、どう改善されるかの説明",
+      "position": { "start": 0, "end": 10 } // オプション：元の文章内の位置
     }
   ],
   "native_expressions": [
     {
-      "expression": "Natural ${targetLangName} expression actually used in corrected_content",
-      "meaning": "Meaning of this expression in ${nativeLangName}",
-      "usage_example": "Example sentence in ${targetLangName}",
-      "usage_example_translation": "Translation of the usage_example in ${nativeLangName}",
-      "context": "Explanation in ${nativeLangName} of when and how to use this expression"
+      "expression": "corrected_contentで実際に使用されているネイティブな${targetLangName}の表現パターン（例：try ~ing、look forward to ~ingなど汎用的な形で）",
+      "meaning": "この表現が表す意味を${nativeLangName}で簡潔に。OK例：「〜してみる」「〜を楽しみにする」。NG例：「〜という意味」「〜という意味です」「〜を意味する」",
+      "usage_example": "${targetLangName}での使用例文",
+      "usage_example_translation": "${nativeLangName}での使用例文の翻訳",
+      "context": "${nativeLangName}でいつ、どのようにこの表現を使うかの説明"
     }
   ]
 }
 
-**Important:**
-- All explanations (explanation, meaning, context, usage_example_translation) must be in ${nativeLangName}
-- usage_example must be in ${targetLangName}
-- native_expressions must only include expressions that are actually used in corrected_content
-- Limit to maximum 5 correction_points
+**重要事項：**
+- すべての説明（explanation、meaning、context、usage_example_translation）は${nativeLangName}で記述
+- usage_exampleは${targetLangName}で記述
+- expressionは汎用的なパターン形式で（例："try ~ing"、"look forward to ~ing"など）
+- meaningの書き方：OK例「〜してみる」「〜を楽しみにする」。NG例「〜という意味」「〜という意味です」「〜を意味する」
+- native_expressionsはcorrected_contentで実際に使用されている表現を、できるだけ多く（最大10個）含める
+- correction_pointsは最大10個まで提供
+- ネイティブ表現は学習に役立つものを積極的に選び、豊富に提供してください
 `.trim();
 }

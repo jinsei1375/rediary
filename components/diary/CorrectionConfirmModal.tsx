@@ -1,5 +1,7 @@
 import { Dialog } from '@/components/common/Dialog';
 import { ModalButton } from '@/components/common/PrimaryButton';
+import { Language } from '@/types/database';
+import { getLanguageName } from '@/utils/languageUtils';
 import { Text, XStack, YStack } from 'tamagui';
 
 type CorrectionConfirmModalProps = {
@@ -9,6 +11,8 @@ type CorrectionConfirmModalProps = {
   nativeContent: string;
   userContent: string;
   hasNativeContent: boolean;
+  targetLanguage: Language;
+  isLanguageMismatch?: boolean;
 };
 
 export function CorrectionConfirmModal({
@@ -16,6 +20,8 @@ export function CorrectionConfirmModal({
   onConfirm,
   onCancel,
   hasNativeContent,
+  targetLanguage,
+  isLanguageMismatch = false,
 }: CorrectionConfirmModalProps) {
   return (
     <Dialog visible={open} onClose={onCancel} title="AI添削を実行しますか？" height="auto">
@@ -27,6 +33,15 @@ export function CorrectionConfirmModal({
         <Text fontSize="$2" color="$orange10" fontWeight="600">
           ⚠️ AI添削は1つの日記に対して1回のみ実行できます
         </Text>
+
+        {isLanguageMismatch && (
+          <Text fontSize="$2" color="$orange10" fontWeight="600">
+            ⚠️ ターゲット言語欄に{getLanguageName(targetLanguage)}
+            以外の言語が含まれている可能性があります。
+            {'\n'}
+            正しく添削できない場合があります。
+          </Text>
+        )}
 
         {!hasNativeContent && (
           <Text fontSize="$2" color="$red10" fontWeight="600">

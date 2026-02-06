@@ -16,6 +16,7 @@ import { useSubscriptionStore } from '@/stores/subscriptionStore';
 import type { AiCorrection, DiaryEntryInsert, TranslationExercise } from '@/types/database';
 import type { DiaryFormData } from '@/types/ui';
 import { formatDate, getTodayString } from '@/utils/dateUtils';
+import { isLanguageMismatch } from '@/utils/languageDetection';
 import { getLanguageName } from '@/utils/languageUtils';
 import { showErrorToast, showSuccessToast } from '@/utils/toast';
 import { Ionicons } from '@expo/vector-icons';
@@ -34,6 +35,7 @@ export default function DiaryDetailScreen() {
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const [existingEntryId, setExistingEntryId] = useState<string | null>(null);
+  const [isSaved, setIsSaved] = useState(false); // 保存済みフラグ
 
   // AI添削関連の状態
   const [aiCorrecting, setAiCorrecting] = useState(false);
@@ -74,9 +76,10 @@ export default function DiaryDetailScreen() {
       }
 
       setLoading(true);
-      // 日付変更時に添削結果をクリア
+      // 日付変更時に添削結果と保存フラグをクリア
       setAiCorrection(null);
       setExistingEntryId(null);
+      setIsSaved(false);
 
       const { data, error } = await DiaryService.getByDate(user.id, date);
 
@@ -93,6 +96,7 @@ export default function DiaryDetailScreen() {
           content_native: data.content_native,
           entry_date: data.entry_date,
         });
+        setIsSaved(true); // 既存データは保存済み
 
         // AI添削も読み込む
         const { data: correctionData } = await AiCorrectionService.getByDiaryEntryId(
@@ -144,11 +148,6 @@ export default function DiaryDetailScreen() {
       return;
     }
 
-    if (!formData.content.trim()) {
-      showErrorToast(`${getLanguageName(targetLanguage)}の内容を入力してください`);
-      return;
-    }
-
     setSaving(true);
 
     try {
@@ -183,6 +182,7 @@ export default function DiaryDetailScreen() {
         if (data) setExistingEntryId(data.id);
       }
 
+      setIsSaved(true); // 保存成功
       showSuccessToast('日記を保存しました');
     } catch (error) {
       let message = '日記の保存に失敗しました';
@@ -198,6 +198,7 @@ export default function DiaryDetailScreen() {
 
   const onFormChange = useCallback((field: keyof DiaryFormData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+    setIsSaved(false); // フォームが変更されたら未保存状態に
   }, []);
 
   // AI添削ボタンクリック
@@ -340,7 +341,7 @@ export default function DiaryDetailScreen() {
         >
           <AiCorrectionButton
             onPress={handleAiCorrectionClick}
-            disabled={!formData.content.trim()}
+            disabled={!isSaved || !formData.content.trim()}
             loading={aiCorrecting}
           />
         </YStack>
@@ -354,6 +355,8 @@ export default function DiaryDetailScreen() {
         nativeContent={formData.content_native}
         userContent={formData.content}
         hasNativeContent={!!formData.content_native.trim()}
+        targetLanguage={targetLanguage}
+        isLanguageMismatch={isLanguageMismatch(targetLanguage, formData.content)}
       />
 
       {/* 表現集ダイアログ */}

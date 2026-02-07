@@ -75,13 +75,19 @@ export function DeleteExpressionDialog({
         </Text>
 
         <XStack gap="$3" marginTop="$2">
-          <Button flex={1} backgroundColor="$bgSecondary" onPress={onClose} disabled={deleting}>
+          <Button
+            flex={1}
+            backgroundColor="$bgSecondary"
+            color="$textPrimary"
+            onPress={onClose}
+            disabled={deleting}
+          >
             キャンセル
           </Button>
           <Button
             flex={1}
             backgroundColor="$error"
-            color="white"
+            color="$background"
             onPress={handleDelete}
             disabled={deleting}
             opacity={deleting ? 0.5 : 1}

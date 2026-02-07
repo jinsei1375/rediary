@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { Button, Text, XStack, YStack } from 'tamagui';
+import { Button, Text, XStack, YStack, useTheme } from 'tamagui';
 
 type HeaderProps = {
   title: string;
@@ -20,6 +20,7 @@ export const Header = React.memo(
     rightButton,
   }: HeaderProps) => {
     const router = useRouter();
+    const theme = useTheme();
 
     const handleBack = () => {
       if (onBack) {
@@ -46,7 +47,7 @@ export const Header = React.memo(
               onPress={handleBack}
               pressStyle={{ opacity: 0.7 }}
             >
-              <Ionicons name="chevron-back" size={28} color="#5B8CFF" />
+              <Ionicons name="chevron-back" size={28} color={theme.primary.get()} />
             </Button>
           )}
           <Text fontSize="$6" fontWeight="bold" color="$textPrimary">
@@ -64,7 +65,7 @@ export const Header = React.memo(
               onPress={() => router.push('/profile')}
               pressStyle={{ opacity: 0.7 }}
             >
-              <Ionicons name="person-circle-outline" size={28} color="#5B8CFF" />
+              <Ionicons name="person-circle-outline" size={28} color={theme.primary.get()} />
             </Button>
           ) : null}
         </XStack>

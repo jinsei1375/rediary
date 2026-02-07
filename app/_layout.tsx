@@ -7,7 +7,7 @@ import Toast from 'react-native-toast-message';
 import { TamaguiProvider, useTheme } from 'tamagui';
 
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
-import { SettingsProvider } from '@/contexts/SettingsContext';
+import { SettingsProvider, useSettings } from '@/contexts/SettingsContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import tamaguiConfig from '@/tamagui.config';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -63,10 +63,14 @@ function NavigationContent() {
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
+  const { theme } = useSettings();
+
+  // themeの変更を監視してTamaguiProviderを更新
+  const effectiveTheme = theme === 'system' ? colorScheme : theme || colorScheme;
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <TamaguiProvider config={tamaguiConfig} defaultTheme={colorScheme || 'light'}>
+    <ThemeProvider value={effectiveTheme === 'dark' ? DarkTheme : DefaultTheme}>
+      <TamaguiProvider config={tamaguiConfig} defaultTheme={effectiveTheme}>
         <PortalProvider shouldAddRootHost>
           <NavigationContent />
         </PortalProvider>

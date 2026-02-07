@@ -1,4 +1,5 @@
 import { Header } from '@/components/common/Header';
+import { APP_NAME } from '@/constants/app';
 import { ChevronDown, ChevronUp } from '@tamagui/lucide-icons';
 import { useState } from 'react';
 import { ScrollView } from 'react-native';
@@ -11,9 +12,8 @@ interface FAQItem {
 
 const faqData: FAQItem[] = [
   {
-    question: 'ReDiaryとは何ですか？',
-    answer:
-      'ReDiaryは、言語学習を支援する日記アプリです。日記を書くことで言語表現を学び、AI技術を活用した添削機能により効果的に語学力を向上させることができます。',
+    question: `${APP_NAME}とは何ですか？`,
+    answer: `${APP_NAME}は、言語学習を支援する日記アプリです。日記を書くことで言語表現を学び、AI技術を活用した添削機能により効果的に語学力を向上させることができます。`,
   },
   {
     question: 'どのような機能がありますか？',

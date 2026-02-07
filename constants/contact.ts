@@ -1,3 +1,5 @@
+import { APP_NAME } from './app';
+
 /**
  * 運営者・お問い合わせ情報
  */
@@ -5,7 +7,7 @@ export const CONTACT = {
   /** お問い合わせメールアドレス */
   EMAIL: 'jinsei.edit@gmail.com',
   /** お問い合わせ件名（デフォルト） */
-  EMAIL_SUBJECT: 'ReDiaryお問い合わせ',
+  EMAIL_SUBJECT: `${APP_NAME}お問い合わせ`,
 } as const;
 
 /**

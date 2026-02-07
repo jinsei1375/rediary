@@ -2,7 +2,7 @@
 
 ## 概要
 
-このドキュメントでは、Rediaryアプリで実装されたGoogle OAuth認証の仕組みと、Supabaseでの設定方法について説明します。
+このドキュメントでは、LanDiaアプリで実装されたGoogle OAuth認証の仕組みと、Supabaseでの設定方法について説明します。
 
 ## 実装の詳細
 
@@ -56,39 +56,46 @@
 ### 3. アプリケーション側の設定
 
 1. **app.json の確認**
+
    ```json
    {
      "expo": {
-       "scheme": "rediary",
+       "scheme": "landia",
        ...
      }
    }
    ```
-   - カスタムURLスキーム（`rediary://`）が設定されていることを確認
+
+   - カスタムURLスキーム（`landia://`）が設定されていることを確認
 
 2. **リダイレクトURLの設定**
-   - authService.ts で定義されているリダイレクトURL: `rediary://auth/callback`
+   - authService.ts で定義されているリダイレクトURL: `landia://auth/callback`
    - このURLがSupabaseのOAuth設定と一致していることを確認
 
 ### 4. モバイルアプリでの追加設定（必要に応じて）
 
 #### iOS
+
 - Xcode で URL Schemes を設定（Expo が自動的に処理）
 
 #### Android
+
 - AndroidManifest.xml にインテントフィルタを追加（Expo が自動的に処理）
 
 ## トラブルシューティング
 
 ### エラー: "OAuth URLが取得できませんでした"
+
 - Supabase で Google Provider が有効になっているか確認
 - Client ID と Client Secret が正しく設定されているか確認
 
 ### エラー: "認証トークンが取得できませんでした"
+
 - リダイレクトURLが正しく設定されているか確認
 - Google Cloud Console の承認済みリダイレクト URI に Supabase のコールバック URL が含まれているか確認
 
 ### 認証後にアプリに戻らない
+
 - app.json の `scheme` が正しく設定されているか確認
 - iOS/Android のディープリンク設定が正しいか確認
 - 開発環境では、`npx expo start --clear` でキャッシュをクリアしてから再度試す

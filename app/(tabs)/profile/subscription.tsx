@@ -1,5 +1,6 @@
 import { Header } from '@/components/common/Header';
 import { PricingCard } from '@/components/subscription/PricingCard';
+import { APP_NAME } from '@/constants/app';
 import { useSubscriptionStore } from '@/stores/subscriptionStore';
 import { SubscriptionPlan } from '@/types/database';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -110,7 +111,7 @@ export default function SubscriptionScreen() {
             <PricingCard
               title="無料プラン"
               price="¥0"
-              features={['ReDiaryの基本的な機能を利用できます']}
+              features={[`${APP_NAME}の基本的な機能を利用できます`]}
               onPress={() => {}}
               loading={false}
               disabled={true}

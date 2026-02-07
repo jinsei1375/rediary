@@ -2,18 +2,18 @@ module.exports = ({ config }) => {
   return {
     ...config,
     expo: {
-      name: 'rediary',
-      slug: 'rediary',
+      name: 'LanDia',
+      slug: 'landia',
       version: '0.1.12',
       orientation: 'portrait',
       icon: './assets/images/icon.png',
-      scheme: 'rediary',
+      scheme: 'landia',
       platforms: ['ios', 'android'],
       userInterfaceStyle: 'automatic',
       newArchEnabled: true,
       ios: {
         supportsTablet: true,
-        bundleIdentifier: 'com.shinseimurakami.rediary',
+        bundleIdentifier: 'com.shinseimurakami.landia',
         infoPlist: {
           ITSAppUsesNonExemptEncryption: false,
         },
@@ -28,7 +28,7 @@ module.exports = ({ config }) => {
         },
         edgeToEdgeEnabled: true,
         predictiveBackGestureEnabled: false,
-        package: 'com.shinseimurakami.rediary',
+        package: 'com.shinseimurakami.landia',
       },
       web: {
         output: 'static',

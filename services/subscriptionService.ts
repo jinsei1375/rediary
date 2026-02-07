@@ -1,3 +1,4 @@
+import { APP_NAME_PRO } from '@/constants/app';
 import { SubscriptionPlan } from '@/types/database';
 import { Platform } from 'react-native';
 import Purchases, {
@@ -81,7 +82,7 @@ export class SubscriptionService {
   private static getPlanFromEntitlements(customerInfo: CustomerInfo): SubscriptionPlan {
     // RevenueCatで設定したEntitlement識別子を確認
     if (
-      customerInfo.entitlements.active['ReDiary Pro'] ||
+      customerInfo.entitlements.active[APP_NAME_PRO] ||
       customerInfo.entitlements.active['pro']
     ) {
       return SubscriptionPlan.PRO;

@@ -1,3 +1,4 @@
+import { APP_SCHEME } from '@/constants/app';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import * as Crypto from 'expo-crypto';
 import * as WebBrowser from 'expo-web-browser';
@@ -8,7 +9,7 @@ import { supabase } from './supabase';
 WebBrowser.maybeCompleteAuthSession();
 
 // OAuthコールバック用のリダイレクトURL
-const redirectUrl = 'rediary://auth/callback';
+const redirectUrl = `${APP_SCHEME}://auth/callback`;
 
 export class AuthService {
   // メールアドレスでサインアップ

@@ -1,3 +1,4 @@
+import { APP_NAME } from '@/constants/app';
 import { CONTACT } from '@/constants/contact';
 import { ScrollView } from 'react-native';
 import { Text, YStack } from 'tamagui';
@@ -11,7 +12,8 @@ export function TermsContent() {
             第1条（適用）
           </Text>
           <Text fontSize="$3" color="$color" lineHeight={24}>
-            本利用規約（以下「本規約」といいます。）は、ReDiary（以下「本アプリ」といいます。）の利用条件を定めるものです。ユーザーの皆さま（以下「ユーザー」といいます。）には、本規約に従って、本アプリをご利用いただきます。本アプリは本アプリの運営者（以下「運営者」といいます。）が提供します。
+            本利用規約（以下「本規約」といいます。）は、{APP_NAME}
+            （以下「本アプリ」といいます。）の利用条件を定めるものです。ユーザーの皆さま（以下「ユーザー」といいます。）には、本規約に従って、本アプリをご利用いただきます。本アプリは本アプリの運営者（以下「運営者」といいます。）が提供します。
           </Text>
         </YStack>
 

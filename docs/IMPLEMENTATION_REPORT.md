@@ -9,11 +9,13 @@ Google認証を追加する際にエラーが発生し、正常に登録でき�
 ### 1. Google OAuth フローの修正 (services/authService.ts)
 
 #### 問題点
+
 - `skipBrowserRedirect: false` が使用されていた（React Nativeでは不適切）
 - トークンの抽出方法が正しくなかった（クエリ文字列を使用していたが、Supabaseはハッシュフラグメントを使用）
 - エラーハンドリングが不完全だった
 
 #### 修正内容
+
 - `skipBrowserRedirect: true` に変更し、明示的に `redirectTo` パラメータを設定
 - ハッシュフラグメント (`#`) からトークンを抽出するように修正
 - すべての結果タイプ (success, cancel, dismiss, locked, opened) に対するエラーハンドリングを追加
@@ -57,7 +59,7 @@ Google認証を追加する際にエラーが発生し、正常に登録でき�
 2. `supabase.auth.signInWithOAuth()` を呼び出し、OAuth URLを取得
 3. `WebBrowser.openAuthSessionAsync()` でブラウザを開き、Google認証画面を表示
 4. ユーザーがGoogleアカウントで認証
-5. Supabaseが `rediary://auth/callback` にリダイレクト（ハッシュフラグメントにトークンを含む）
+5. Supabaseが `landia://auth/callback` にリダイレクト（ハッシュフラグメントにトークンを含む）
 6. アプリがリダイレクトURLを受け取り、ハッシュフラグメントからトークンを抽出
 7. `supabase.auth.setSession()` でセッションを設定
 8. AuthContextの `onAuthStateChange` が認証状態の変更を検知

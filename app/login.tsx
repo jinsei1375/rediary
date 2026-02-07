@@ -3,6 +3,7 @@ import { Dialog } from '@/components/common/Dialog';
 import { GoogleLogo } from '@/components/common/GoogleLogo';
 import { PrivacyContent } from '@/components/common/PrivacyContent';
 import { TermsContent } from '@/components/common/TermsContent';
+import { APP_NAME } from '@/constants/app';
 import { useAuth } from '@/contexts/AuthContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { handleAuthError } from '@/utils/authErrorHandler';
@@ -49,7 +50,7 @@ export default function LoginScreen() {
   return (
     <YStack flex={1} justifyContent="center" paddingHorizontal="$6" backgroundColor="$background">
       <Text fontSize="$10" fontWeight="bold" textAlign="center" marginBottom="$2" color="$primary">
-        ReDiary
+        {APP_NAME}
       </Text>
       <Text fontSize="$5" textAlign="center" color="$placeholderColor" marginBottom="$10">
         日記で学ぶ言語学習アプリ

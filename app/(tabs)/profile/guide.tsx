@@ -1,4 +1,5 @@
 import { Header } from '@/components/common/Header';
+import { APP_NAME } from '@/constants/app';
 import { BookOpen, Calendar, Edit3, PenTool, Sparkles, TrendingUp } from '@tamagui/lucide-icons';
 import { ScrollView } from 'react-native';
 import { Text, XStack, YStack } from 'tamagui';
@@ -83,7 +84,8 @@ export default function UserGuideScreen() {
           {/* Welcome Section */}
           <YStack gap="$3">
             <Text fontSize="$3" color="$color" lineHeight={22}>
-              ReDiaryは、日記を書くことで言語学習を楽しく続けられるアプリです。書いた表現を繰り返し思い出すことで、「使える言語」へと変えていきましょう。
+              {APP_NAME}
+              は、日記を書くことで言語学習を楽しく続けられるアプリです。書いた表現を繰り返し思い出すことで、「使える言語」へと変えていきましょう。
             </Text>
           </YStack>
 
@@ -93,7 +95,7 @@ export default function UserGuideScreen() {
               基本的な使い方
             </Text>
             <Text fontSize="$3" color="$color" lineHeight={22}>
-              ReDiaryは5つのステップで言語学習をサポートします。
+              {APP_NAME}は5つのステップで言語学習をサポートします。
             </Text>
           </YStack>
 

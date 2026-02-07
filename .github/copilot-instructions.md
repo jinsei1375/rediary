@@ -1,4 +1,4 @@
-# Rediary - React Native 日記アプリ
+# LanDia - React Native 日記アプリ
 
 ## コンセプト
 

@@ -20,7 +20,6 @@ interface SubscriptionState {
   initialize: (userId: string) => Promise<void>;
   syncSubscription: () => Promise<void>;
   subscribe: (pkg: PurchasesPackage) => Promise<void>;
-  restore: () => Promise<void>;
   reset: () => void;
 }
 
@@ -91,22 +90,6 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
       Alert.alert('登録完了', 'Proプランに登録しました！');
     } catch (error: any) {
       Alert.alert('エラー', error.message || '購入に失敗しました');
-    } finally {
-      set({ loading: false });
-    }
-  },
-
-  // Restore purchases
-  restore: async () => {
-    try {
-      set({ loading: true });
-      await SubscriptionService.restorePurchases();
-
-      await get().syncSubscription();
-
-      Alert.alert('復元完了', 'Proプランの購入を復元しました');
-    } catch (error: any) {
-      Alert.alert('エラー', '復元に失敗しました');
     } finally {
       set({ loading: false });
     }

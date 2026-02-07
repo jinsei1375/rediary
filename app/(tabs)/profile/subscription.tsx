@@ -1,5 +1,4 @@
 import { Header } from '@/components/common/Header';
-import { SecondaryButton } from '@/components/common/PrimaryButton';
 import { PricingCard } from '@/components/subscription/PricingCard';
 import { useSubscriptionStore } from '@/stores/subscriptionStore';
 import { SubscriptionPlan } from '@/types/database';
@@ -16,7 +15,6 @@ export default function SubscriptionScreen() {
   const expiresAt = useSubscriptionStore((state) => state.expiresAt);
   const loading = useSubscriptionStore((state) => state.loading);
   const subscribe = useSubscriptionStore((state) => state.subscribe);
-  const restore = useSubscriptionStore((state) => state.restore);
 
   const handleBack = () => {
     if (params.returnTo) {
@@ -120,10 +118,6 @@ export default function SubscriptionScreen() {
               hideButton={isPremium}
             />
           </YStack>
-
-          <SecondaryButton onPress={restore} marginTop="$4" disabled={loading}>
-            <Text color="$textPrimary">{loading ? '処理中...' : '購入を復元'}</Text>
-          </SecondaryButton>
 
           <Text fontSize="$2" color="$textTertiary" textAlign="center" marginTop="$4">
             自動更新されます。いつでもキャンセル可能です。

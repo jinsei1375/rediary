@@ -101,7 +101,7 @@ export class SubscriptionService {
       const customerInfo = await Purchases.getCustomerInfo();
       const plan = this.getPlanFromEntitlements(customerInfo);
       const expiresAt =
-        customerInfo.entitlements.active['ReDiary Pro']?.expirationDate ||
+        customerInfo.entitlements.active['LanDia Pro']?.expirationDate ||
         customerInfo.entitlements.active['pro']?.expirationDate ||
         null;
 
@@ -121,7 +121,7 @@ export class SubscriptionService {
   private static async syncWithSupabase(customerInfo: CustomerInfo): Promise<void> {
     const plan = this.getPlanFromEntitlements(customerInfo);
     const expiresAt =
-      customerInfo.entitlements.active['ReDiary Pro']?.expirationDate ||
+      customerInfo.entitlements.active['LanDia Pro']?.expirationDate ||
       customerInfo.entitlements.active['pro']?.expirationDate ||
       null;
 

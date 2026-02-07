@@ -9,12 +9,11 @@ import { Card, Text, useTheme, XStack, YStack } from 'tamagui';
 type ExpressionCardProps = {
   expression: TranslationExercise;
   displayDate?: boolean;
-  onEdit?: (expression: TranslationExercise) => void;
   onDelete?: (expression: TranslationExercise) => void;
 };
 
 export const ExpressionCard = React.memo(
-  ({ expression, displayDate = true, onEdit, onDelete }: ExpressionCardProps) => {
+  ({ expression, displayDate = true, onDelete }: ExpressionCardProps) => {
     const theme = useTheme();
 
     const renderRightActions = (
@@ -62,11 +61,6 @@ export const ExpressionCard = React.memo(
         padding="$3"
         borderRadius="$3"
         marginBottom="$2"
-        onPress={onEdit ? () => onEdit(expression) : undefined}
-        pressStyle={onEdit ? { scale: 0.98, opacity: 0.8 } : undefined}
-        hoverStyle={onEdit ? { borderColor: '$blue8' } : undefined}
-        cursor={onEdit ? 'pointer' : 'default'}
-        animation="quick"
       >
         <YStack gap="$2">
           <YStack gap="$2" flex={1}>

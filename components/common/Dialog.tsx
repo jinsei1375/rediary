@@ -9,10 +9,21 @@ type DialogProps = {
   children: React.ReactNode;
   height?: string | number;
   width?: string;
+  position?: 'center' | 'top';
+  marginTop?: string | number;
 };
 
 export const Dialog = React.memo(
-  ({ visible, onClose, title, children, height = '60%', width = '90%' }: DialogProps) => {
+  ({
+    visible,
+    onClose,
+    title,
+    children,
+    height = '60%',
+    width = '90%',
+    position = 'center',
+    marginTop,
+  }: DialogProps) => {
     const theme = useTheme();
 
     return (
@@ -44,6 +55,8 @@ export const Dialog = React.memo(
             shadowOpacity={0.3}
             shadowRadius={8}
             elevation={5}
+            marginTop={position === 'top' ? marginTop : undefined}
+            alignSelf="center"
           >
             <XStack justifyContent="space-between" alignItems="center" marginBottom="$3">
               <TamaguiDialog.Title fontSize="$7" fontWeight="700" color="$textPrimary">
